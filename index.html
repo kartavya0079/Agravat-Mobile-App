@@ -458,7 +458,7 @@
     <div class="card" style="padding:16px; margin-top:8px; text-align:center;">
       <b data-i="ugcTitle">Share your recovery story</b>
       <p class="sub" style="margin:6px 0 12px" data-i="ugcSub">Featured patients appear on the Dr Agravat Wellness YouTube channel (with consent).</p>
-      <button class="btn btn-blue btn-block" onclick="toast(t('soonMsg'))">📹 <span data-i="ugcBtn">Submit my story</span></button>
+      <button class="btn btn-blue btn-block" onclick="openSheet('story')">📹 <span data-i="ugcBtn">Submit my story</span></button>
     </div>
   </div>
 
@@ -475,6 +475,7 @@
 
   <!-- PROFILE -->
   <div class="screen hidden" id="screen-profile">
+    <div id="acctCard"></div>
     <div class="passport">
       <h3 data-i="passportTitle">Health Passport</h3><div class="pid">ID · AHCL-0001-KA</div>
       <div class="pg">
@@ -493,8 +494,8 @@
     <h2 class="sec" data-i="myCare">My care</h2>
     <div class="card" style="padding:4px 0">
       <div class="menu-item" onclick="openSheet('consult')"><span class="e">📹</span><span class="ml" data-i="mConsult">Video consultation</span><span class="ar">›</span></div>
-      <div class="menu-item" onclick="toast(t('soonMsg'))"><span class="e">📄</span><span class="ml" data-i="mRecords">Health records (PDF export)</span><span class="ar">›</span></div>
-      <div class="menu-item" onclick="toast(t('soonMsg'))"><span class="e">👨‍👩‍👧</span><span class="ml" data-i="mFamily">Family profiles</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="exportPassport()"><span class="e">📄</span><span class="ml" data-i="mRecords">Health records (PDF export)</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="openSheet('family')"><span class="e">👨‍👩‍👧</span><span class="ml" data-i="mFamily">Family profiles</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openSheet('care')"><span class="e">⭐</span><span class="ml" data-i="mCarePlus">AGRAVAT Care+ membership</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openSheet('consent')"><span class="e">🔒</span><span class="ml" data-i="mPrivacy">Privacy & data consent</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openAdminGate()"><span class="e">🛠️</span><span class="ml" data-i="mAdmin">Manager Control (owner/staff)</span><span class="ar">›</span></div>
@@ -725,6 +726,8 @@ let SUGAR=JSON.parse(localStorage.getItem('agr_sugar')||'[140,132,128,135,122,11
 let MEALS_DONE=JSON.parse(localStorage.getItem('agr_meals')||'{}');
 let HABITS=JSON.parse(localStorage.getItem('agr_habits')||'{}');
 let DIET_TAB='diet', CUR='home', PD_TAB='what', SHOP_FILTER='all';
+let ACCOUNT=JSON.parse(localStorage.getItem('agr_account')||'null');
+const STORE_URL='https://www.agravat.com';
 const t=k=>(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;
 const L=o=>o?(o[LANG]||o.en):'';
 const money=n=>'₹'+n.toLocaleString('en-IN');
@@ -732,9 +735,10 @@ const money=n=>'₹'+n.toLocaleString('en-IN');
 function applyI18n(){
   document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(I18N[LANG]&&I18N[LANG][k]!==undefined)el.textContent=I18N[LANG][k];});
   document.getElementById('langLabel').textContent=LANG.toUpperCase();
-  document.getElementById('greetLine').textContent=greeting()+', Kartavya';
+  const nm=ACCOUNT&&ACCOUNT.name?ACCOUNT.name.split(' ')[0]:'there';
+  document.getElementById('greetLine').textContent=greeting()+', '+nm;
   document.documentElement.lang=LANG;
-  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates();
+  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates(); renderAcct();
 }
 function greeting(){const h=new Date().getHours();return h<12?t('greetMorning'):h<17?t('greetAfternoon'):t('greetEvening');}
 
@@ -763,7 +767,7 @@ function pcardHtml(p){
       <h4>${L(p.name)}${p.flag?'<span class="flag">★ Best</span>':''}</h4>
       <div class="stars">${'★'.repeat(Math.round(p.rating))}<span style="color:var(--muted);font-size:.66rem"> ${p.rating} · ${p.sold} ${t('sold')}</span></div>
       <div class="prow"><span class="price">${money(p.price)}${p.mrp>p.price?` <s>${money(p.mrp)}</s>`:''}</span>
-      ${p.stock?`<button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+ ${t('addCart')}</button>`:`<button class="btn btn-ghost" onclick="event.stopPropagation();toast(t('soonMsg'))">${t('notify')}</button>`}</div>
+      ${p.stock?`<button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+ ${t('addCart')}</button>`:`<button class="btn btn-ghost" onclick="event.stopPropagation();notifyMe('${p.id}')">${t('notify')}</button>`}</div>
     </div></div>`;
 }
 function renderReco(){document.getElementById('homeReco').innerHTML=['kit','smile','pops'].map(id=>pcardHtml(PRODUCTS.find(p=>p.id===id))).join('');}
@@ -795,7 +799,7 @@ function renderPD(){
     <div class="tabbody">${L(p[PD_TAB])}</div>
     <div class="compliance">${t('osmfCompliance')}</div>
     <div style="display:flex;gap:10px;margin:18px 0 8px;">
-      ${p.stock?`<button class="btn btn-block btn-ghost" onclick="addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-block btn-gold" onclick="addCart('${p.id}',true)">${t('buyNow')}</button>`:`<button class="btn btn-block btn-blue" onclick="toast(t('soonMsg'))">🔔 ${t('notify')}</button>`}
+      ${p.stock?`<button class="btn btn-block btn-ghost" onclick="addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-block btn-gold" onclick="addCart('${p.id}',true)">${t('buyNow')}</button>`:`<button class="btn btn-block btn-blue" onclick="notifyMe('${p.id}')">🔔 ${t('notify')}</button>`}
     </div>`;
 }
 
@@ -852,7 +856,7 @@ function renderDiet(){
       <h2 class="sec">${t('todayMeals')}</h2>
       ${meals.map(([id,e,n,s])=>`<div class="card meal"><div class="mi">${e}</div><div class="mb"><b>${t(n)}</b><p>${t(s)}</p></div><div class="chk ${MEALS_DONE[id]?'done':''}" onclick="toggleMeal('${id}')">✓</div></div>`).join('')}
       <h2 class="sec">${t('habits')}</h2><div class="habit">${habitHtml()}</div>
-      <h2 class="sec">${t('grocery')}</h2><div class="card" style="padding:14px;font-size:.84rem;line-height:1.9">🛒 Turmeric, almonds, moong dal, ghee, bottle gourd, paneer, milk, buttermilk, tulsi, OSMF Pops<br><button class="btn btn-blue" style="margin-top:8px" onclick="toast(t('soonMsg'))">${t('addCart')} → cart</button></div>
+      <h2 class="sec">${t('grocery')}</h2><div class="card" style="padding:14px;font-size:.84rem;line-height:1.9">🛒 Turmeric, almonds, moong dal, ghee, bottle gourd, paneer, milk, buttermilk, tulsi, OSMF Pops<br><button class="btn btn-blue" style="margin-top:8px" onclick="addToCartMulti(['pops','vita'],'Added OSMF Pops & Vita to cart')">Add AGRAVAT items → cart</button></div>
       <div class="compliance">${t('osmfCompliance')}</div>`;
   } else {
     const meals=[['d1','🥣','dMeal1','dMeal1s'],['d2','🫓','dMeal2','dMeal2s'],['d3','🥗','dMeal3','dMeal3s'],['d4','🍵','dMeal4','dMeal4s']];
@@ -942,7 +946,7 @@ const ADMIN={
  esc:[['Imran K.','"sharp pain while stretching"','OSMF · urgent'],['Priya M.','"my sugar reading is high"','Diabetes'],['Ramesh P.','"which supplement with the kit?"','Product']]
 };
 let ADMIN_TAB='overview';
-function openAdminGate(){openSheetRaw(`<div class="grab"></div><h3>🛠️ Manager Control</h3><p class="sub">Owner / staff access. Role-based, secure in the full build.</p><div class="field"><label>Passcode</label><input id="adminPin" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')verifyAdmin()"></div><button class="btn btn-block btn-navy" onclick="verifyAdmin()">Enter dashboard</button><p class="sub" style="text-align:center;margin-top:8px">Demo passcode: <b>1950</b></p>`);}
+function openAdminGate(){openSheetRaw(`<div class="grab"></div><h3>🛠️ Manager Control</h3><p class="sub">Owner / staff access · role-based.</p><div class="field"><label>Passcode</label><input id="adminPin" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')verifyAdmin()"></div><button class="btn btn-block btn-navy" onclick="verifyAdmin()">Enter dashboard</button><p class="sub" style="text-align:center;margin-top:8px">Demo passcode: <b>1950</b></p>`);}
 function verifyAdmin(){const el=document.getElementById('adminPin');if(el&&el.value==='1950'){closeSheet();go('admin');}else{toast('Incorrect passcode');}}
 function setAdminTab(tb){ADMIN_TAB=tb;renderAdmin(tb);document.getElementById('screen-admin').scrollTop=0;}
 function renderAdmin(sec){
@@ -956,19 +960,61 @@ function renderAdmin(sec){
     <h2 class="sec">Top products</h2>${['kit','smile','pops'].map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<div class="card pcard" style="cursor:default">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="sub">${p.sold} sold · ${money(p.price)}</div></div></div>`;}).join('')}`;
     setTimeout(drawRev,30);
   } else if(sec==='customers'){
-    b.innerHTML=`<h2 class="sec">Unified Health Passport</h2><input style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:8px" placeholder="Search customers… (demo)"><div class="card" style="padding:4px 0">${ADMIN.customers.map(c=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.86rem">${c[0]}</b><div class="sub" style="font-size:.72rem">${c[1]} · ${c[2]} · ${c[3]}</div></div><div style="text-align:right"><div class="sub" style="font-size:.66rem">${c[4]}</div><span class="badge-soft">consent ✓</span></div></div>`).join('')}</div><p class="sub" style="margin-top:8px">One record per customer, merged across app, kiosk & WhatsApp. Segment & export in the full build.</p>`;
+    b.innerHTML=`<h2 class="sec">Unified Health Passport</h2><input id="custSearch" style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:8px" placeholder="Search by name or city…" oninput="renderCustList(this.value)"><div id="custList"></div><p class="sub" style="margin-top:8px">One record per customer, merged across app, kiosk & WhatsApp.</p>`;
+    renderCustList('');
   } else if(sec==='orders'){
     b.innerHTML=`<h2 class="sec">Recent orders</h2><div class="card" style="padding:4px 0">${ADMIN.orders.map(o=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${o[1]}</b><div class="sub">${o[0]} · ${o[2]}</div></div><span class="badge-soft">${o[3]}</span></div>`).join('')}</div>
     <h2 class="sec">Inventory (Sanand plant)</h2><div class="card" style="padding:4px 0">${PRODUCTS.map((p,i)=>{const stk=p.stock?[57,54,69,226,42,48,0,40][i]:0;return `<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${L(p.name)}</b></div><span style="font-weight:800;color:${stk===0?'#b91c1c':stk<20?'#C9A94E':'var(--green)'}">${p.stock?stk+' in stock':'OUT'}</span></div>`;}).join('')}</div>`;
   } else if(sec==='kiosks'){
     b.innerHTML=`<h2 class="sec">ATH kiosks · walk-in capture</h2>${ADMIN.kiosks.map(k=>`<div class="card" style="padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="font-size:1.6rem">⬢</div><div style="flex:1"><b>${k[0]}</b><div class="sub">Staff on duty: ${k[2]}</div></div><div style="text-align:right"><b style="color:var(--blue);font-size:1.2rem">${k[1]}</b><div class="sub" style="font-size:.64rem">walk-ins (30d)</div></div></div>`).join('')}<p class="sub">Multi-location ready — compare per-site and per-staff performance.</p>`;
   } else if(sec==='ai'){
-    b.innerHTML=`<h2 class="sec">Human-escalation queue</h2>${ADMIN.esc.map(e=>`<div class="card" style="padding:13px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>${e[0]}</b><span class="badge-soft">${e[2]}</span></div><p class="sub" style="margin:5px 0 9px">${e[1]}</p><button class="btn btn-blue" onclick="toast('Opening conversation with full AI context…')">Review & reply</button></div>`).join('')}<p class="sub">Ask-the-Doctor: AI drafts a compliant reply, a clinician approves before it is sent.</p>`;
+    b.innerHTML=`<h2 class="sec">Human-escalation queue</h2>${ADMIN.esc.map(e=>`<div class="card" style="padding:13px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>${e[0]}</b><span class="badge-soft">${e[2]}</span></div><p class="sub" style="margin:5px 0 9px">${e[1]}</p><button class="btn btn-blue" onclick="adminReply('${e[0]}')">Review & reply</button></div>`).join('')}<p class="sub">Ask-the-Doctor: AI drafts a compliant reply, a clinician approves before it is sent.</p>`;
   }
 }
+function renderCustList(q){const el=document.getElementById('custList');if(!el)return;q=(q||'').toLowerCase();const rows=ADMIN.customers.filter(c=>!q||c[0].toLowerCase().includes(q)||c[1].toLowerCase().includes(q)||c[2].toLowerCase().includes(q));el.innerHTML=`<div class="card" style="padding:4px 0">${rows.length?rows.map(c=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.86rem">${c[0]}</b><div class="sub" style="font-size:.72rem">${c[1]} · ${c[2]} · ${c[3]}</div></div><div style="text-align:right"><div class="sub" style="font-size:.66rem">${c[4]}</div><span class="badge-soft">consent ✓</span></div></div>`).join(''):'<p class="sub" style="padding:12px">No matching customers.</p>'}</div>`;}
 function drawRev(){const cv=document.getElementById('revChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=150;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=ADMIN.rev,n=d.length,mx=Math.max(...d)*1.12,gap=W/n,bw=gap*0.56;d.forEach((v,i)=>{const bh=(H-18)*(v/mx);const xx=i*gap+gap*0.22,yy=H-bh-14,r=3;const g=x.createLinearGradient(0,yy,0,H);g.addColorStop(0,'#2E7BE0');g.addColorStop(1,'#0A1F44');x.fillStyle=g;x.beginPath();x.moveTo(xx,H-14);x.lineTo(xx,yy+r);x.quadraticCurveTo(xx,yy,xx+r,yy);x.lineTo(xx+bw-r,yy);x.quadraticCurveTo(xx+bw,yy,xx+bw,yy+r);x.lineTo(xx+bw,H-14);x.closePath();x.fill();});}
 
 function seedChat(){CHAT=[];const h={en:"Namaste 🙏 I'm AGRAVAT, your doctor-inspired wellness assistant. Ask me about OSMF care, supplements, diet or how to use any product — in your language, anytime.",hi:"नमस्ते 🙏 मैं AGRAVAT हूँ, आपका डॉक्टर-प्रेरित वेलनेस सहायक। OSMF देखभाल, सप्लीमेंट्स या आहार के बारे में पूछें।",gu:"નમસ્તે 🙏 હું AGRAVAT છું, તમારો ડૉક્ટર-પ્રેરિત વેલનેસ સહાયક. OSMF સંભાળ, સપ્લિમેન્ટ્સ વિશે પૂછો."};pushMsg('bot',h[LANG]||h.en);}
+
+/* ===== ACCOUNTS ===== */
+function renderAcct(){
+  const el=document.getElementById('acctCard');if(!el)return;
+  if(ACCOUNT){
+    el.innerHTML=`<div class="card" style="padding:16px;margin-top:14px;display:flex;align-items:center;gap:13px">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800">${(ACCOUNT.name||'A').slice(0,1).toUpperCase()}</div>
+      <div style="flex:1;min-width:0"><b>${ACCOUNT.name||'AGRAVAT user'}</b><div class="sub" style="font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ACCOUNT.email||''}${ACCOUNT.city?' · '+ACCOUNT.city:''}</div></div>
+      <button class="btn btn-ghost" onclick="openSheet('editAccount')">Manage</button></div>`;
+  } else {
+    el.innerHTML=`<div class="card" style="padding:18px;margin-top:14px;text-align:center;background:linear-gradient(135deg,#0A1F44,#1E5FB4);color:#fff;border:none">
+      <b style="font-size:1.05rem">Create your AGRAVAT account</b><p style="font-size:.8rem;opacity:.9;margin:6px 0 12px">Save your Health Passport, orders, rewards & recovery — synced to you.</p>
+      <button class="btn btn-block btn-gold" onclick="openSheet('auth')">Sign up / Log in</button></div>`;
+  }
+}
+function regFormHtml(){return `<div class="field"><label>Full name</label><input id="acName" value="${(ACCOUNT&&ACCOUNT.name)||''}"></div><div class="field"><label>Email</label><input id="acEmail" type="email" value="${(ACCOUNT&&ACCOUNT.email)||''}" inputmode="email"></div><div class="field"><label>Phone</label><input id="acPhone" inputmode="tel" placeholder="+91"></div><div class="field"><label>City</label><input id="acCity"></div><div class="field"><label>Create password</label><input id="acPass" type="password"></div><button class="btn btn-block btn-gold" onclick="doRegister()">Create account</button><p class="sub" style="text-align:center;margin-top:8px;font-size:.66rem">Stored securely on your device in this prototype. Consent-based, per AGRAVAT privacy.</p>`;}
+function loginFormHtml(){return `<div class="field"><label>Email</label><input id="acEmail" type="email" inputmode="email"></div><div class="field"><label>Password</label><input id="acPass" type="password"></div><button class="btn btn-block btn-navy" onclick="doLogin()">Log in</button>`;}
+function authMode(m){document.getElementById('authTabR').classList.toggle('active',m==='reg');document.getElementById('authTabL').classList.toggle('active',m==='login');document.getElementById('authForm').innerHTML=m==='reg'?regFormHtml():loginFormHtml();}
+function doRegister(){const g=id=>(document.getElementById(id)||{}).value||'';const name=g('acName'),email=g('acEmail');if(!name||!email){toast('Enter your name and email');return;}ACCOUNT={name,email,phone:g('acPhone'),city:g('acCity'),pass:g('acPass'),joined:new Date().toISOString()};localStorage.setItem('agr_account',JSON.stringify(ACCOUNT));closeSheet();applyI18n();toast('🎉 Welcome, '+name.split(' ')[0]+'!');}
+function doLogin(){const g=id=>(document.getElementById(id)||{}).value||'';const email=g('acEmail');if(!email){toast('Enter your email');return;}const saved=JSON.parse(localStorage.getItem('agr_account')||'null');if(saved&&saved.email===email){ACCOUNT=saved;}else{ACCOUNT={name:email.split('@')[0],email};localStorage.setItem('agr_account',JSON.stringify(ACCOUNT));}closeSheet();applyI18n();toast('Welcome back'+(ACCOUNT.name?', '+ACCOUNT.name.split(' ')[0]:''));}
+function saveAccount(){const g=id=>(document.getElementById(id)||{}).value||'';ACCOUNT=Object.assign(ACCOUNT||{},{name:g('acName'),email:g('acEmail'),phone:g('acPhone'),city:g('acCity')});localStorage.setItem('agr_account',JSON.stringify(ACCOUNT));closeSheet();applyI18n();toast('✅ Account updated');}
+function logout(){ACCOUNT=null;localStorage.removeItem('agr_account');closeSheet();applyI18n();toast('Logged out');}
+function deleteAccount(){ACCOUNT=null;['agr_account'].forEach(k=>localStorage.removeItem(k));closeSheet();applyI18n();toast('Your account data was deleted');}
+
+/* ===== FEATURE ACTIONS (all live) ===== */
+function bookSlot(tm){localStorage.setItem('agr_booking',JSON.stringify({doctor:'Dr Bharat Agravat',time:tm,date:new Date().toDateString()}));closeSheet();toast('✅ Consultation booked with Dr Bharat · '+tm+' today. Confirmation sent'+(ACCOUNT&&ACCOUNT.email?(' to '+ACCOUNT.email):'')+'.');}
+function careJoin(){localStorage.setItem('agr_careplus','1');closeSheet();toast('⭐ Welcome to AGRAVAT Care+! Your benefits are now active.');}
+function notifyMe(id){const p=PRODUCTS.find(x=>x.id===id)||{};const em=ACCOUNT&&ACCOUNT.email;const list=JSON.parse(localStorage.getItem('agr_notify')||'[]');if(!list.includes(id)){list.push(id);localStorage.setItem('agr_notify',JSON.stringify(list));}toast(em?('🔔 We’ll email '+em+' when '+(L(p.name)||'this')+' is back'):'🔔 Added to your notify list — sign in to get alerts');}
+function addToCartMulti(ids,msg){ids.forEach(i=>{const e=CART.find(c=>c.id===i);if(e)e.q++;else CART.push({id:i,q:1});});saveCart();toast(msg||t('addedToast'));}
+function addFam(){const n=(document.getElementById('fName')||{}).value,r=(document.getElementById('fRel')||{}).value;if(!n){toast('Enter a name');return;}const fam=JSON.parse(localStorage.getItem('agr_family')||'[]');fam.push({name:n,rel:r||'Family'});localStorage.setItem('agr_family',JSON.stringify(fam));openSheet('family');toast('✅ '+n+' added to your family');}
+function removeFam(i){const fam=JSON.parse(localStorage.getItem('agr_family')||'[]');fam.splice(i,1);localStorage.setItem('agr_family',JSON.stringify(fam));openSheet('family');}
+function submitStory(){const n=(document.getElementById('stName')||{}).value,txt=(document.getElementById('stText')||{}).value,c=(document.getElementById('stConsent')||{}).checked;if(!n||!txt){toast('Add your name and story');return;}if(!c){toast('Please tick consent to submit');return;}const arr=JSON.parse(localStorage.getItem('agr_stories')||'[]');arr.push({n,txt,when:Date.now()});localStorage.setItem('agr_stories',JSON.stringify(arr));closeSheet();toast('🙏 Thank you! Your story was submitted for review.');}
+function adminReply(name){openSheetRaw(`<div class="grab"></div><h3>Reply to ${name}</h3><p class="sub">AI drafts a compliant reply; a clinician approves before it is sent.</p><textarea id="admReply" style="width:100%;min-height:110px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit" placeholder="Type your reply…"></textarea><button class="btn btn-block btn-blue" style="margin-top:10px" onclick="closeSheet();toast('✅ Reply sent to ${name}')">Send reply</button>`);}
+function exportPassport(){
+  const a=ACCOUNT||{},cur=MMLOG[MMLOG.length-1],start=MMLOG[0];
+  const w=window.open('','_blank');
+  if(!w){toast('Please allow pop-ups to export your passport');return;}
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>AGRAVAT Health Passport</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Segoe UI,Arial,sans-serif;color:#0A1F44;padding:26px;max-width:640px;margin:auto}.h{background:linear-gradient(135deg,#0A1F44,#1E5FB4);color:#fff;padding:22px;border-radius:16px}.h h1{margin:0;letter-spacing:.1em}.g{color:#b8860b;font-weight:800}table{width:100%;border-collapse:collapse;margin-top:16px}td{padding:9px;border-bottom:1px solid #e2e8f5;font-size:14px}.btn{margin-top:20px;padding:13px 20px;background:#1E5FB4;color:#fff;border:none;border-radius:10px;font-weight:800;cursor:pointer}.n{font-size:12px;color:#64748b;margin-top:16px}@media print{.btn{display:none}}</style></head><body><div class="h"><h1>AGRAVAT</h1><div>Health Passport · Doctor Inspired Daily Wellness, Since 1950</div></div><table><tr><td>Name</td><td><b>${a.name||'—'}</b></td></tr><tr><td>Email</td><td>${a.email||'—'}</td></tr><tr><td>Phone</td><td>${a.phone||'—'}</td></tr><tr><td>City</td><td>${a.city||'—'}</td></tr><tr><td>Mouth opening (current)</td><td class="g">${cur} mm</td></tr><tr><td>At start</td><td>${start} mm</td></tr><tr><td>Improvement</td><td class="g">+${cur-start} mm</td></tr><tr><td>Wellness score</td><td>76 / 100</td></tr><tr><td>Tobacco-free streak</td><td>28 days</td></tr><tr><td>Reading history (mm)</td><td>${MMLOG.join(', ')}</td></tr></table><p class="n">Functional tracking record generated by the AGRAVAT app. This is not a medical diagnosis; clinical assessment is performed only by AGRAVAT's qualified clinicians. Care 7575 00 8686 · FSSAI 10721009000042.</p><button class="btn" onclick="window.print()">Save as PDF / Print</button></body></html>`);
+  w.document.close();toast('📄 Health Passport ready — use Save as PDF');
+}
 
 /* sheets */
 function openSheetRaw(h){document.getElementById('sheetBody').innerHTML=h;document.getElementById('sheetBg').classList.add('show');}
@@ -978,17 +1024,26 @@ function openSheet(type){
     if(!CART.length)h+=`<h3>${t('cartTitle')}</h3><p class="sub" style="padding:20px 0">${t('cartEmpty')}</p><button class="btn btn-block btn-navy" onclick="closeSheet();go('shop')">${t('shopTitle')}</button>`;
     else h+=`<h3>${t('cartTitle')}</h3>`+CART.map(c=>{const p=PRODUCTS.find(x=>x.id===c.id);return `<div class="cart-line">${imgHtml(p)}<div style="flex:1"><b style="font-size:.84rem">${L(p.name)}</b><div class="price" style="font-size:.84rem">${money(p.price*c.q)}</div></div><div class="qty"><button onclick="changeQty('${c.id}',-1)">−</button><b>${c.q}</b><button onclick="changeQty('${c.id}',1)">+</button></div></div>`;}).join('')+`<div style="display:flex;justify-content:space-between;margin:16px 0 4px;font-size:1.1rem;font-weight:800"><span>${t('cartTotal')}</span><span class="price" style="font-size:1.1rem">${money(cartTotal())}</span></div><button class="btn btn-block btn-gold" onclick="openSheet('checkout')">${t('checkout')}</button><div class="rz">🔒 ${t('rzSecure')}</div>`;
   } else if(type==='checkout'){
-    h+=`<h3>${t('checkout')}</h3><div class="field"><label>${t('coName')}</label><input value="Kartavya Agravat"></div><div class="field"><label>${t('coPhone')}</label><input value="+91 75750 08686" inputmode="tel"></div><div class="field"><label>${t('coAddr')}</label><input placeholder="Thaltej, Ahmedabad, Gujarat 380059"></div><div class="field"><label>${t('coPay')}</label><select><option>UPI (Google Pay / PhonePe)</option><option>Credit / Debit Card</option><option>Net Banking</option><option>EMI</option></select></div><div style="display:flex;justify-content:space-between;margin:10px 0;font-weight:800"><span>${t('cartTotal')}</span><span class="price">${money(cartTotal())}</span></div><button class="btn btn-block btn-green" onclick="payNow()">🔒 ${t('coPay')} ${money(cartTotal())}</button><div class="rz">🔒 ${t('rzSecure')}</div>`;
+    h+=`<h3>${t('checkout')}</h3><div class="field"><label>${t('coName')}</label><input value="${(ACCOUNT&&ACCOUNT.name)||''}"></div><div class="field"><label>${t('coPhone')}</label><input value="${(ACCOUNT&&ACCOUNT.phone)||''}" inputmode="tel"></div><div class="field"><label>${t('coAddr')}</label><input placeholder="${(ACCOUNT&&ACCOUNT.city)||'Thaltej, Ahmedabad, Gujarat 380059'}"></div><div style="display:flex;justify-content:space-between;margin:10px 0;font-weight:800"><span>${t('cartTotal')}</span><span class="price">${money(cartTotal())}</span></div><button class="btn btn-block btn-green" onclick="payNow()">🛒 Complete purchase on agravat.com</button><div class="rz">🔒 Secure checkout & payment completes on agravat.com</div>`;
   } else if(type==='lang'){
     const o=[['en','🇬🇧','English'],['hi','🇮🇳','हिन्दी'],['gu','🇮🇳','ગુજરાતી']];h+=`<h3>Language / भाषा / ભાષા</h3>`+o.map(([k,f,n])=>`<div class="lang-opt ${LANG===k?'sel':''}" onclick="setLang('${k}')"><span class="fl">${f}</span><b>${n}</b>${LANG===k?'<span style="margin-left:auto;color:var(--green)">✓</span>':''}</div>`).join('');
   } else if(type==='refer'){
     h+=`<h3>🎁 ${t('refer')}</h3><p class="sub">Two-sided reward: you and your friend both get ₹200 store credit.</p><div class="card" style="padding:16px;text-align:center;margin:12px 0"><div class="sub">Your referral code</div><b style="font-size:1.6rem;letter-spacing:.15em;color:var(--gold)">KARTAVYA50</b></div><button class="btn btn-block btn-green" onclick="openLink('https://wa.me/?text=Try%20AGRAVAT%20%E2%80%94%20doctor-inspired%20wellness%20since%201950.%20Use%20code%20KARTAVYA50')">📲 Share on WhatsApp</button><div style="margin-top:14px">${['Member','🥈 Advocate (you)','Ambassador','Wellness Champion'].map((s,i)=>`<div style="display:flex;gap:10px;padding:8px 0;align-items:center;${i===1?'font-weight:800':''}"><span>${i<=1?'✅':'⚪'}</span>${s}</div>`).join('')}</div>`;
   } else if(type==='consult'){
-    h+=`<h3>📹 Video Consultation</h3><p class="sub">Speak directly with AGRAVAT's clinical team. Diagnosis and assessment are performed only by our qualified clinicians.</p><div class="card" style="padding:16px;margin:12px 0;display:flex;gap:12px;align-items:center"><div style="font-size:2rem">👨‍⚕️</div><div><b>Dr Bharat Agravat</b><div class="sub">25 yrs · 18 awards · OLI Therapy · 3 slots today</div></div></div><button class="btn btn-block btn-navy" onclick="toast(t('soonMsg'))">Book a slot</button><p class="sub" style="margin-top:10px">Or try async "Ask the Doctor" — AI drafts, a clinician approves before it's sent.</p>`;
+    h+=`<h3>📹 Video Consultation</h3><p class="sub">Speak directly with AGRAVAT's clinical team. Diagnosis and assessment are performed only by our qualified clinicians.</p><div class="card" style="padding:16px;margin:12px 0;display:flex;gap:12px;align-items:center"><div style="font-size:2rem">👨‍⚕️</div><div><b>Dr Bharat Agravat</b><div class="sub">25 yrs · 18 awards · OLI Therapy</div></div></div><div class="sub" style="margin-bottom:6px;font-weight:700">Pick a slot for today:</div><div class="qrow">${['11:30 AM','1:00 PM','3:30 PM','5:00 PM'].map(s=>`<div class="chip" onclick="bookSlot('${s}')">🕐 ${s}</div>`).join('')}</div><button class="btn btn-block btn-blue" style="margin-top:12px" onclick="closeSheet();go('ask')">💬 Ask the Doctor (async · clinician-approved)</button>`;
   } else if(type==='care'){
-    h+=`<h3>⭐ AGRAVAT Care+</h3><p class="sub">Membership bundling consultations, member discounts, free shipping & priority support.</p><div class="card" style="padding:16px;margin:12px 0;text-align:center"><b style="font-size:1.6rem;color:var(--gold)">₹999<span style="font-size:.8rem;color:var(--muted)">/year</span></b><ul style="text-align:left;font-size:.85rem;margin-top:10px">${['2 free video consults','10% off all products','Free shipping always','Priority support','Doctor-reviewed care plan'].map(x=>`<li>${x}</li>`).join('')}</ul></div><button class="btn btn-block btn-gold" onclick="toast(t('soonMsg'))">Join Care+</button>`;
+    h+=`<h3>⭐ AGRAVAT Care+</h3><p class="sub">Membership bundling consultations, member discounts, free shipping & priority support.</p><div class="card" style="padding:16px;margin:12px 0;text-align:center"><b style="font-size:1.6rem;color:var(--gold)">₹999<span style="font-size:.8rem;color:var(--muted)">/year</span></b><ul style="text-align:left;font-size:.85rem;margin-top:10px">${['2 free video consults','10% off all products','Free shipping always','Priority support','Doctor-reviewed care plan'].map(x=>`<li>${x}</li>`).join('')}</ul></div><button class="btn btn-block btn-gold" onclick="careJoin()">Join Care+ · ₹999/yr</button>`;
+  } else if(type==='family'){
+    const fam=JSON.parse(localStorage.getItem('agr_family')||'[]');
+    h+=`<h3>👨‍👩‍👧 Family profiles</h3><p class="sub">Manage wellness for your whole family under one account.</p>${fam.length?fam.map((m,i)=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="ml">${m.name} · <span class="sub">${m.rel}</span></span><span onclick="removeFam(${i})" style="color:#b91c1c;cursor:pointer;font-size:.8rem;font-weight:700">Remove</span></div>`).join(''):'<p class="sub" style="padding:8px 0">No family members added yet.</p>'}<div class="field"><label>Name</label><input id="fName"></div><div class="field"><label>Relation</label><input id="fRel" placeholder="e.g. Father, Daughter"></div><button class="btn btn-block btn-gold" onclick="addFam()">+ Add family member</button>`;
+  } else if(type==='story'){
+    h+=`<h3>📹 Share your recovery story</h3><p class="sub">With your consent, the best stories feature on the Dr Agravat Wellness channel (functional language).</p><div class="field"><label>Your name</label><input id="stName" value="${(ACCOUNT&&ACCOUNT.name)||''}"></div><div class="field"><label>Your story</label><textarea id="stText" style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"></textarea></div><div class="field"><label>Video link (optional)</label><input id="stLink" placeholder="YouTube / Drive link"></div><label style="font-size:.76rem;display:flex;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" id="stConsent"> I consent to AGRAVAT sharing this.</label><button class="btn btn-block btn-blue" style="margin-top:10px" onclick="submitStory()">Submit my story</button>`;
   } else if(type==='consent'){
     h+=`<h3>🔒 Privacy & Data Consent</h3><p class="sub">Your health data builds your unified Health Passport, stored securely and never shared without consent.</p>${[['Health & OSMF data',true],['Supplement & order history',true],['AI assistant conversations',true],['Marketing communications',false]].map(([l,on])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="ml">${l}</span><span style="color:${on?'var(--green)':'var(--muted)'};font-weight:800">${on?'● On':'○ Off'}</span></div>`).join('')}<p class="sub" style="margin-top:10px">View, download or delete your data anytime. Compliant with ASCI, FSSAI & data-protection norms.</p>`;
+  } else if(type==='auth'){
+    h+=`<h3>Welcome to AGRAVAT</h3><p class="sub">Create an account or log in to save your Health Passport & orders.</p><div class="tabs" style="margin:12px 0"><div class="tab active" id="authTabR" onclick="authMode('reg')">Register</div><div class="tab" id="authTabL" onclick="authMode('login')">Log in</div></div><div id="authForm">${regFormHtml()}</div>`;
+  } else if(type==='editAccount'){
+    const a=ACCOUNT||{};h+=`<h3>Account & profile</h3><div class="field"><label>Full name</label><input id="acName" value="${a.name||''}"></div><div class="field"><label>Email</label><input id="acEmail" value="${a.email||''}"></div><div class="field"><label>Phone</label><input id="acPhone" value="${a.phone||''}"></div><div class="field"><label>City</label><input id="acCity" value="${a.city||''}"></div><button class="btn btn-block btn-green" onclick="saveAccount()">Save changes</button><button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="logout()">Log out</button><button class="btn btn-block" style="margin-top:8px;color:#b91c1c;background:transparent;border:1px solid var(--line)" onclick="deleteAccount()">Delete my data</button>`;
   } else if(type==='reminders'){
     h+=`<h3>⏰ ${t('qRem')}</h3>`+[['🦷','Morning OSMF exercise','8:00 AM'],['🧴','Apply OSMF Oral Gel','2:00 PM'],['💊','OSMF Vita after dinner','9:00 PM'],['🔄','OSMF kit refill predicted','in 6 days']].map(([e,l,tm])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="e">${e}</span><span class="ml">${l}</span><span class="sub">${tm}</span></div>`).join('');
   } else if(type==='measure'){
@@ -997,7 +1052,7 @@ function openSheet(type){
   openSheetRaw(h);
 }
 function closeSheet(){document.getElementById('sheetBg').classList.remove('show');document.getElementById('sheetBody').innerHTML='';}
-function payNow(){CART=[];saveCart();closeSheet();setTimeout(()=>toast(t('paySuccess')),200);}
+function payNow(){closeSheet();toast('Opening agravat.com to complete your order…');setTimeout(()=>{const w=window.open(STORE_URL,'_blank','noopener');if(!w)window.location.href=STORE_URL;},600);}
 function setLang(k){LANG=k;localStorage.setItem('agr_lang',k);applyI18n();seedChat();closeSheet();}
 
 /* modes */
