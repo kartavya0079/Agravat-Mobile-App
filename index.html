@@ -255,7 +255,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="kioskBanner">⬢ ATH KIOSK MODE — STAFF ASSISTED · ANYTIME HEALTH</div>
+  <div id="kioskBanner" onclick="go('ath')" style="cursor:pointer">⬢ ATH KIOSK MODE · TAP FOR STAFF CONSOLE →</div>
   <div class="topbar">
     <div class="logo">
       <div class="mark"><svg viewBox="0 0 100 100"><text x="50" y="74" font-size="72" font-family="Georgia,serif" font-weight="bold" fill="#C9A94E" text-anchor="middle">A</text></svg></div>
@@ -280,7 +280,7 @@
       <div class="hstats">
         <div><b id="hsMm">34mm</b><span data-i="hsOpen">Opening</span></div>
         <div><b id="hsStreak">12</b><span data-i="hsStreak">Day streak</span></div>
-        <div><b>1,240</b><span data-i="hsPoints">Points</span></div>
+        <div onclick="openSheet('rewards')" style="cursor:pointer"><b id="ptsHero">1,240</b><span data-i="hsPoints">Points</span></div>
       </div>
     </div>
 
@@ -482,7 +482,7 @@
         <div><b id="ppMm">34mm</b><span data-i="ppOpening">Mouth opening</span></div>
         <div><b>76</b><span data-i="ppScore">Wellness score</span></div>
         <div><b>3</b><span data-i="ppPlans">Active plans</span></div>
-        <div><b>1,240</b><span data-i="ppPoints">Reward points</span></div>
+        <div onclick="openSheet('rewards')" style="cursor:pointer"><b id="ptsPass">1,240</b><span data-i="ppPoints">Reward points</span></div>
       </div>
     </div>
     <h2 class="sec" data-i="ambTitle">Ambassador status</h2>
@@ -496,6 +496,7 @@
       <div class="menu-item" onclick="openSheet('consult')"><span class="e">📹</span><span class="ml" data-i="mConsult">Video consultation</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="exportPassport()"><span class="e">📄</span><span class="ml" data-i="mRecords">Health records (PDF export)</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openSheet('family')"><span class="e">👨‍👩‍👧</span><span class="ml" data-i="mFamily">Family profiles</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="openSheet('rewards')"><span class="e">🎁</span><span class="ml" data-i="mRewards">Rewards & offers</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openSheet('care')"><span class="e">⭐</span><span class="ml" data-i="mCarePlus">AGRAVAT Care+ membership</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openSheet('consent')"><span class="e">🔒</span><span class="ml" data-i="mPrivacy">Privacy & data consent</span><span class="ar">›</span></div>
       <div class="menu-item" onclick="openAdminGate()"><span class="e">🛠️</span><span class="ml" data-i="mAdmin">Manager Control (owner/staff)</span><span class="ar">›</span></div>
@@ -518,6 +519,35 @@
     <div id="adminBody"></div>
   </div>
 
+  <!-- ATH STAFF CONSOLE (kiosk) -->
+  <div class="screen hidden" id="screen-ath">
+    <div style="display:flex;align-items:center;gap:8px;padding-top:12px">
+      <button class="back" style="padding:0" onclick="go('home')">← Exit</button>
+      <b style="margin-left:auto;font-size:1rem">🩺 ATH Staff Console</b>
+    </div>
+    <p class="sub" style="margin-top:6px">Staff-assisted intake. Measurements & screening are captured by staff; <b>diagnosis is entered only by a qualified AGRAVAT clinician</b>.</p>
+
+    <div class="card" style="padding:14px;margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>New patient intake</b><button class="btn btn-ghost" onclick="athNew()">↺ New session</button></div>
+      <div class="field"><label>Full name *</label><input id="athName"></div>
+      <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Age</label><input id="athAge" inputmode="numeric"></div><div class="field" style="flex:1"><label>Gender</label><select id="athGender"><option value="">—</option><option>Male</option><option>Female</option><option>Other</option></select></div></div>
+      <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Phone</label><input id="athPhone" inputmode="tel"></div><div class="field" style="flex:1"><label>City</label><input id="athCity"></div></div>
+      <div class="field"><label>Tobacco / betel habit</label><select id="athHabit"><option value="">None</option><option>Gutkha / paan masala</option><option>Smoking</option><option>Betel nut</option><option>Multiple</option><option>Quit</option></select></div>
+      <div class="field"><label>Chief complaint</label><input id="athComplaint" placeholder="e.g. reduced mouth opening, burning"></div>
+      <div style="font-weight:800;font-size:.8rem;color:var(--blue);margin:10px 0 4px">📏 Measurements & screening (staff)</div>
+      <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Mouth opening (mm)</label><input id="athMm" inputmode="decimal"></div><div class="field" style="flex:1"><label>Blood pressure</label><input id="athBP" placeholder="120/80"></div></div>
+      <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Blood sugar (mg/dL)</label><input id="athSugar" inputmode="numeric"></div><div class="field" style="flex:1"><label>Weight (kg)</label><input id="athWeight" inputmode="decimal"></div></div>
+      <div class="field"><label>Screening notes</label><textarea id="athScreen" style="width:100%;min-height:60px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"></textarea></div>
+      <div style="font-weight:800;font-size:.8rem;color:var(--green);margin:10px 0 4px">🩺 Clinician assessment & diagnosis</div>
+      <div class="field"><label>Diagnosis (qualified clinician only)</label><textarea id="athDx" style="width:100%;min-height:60px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit" placeholder="Entered by AGRAVAT clinician after assessment"></textarea></div>
+      <button class="btn btn-block btn-green" onclick="athSave()">💾 Save patient to AGRAVAT database</button>
+      <button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="openLink('https://kartavya0079.github.io/Agravat-Mobile-App/')">📲 QR handoff — continue on patient's phone</button>
+    </div>
+
+    <h2 class="sec">🗂️ Patient database (<span id="athCount">0</span>)</h2>
+    <div id="athList"></div>
+  </div>
+
   <div class="nav">
     <button class="active" data-nav="home" onclick="go('home')"><span class="e">🏠</span><span data-i="navHome">Home</span></button>
     <button data-nav="osmf" onclick="go('osmf')"><span class="e">🦷</span><span data-i="navOsmf">OSMF</span></button>
@@ -528,6 +558,7 @@
 </div>
 
 <button class="fab" onclick="go('ask')" title="Ask AGRAVAT">✨</button>
+<div id="camView" style="position:fixed;inset:0;background:#000;z-index:100;display:none;flex-direction:column"></div>
 <div class="toast" id="toast"></div>
 <div class="sheet-bg" id="sheetBg" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheetBody"></div></div>
 
@@ -738,13 +769,13 @@ function applyI18n(){
   const nm=ACCOUNT&&ACCOUNT.name?ACCOUNT.name.split(' ')[0]:'there';
   document.getElementById('greetLine').textContent=greeting()+', '+nm;
   document.documentElement.lang=LANG;
-  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates(); renderAcct();
+  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates(); renderAcct(); renderPoints();
 }
 function greeting(){const h=new Date().getHours();return h<12?t('greetMorning'):h<17?t('greetAfternoon'):t('greetEvening');}
 
 function go(s){
   CUR=s;
-  ['home','shop','product','osmf','supp','diet','updates','ask','profile','admin'].forEach(x=>document.getElementById('screen-'+x).classList.add('hidden'));
+  ['home','shop','product','osmf','supp','diet','updates','ask','profile','admin','ath'].forEach(x=>document.getElementById('screen-'+x).classList.add('hidden'));
   document.getElementById('screen-'+s).classList.remove('hidden');
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===s));
   document.getElementById('screen-'+s).scrollTop=0;
@@ -752,6 +783,7 @@ function go(s){
   if(s==='supp'){renderSupp();setTimeout(drawAdh,30);}
   if(s==='diet')renderDiet();
   if(s==='admin')renderAdmin(ADMIN_TAB||'overview');
+  if(s==='ath')renderAth();
 }
 
 function imgHtml(p,cls){
@@ -767,7 +799,7 @@ function pcardHtml(p){
       <h4>${L(p.name)}${p.flag?'<span class="flag">★ Best</span>':''}</h4>
       <div class="stars">${'★'.repeat(Math.round(p.rating))}<span style="color:var(--muted);font-size:.66rem"> ${p.rating} · ${p.sold} ${t('sold')}</span></div>
       <div class="prow"><span class="price">${money(p.price)}${p.mrp>p.price?` <s>${money(p.mrp)}</s>`:''}</span>
-      ${p.stock?`<button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+ ${t('addCart')}</button>`:`<button class="btn btn-ghost" onclick="event.stopPropagation();notifyMe('${p.id}')">${t('notify')}</button>`}</div>
+      ${p.stock?`<div style="display:flex;gap:6px"><button class="btn btn-ghost" style="padding:8px 11px" onclick="event.stopPropagation();addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-gold" style="padding:8px 11px" onclick="event.stopPropagation();buyNow('${p.id}')">${t('buyNow')}</button></div>`:`<button class="btn btn-ghost" onclick="event.stopPropagation();notifyMe('${p.id}')">${t('notify')}</button>`}</div>
     </div></div>`;
 }
 function renderReco(){document.getElementById('homeReco').innerHTML=['kit','smile','pops'].map(id=>pcardHtml(PRODUCTS.find(p=>p.id===id))).join('');}
@@ -799,12 +831,12 @@ function renderPD(){
     <div class="tabbody">${L(p[PD_TAB])}</div>
     <div class="compliance">${t('osmfCompliance')}</div>
     <div style="display:flex;gap:10px;margin:18px 0 8px;">
-      ${p.stock?`<button class="btn btn-block btn-ghost" onclick="addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-block btn-gold" onclick="addCart('${p.id}',true)">${t('buyNow')}</button>`:`<button class="btn btn-block btn-blue" onclick="notifyMe('${p.id}')">🔔 ${t('notify')}</button>`}
+      ${p.stock?`<button class="btn btn-block btn-ghost" onclick="addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-block btn-gold" onclick="buyNow('${p.id}')">🛒 ${t('buyNow')} · agravat.com</button>`:`<button class="btn btn-block btn-blue" onclick="notifyMe('${p.id}')">🔔 ${t('notify')}</button>`}
     </div>`;
 }
 
 /* cart */
-function addCart(id,buy){const e=CART.find(c=>c.id===id);if(e)e.q++;else CART.push({id,q:1});saveCart();toast(t('addedToast'));if(buy)openSheet('cart');}
+function addCart(id,buy){const e=CART.find(c=>c.id===id);if(e)e.q++;else CART.push({id,q:1});saveCart();earn(5);toast(t('addedToast')+' · +5 pts');if(buy)openSheet('cart');}
 function saveCart(){localStorage.setItem('agr_cart2',JSON.stringify(CART));const n=CART.reduce((s,c)=>s+c.q,0);const b=document.getElementById('cartBadge');b.textContent=n;b.classList.toggle('hidden',n===0);}
 function cartTotal(){return CART.reduce((s,c)=>{const p=PRODUCTS.find(x=>x.id===c.id);return s+p.price*c.q;},0);}
 function changeQty(id,d){const c=CART.find(x=>x.id===id);if(!c)return;c.q+=d;if(c.q<=0)CART=CART.filter(x=>x.id!==id);saveCart();openSheet('cart');}
@@ -823,7 +855,7 @@ let exDone=JSON.parse(localStorage.getItem('agr_exdone')||'{}');
 const isToday=v=>v===new Date().toDateString();
 function selectEx(i){curEx=i;curSet=1;phase='work';timerLeft=WORK;timerRunning=false;clearInterval(timerInt);const b=document.getElementById('timerBtn');if(b)b.textContent=t('start');updTimer();renderExList();}
 function toggleTimer(){const b=document.getElementById('timerBtn');if(timerRunning){clearInterval(timerInt);timerRunning=false;b.textContent=t('start');return;}timerRunning=true;b.textContent=t('pause');timerInt=setInterval(()=>{timerLeft--;updTimer();if(timerLeft<=0){clearInterval(timerInt);timerRunning=false;b.textContent=t('start');advancePhase();}},1000);}
-function advancePhase(){const ex=EXERCISES[curEx];if(phase==='work'){phase='rest';timerLeft=REST;updTimer();toast('😌 Rest 60 seconds');}else{if(curSet<ex.sets){curSet++;phase='work';timerLeft=WORK;updTimer();toast('▶ Set '+curSet+' of '+ex.sets);}else{exDone[ex.id]=new Date().toDateString();localStorage.setItem('agr_exdone',JSON.stringify(exDone));renderOsmf();if(curEx<EXERCISES.length-1){curEx++;curSet=1;phase='work';timerLeft=WORK;updTimer();renderExList();toast('✅ Next: '+EXERCISES[curEx].name);}else{curSet=1;phase='work';timerLeft=WORK;updTimer();toast('🎉 Routine complete for today!');}}}}
+function advancePhase(){const ex=EXERCISES[curEx];if(phase==='work'){phase='rest';timerLeft=REST;updTimer();toast('😌 Rest 60 seconds');}else{if(curSet<ex.sets){curSet++;phase='work';timerLeft=WORK;updTimer();toast('▶ Set '+curSet+' of '+ex.sets);}else{exDone[ex.id]=new Date().toDateString();localStorage.setItem('agr_exdone',JSON.stringify(exDone));renderOsmf();earn(5);if(curEx<EXERCISES.length-1){curEx++;curSet=1;phase='work';timerLeft=WORK;updTimer();renderExList();toast('✅ Next: '+EXERCISES[curEx].name);}else{curSet=1;phase='work';timerLeft=WORK;updTimer();toast('🎉 Routine complete for today!');}}}}
 function resetTimer(){clearInterval(timerInt);timerRunning=false;curSet=1;phase='work';timerLeft=WORK;const b=document.getElementById('timerBtn');if(b)b.textContent=t('start');updTimer();}
 function updTimer(){const ex=EXERCISES[curEx];const dur=phase==='rest'?REST:WORK;const m=String(Math.floor(timerLeft/60)).padStart(2,'0'),s=String(timerLeft%60).padStart(2,'0');const tt=document.getElementById('timerText');if(tt)tt.textContent=`${m}:${s}`;const en=document.getElementById('exName');if(en)en.textContent=phase==='rest'?'😌 Rest':ex.name;const es=document.getElementById('exSet');if(es)es.textContent=phase==='rest'?('Next: set '+curSet+' / '+ex.sets):('Set '+curSet+' / '+ex.sets);const r=document.getElementById('timerRing');if(r){r.style.strokeDashoffset=RING*(1-timerLeft/dur);r.setAttribute('stroke',phase==='rest'?'#2D6A4F':'#C9A94E');}}
 function renderExList(){const el=document.getElementById('exList');if(!el)return;el.innerHTML=EXERCISES.map((e,i)=>`<div class="card pcard" style="padding:10px 12px;margin-bottom:8px;${i===curEx?'border-color:var(--gold);border-width:2px;':''}" onclick="selectEx(${i})"><div style="width:40px;height:40px;border-radius:11px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none">${e.emo}</div><div class="pi"><h4 style="margin:0">${e.name}</h4><div class="sub" style="font-size:.72rem">${WORK}s × ${e.sets} sets · 60s rest · ${e.tip}</div></div><div style="font-size:1.15rem;color:${isToday(exDone[e.id])?'var(--green)':'var(--muted)'}">${isToday(exDone[e.id])?'✓':(i===curEx?'▶':'○')}</div></div>`).join('');}
@@ -843,7 +875,7 @@ function renderOsmf(){
   document.getElementById('achvRow').innerHTML=ach.map(([e,l,on])=>`<div class="chip" style="${on?'':'opacity:.45'}"><span class="e">${on?e:'🔒'}</span>${l}</div>`).join('');
 }
 function buildExSteps(){const st={en:['Gentle warm-up: open and close slowly 10 times.','Insert the UNIQUE Mouth Opener at a comfortable size, stretch and hold 30 seconds.','Progress one turn up when comfortable, repeat 3 sets.','Apply OSMF Oral Gel, then log your reading below.'],hi:['वार्म-अप: धीरे 10 बार खोलें-बंद करें।','ओपनर आरामदायक आकार में डालें, 30 सेकंड रोकें।','आरामदायक होने पर एक मोड़ बढ़ाएं, 3 सेट।','ओरल जेल लगाएं, फिर रीडिंग दर्ज करें।'],gu:['વોર્મ-અપ: ધીમે 10 વાર ખોલો-બંધ કરો.','ઓપનર આરામદાયક કદમાં મૂકો, 30 સેકન્ડ પકડો.','આરામદાયક હોય ત્યારે એક વળાંક વધારો, 3 સેટ.','ઓરલ જેલ લગાવો, પછી રીડિંગ નોંધો.']};const el=document.getElementById('exSteps');if(el)el.innerHTML=(st[LANG]||st.en).map((s,i)=>`<div class="ex-step"><div class="n">${i+1}</div><p>${s}</p></div>`).join('');}
-function logMm(){const v=parseFloat(document.getElementById('mmInput').value);if(!v||v<5||v>80){toast('Enter valid mm (5–80)');return;}MMLOG.push(v);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));document.getElementById('mmInput').value='';updateOsmfStats();drawChart();renderOsmf();toast('✅ '+v+'mm logged');}
+function logMm(){const v=parseFloat(document.getElementById('mmInput').value);if(!v||v<5||v>80){toast('Enter valid mm (5–80)');return;}MMLOG.push(v);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));document.getElementById('mmInput').value='';updateOsmfStats();drawChart();renderOsmf();earn(10);toast('✅ '+v+'mm logged · +10 pts');}
 function updateOsmfStats(){const c=MMLOG[MMLOG.length-1],s=MMLOG[0];document.getElementById('curMm').textContent=c;document.getElementById('startMm').textContent=s;document.getElementById('gainMm').textContent=(c-s>=0?'+':'')+(c-s);document.getElementById('ppMm').textContent=c+'mm';document.getElementById('hsMm').textContent=c+'mm';}
 function drawChart(){const cv=document.getElementById('osmfChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=170;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const GOAL=40;const d=MMLOG,n=d.length,mn=Math.min(...d)-2,mx=Math.max(Math.max(...d),GOAL)+2,pad=24,px=i=>pad+(W-pad*1.5)*(i/(n-1)),py=v=>H-pad-(H-pad*1.8)*((v-mn)/(mx-mn));x.strokeStyle=getComputedStyle(document.body).getPropertyValue('--line');x.lineWidth=1;for(let g=0;g<=3;g++){const gy=pad*.4+(H-pad*1.5)*g/3;x.beginPath();x.moveTo(pad,gy);x.lineTo(W-pad*.5,gy);x.stroke();}const gr=x.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(30,95,180,.28)');gr.addColorStop(1,'rgba(30,95,180,0)');x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.lineTo(px(n-1),H-pad);x.lineTo(px(0),H-pad);x.closePath();x.fillStyle=gr;x.fill();x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.strokeStyle='#1E5FB4';x.lineWidth=2.6;x.lineJoin='round';x.stroke();d.forEach((v,i)=>{x.beginPath();x.arc(px(i),py(v),i===n-1?5:3,0,7);x.fillStyle=i===n-1?'#C9A94E':'#1E5FB4';x.fill();});x.setLineDash([5,4]);x.strokeStyle='#C9A94E';x.lineWidth=1.5;x.beginPath();x.moveTo(pad,py(GOAL));x.lineTo(W-pad*.5,py(GOAL));x.stroke();x.setLineDash([]);x.fillStyle='#C9A94E';x.font='bold 10px sans-serif';x.fillText('Goal '+GOAL+'mm',pad+2,py(GOAL)-4);x.fillStyle=getComputedStyle(document.body).getPropertyValue('--ink');x.font='bold 12px sans-serif';x.fillText(d[n-1]+'mm',px(n-1)-22,py(d[n-1])-12);}
 
@@ -857,7 +889,10 @@ function renderDiet(){
     b.innerHTML=`<div class="prog-card"><h3>${t('dietPlanName')}</h3><div class="sub" style="color:rgba(255,255,255,.8)">${t('dietPhase')}</div><div class="bar"><i style="width:${pct}%"></i></div><div style="font-size:.72rem;opacity:.85">${done}/4 ✓</div></div>
       <h2 class="sec">${t('todayMeals')}</h2>
       ${meals.map(([id,e,n,s])=>`<div class="card meal"><div class="mi">${e}</div><div class="mb"><b>${t(n)}</b><p>${t(s)}</p></div><div class="chk ${MEALS_DONE[id]?'done':''}" onclick="toggleMeal('${id}')">✓</div></div>`).join('')}
-      <h2 class="sec">${t('habits')}</h2><div class="habit">${habitHtml()}</div>
+      <h2 class="sec">🍽️ OSMF-friendly eating</h2>
+      <div class="card" style="padding:14px;font-size:.82rem"><b style="color:var(--green)">✅ Favour</b><p class="sub" style="margin:4px 0 8px">Soft, cool, protein-rich foods — dals, moong khichdi, paneer, curd, milk, banana, soaked nuts; turmeric & tulsi for their soothing properties.</p><b style="color:#b91c1c">⛔ Limit / avoid</b><p class="sub" style="margin:4px 0 0">Spicy, chilli, very hot or hard/crunchy foods that irritate the mouth — and all tobacco, gutkha & betel nut, which drive OSMF.</p></div>
+      <div class="card" style="padding:14px;margin-top:10px;display:flex;gap:10px;text-align:center"><div style="flex:1"><b style="color:var(--blue);font-size:1.1rem">~1,800</b><div class="sub" style="font-size:.62rem">kcal / day</div></div><div style="flex:1"><b style="color:var(--blue);font-size:1.1rem">70 g</b><div class="sub" style="font-size:.62rem">protein</div></div><div style="flex:1"><b style="color:var(--blue);font-size:1.1rem">8</b><div class="sub" style="font-size:.62rem">glasses water</div></div></div>
+      <h2 class="sec">🌱 Daily habits · in depth</h2>${habitHtml()}
       <h2 class="sec">${t('grocery')}</h2><div class="card" style="padding:14px;font-size:.84rem;line-height:1.9">🛒 Turmeric, almonds, moong dal, ghee, bottle gourd, paneer, milk, buttermilk, tulsi, OSMF Pops<br><button class="btn btn-blue" style="margin-top:8px" onclick="addToCartMulti(['pops','vita'],'Added OSMF Pops & Vita to cart')">Add AGRAVAT items → cart</button></div>
       <div class="compliance">${t('osmfCompliance')}</div>`;
   } else {
@@ -869,19 +904,45 @@ function renderDiet(){
       <canvas id="sugarChart" style="width:100%;height:160px"></canvas></div>
       <h2 class="sec">${t('todayMeals')}</h2>
       ${meals.map(([id,e,n,s])=>`<div class="card meal"><div class="mi">${e}</div><div class="mb"><b>${t(n)}</b><p>${t(s)}</p></div><div class="chk ${MEALS_DONE[id]?'done':''}" onclick="toggleMeal('${id}')">✓</div></div>`).join('')}
-      <h2 class="sec">${t('habits')}</h2><div class="habit">${habitHtml()}</div>
+      <h2 class="sec">🍽️ Diabetes-friendly eating</h2>
+      <div class="card" style="padding:14px;font-size:.82rem"><b style="color:var(--green)">✅ Favour</b><p class="sub" style="margin:4px 0 8px">High-fibre, low-GI foods — jowar/bajra roti, whole dals, green veg, paneer, sprouts, nuts; eat protein first and carbs last.</p><b style="color:#b91c1c">⛔ Limit</b><p class="sub" style="margin:4px 0 0">Sugar, sweets, white rice, maida, fried snacks & sugary drinks. A 10–15 min walk after meals helps.</p></div>
+      <h2 class="sec">🌱 Daily habits · in depth</h2>${habitHtml()}
       <div class="compliance">${t('osmfCompliance')}</div>`;
     setTimeout(drawSugar,30);
   }
 }
-function habitHtml(){const hs=[['water','💧','Water'],['walk','🚶','Walk'],['sleep','😴','Sleep'],['notobacco','🚭','No tobacco'],['meds','💊','Supps']];return hs.map(([k,e,l])=>`<div class="h ${HABITS[k]?'on':''}" onclick="toggleHabit('${k}')"><div class="e">${e}</div><small>${l}</small></div>`).join('');}
+function waterAdd(d){HABITS.water=Math.max(0,Math.min(12,(HABITS.water||0)+d));localStorage.setItem('agr_habits',JSON.stringify(HABITS));renderDiet();}
+function habitHtml(){
+  const water=HABITS.water||0, goal=8;
+  const rows=[
+    ['walk','🚶','Walk / activity','30 min brisk walk — improves circulation & aids recovery'],
+    ['sleep','😴','Sleep 7–8 hours','Tissue healing happens most during deep rest'],
+    ['meditate','🧘','Relax & breathe · 10 min','Lowers stress that worsens jaw clenching & burning'],
+    ['notobacco','🚭','Stay tobacco-free today','The single biggest driver of OSMF recovery'],
+    ['exercise','🦷','OSMF exercises done','Complete today’s guided mouth-opening routine'],
+    ['supp','💊','Supplements taken','OSMF Vita & your daily stack, as scheduled'],
+  ];
+  let h=`<div class="card" style="padding:14px;margin-bottom:9px">
+    <div style="display:flex;align-items:center;gap:11px"><div style="font-size:1.4rem">💧</div><div style="flex:1"><b style="font-size:.88rem">Water intake</b><div class="sub" style="font-size:.72rem">Goal ${goal} glasses · sip cool water to soothe burning</div></div><div class="qty"><button onclick="waterAdd(-1)">−</button><b>${water}/${goal}</b><button onclick="waterAdd(1)">+</button></div></div>
+    <div class="tier-bar" style="margin-top:10px"><i style="width:${Math.min(100,water/goal*100)}%"></i></div></div>`;
+  h+=rows.map(([k,e,n,d])=>`<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px"><div style="font-size:1.3rem">${e}</div><div style="flex:1"><b style="font-size:.85rem">${n}</b><div class="sub" style="font-size:.71rem">${d}</div></div><div class="chk ${HABITS[k]?'done':''}" style="cursor:pointer" onclick="toggleHabit('${k}')">✓</div></div>`).join('');
+  const done=rows.filter(r=>HABITS[r[0]]).length+(water>=goal?1:0);
+  h+=`<div class="card" style="padding:12px;text-align:center;background:linear-gradient(135deg,#0A1F44,#1E5FB4);color:#fff"><b>${done}/${rows.length+1} habits on track today</b> 💪<div style="font-size:.7rem;opacity:.85;margin-top:2px">Consistency compounds — small daily wins drive recovery.</div></div>`;
+  return h;
+}
 function toggleMeal(id){MEALS_DONE[id]=!MEALS_DONE[id];localStorage.setItem('agr_meals',JSON.stringify(MEALS_DONE));renderDiet();}
 function toggleHabit(k){HABITS[k]=!HABITS[k];localStorage.setItem('agr_habits',JSON.stringify(HABITS));renderDiet();}
 function logSugar(){const v=parseFloat(document.getElementById('sugarInput').value);if(!v||v<40||v>500){toast('Enter valid mg/dL');return;}SUGAR.push(v);if(SUGAR.length>7)SUGAR=SUGAR.slice(-7);localStorage.setItem('agr_sugar',JSON.stringify(SUGAR));renderDiet();toast('✅ '+v+' mg/dL logged');}
 function drawSugar(){const cv=document.getElementById('sugarChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=160;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=SUGAR,n=d.length,mn=Math.min(...d)-10,mx=Math.max(...d)+10,pad=26,px=i=>pad+(W-pad*1.5)*(i/(n-1)),py=v=>H-pad-(H-pad*1.7)*((v-mn)/(mx-mn));x.strokeStyle=getComputedStyle(document.body).getPropertyValue('--line');for(let g=0;g<=3;g++){const gy=pad*.4+(H-pad*1.4)*g/3;x.beginPath();x.moveTo(pad,gy);x.lineTo(W-pad*.5,gy);x.stroke();}x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.strokeStyle='#2D6A4F';x.lineWidth=2.6;x.lineJoin='round';x.stroke();d.forEach((v,i)=>{x.beginPath();x.arc(px(i),py(v),i===n-1?5:3,0,7);x.fillStyle=i===n-1?'#C9A94E':'#2D6A4F';x.fill();});x.fillStyle=getComputedStyle(document.body).getPropertyValue('--ink');x.font='bold 12px sans-serif';x.fillText(d[n-1]+'',px(n-1)-14,py(d[n-1])-12);}
 
 /* SUPPLEMENTS */
-const SUPP_GOALS=[['recovery','🦷','OSMF recovery',['vita','pops','gel']],['immunity','🛡️','Immunity & antioxidant',['vita','gummies']],['oral','🪥','Oral care',['smile','gel','pops']],['daily','✨','Daily multivitamin',['gummies','vita']],['quit','🚭','Quit tobacco',['qsg']]];
+const SUPP_GOALS=[
+ ['recovery','🦷','OSMF recovery',['vita','pops','gel'],'Supports mouth-opening recovery, oral comfort and nutrition through OSMF care — antioxidants + herbal oral relief.'],
+ ['immunity','🛡️','Immunity & antioxidant',['vita','gummies'],'Lycopene, multivitamins and antioxidants to support day-to-day immunity and cellular protection.'],
+ ['oral','🪥','Oral care',['smile','gel','pops'],'Fluoride-free daily oral care for healthy gums, reduced sensitivity and fresh breath.'],
+ ['daily','✨','Daily multivitamin',['gummies','vita'],'Everyday multivitamin support for energy, skin, bones and general wellbeing.'],
+ ['quit','🚭','Quit tobacco',['qsg'],'A guided 1-month kit to help quit gutkha & smoking with craving control, calm sleep and daytime energy.'],
+];
 let SUPP_GOAL=localStorage.getItem('agr_sgoal')||'recovery';
 const SUPP_SCHED=[['🌅','Morning',[['gummies','Ultimate Health Gummies — 1 with breakfast'],['smile','Brush with Smile Toothgel']]],['☀️','Afternoon',[['pops','OSMF Pops — dissolve 1 slowly']]],['🌙','Night',[['vita','OSMF Vita — 1 after dinner'],['gel','OSMF Oral Gel — apply to gums']]]];
 let SUPP_DONE=JSON.parse(localStorage.getItem('agr_suppdone')||'{}');
@@ -892,12 +953,27 @@ function renderSupp(){
   const gr=document.getElementById('goalRow');if(!gr)return;
   gr.innerHTML=SUPP_GOALS.map(([k,e,l])=>`<div class="chip ${SUPP_GOAL===k?'on':''}" onclick="pickGoal('${k}')"><span class="e">${e}</span>${l}</div>`).join('');
   const goal=SUPP_GOALS.find(g=>g[0]===SUPP_GOAL)||SUPP_GOALS[0];const ids=goal[3];
-  document.getElementById('stackReco').innerHTML=`<div class="card" style="padding:12px;margin-top:6px"><div class="ptag">✦ Recommended stack · ${goal[2]}</div>${ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?`<div class="pcard" style="padding:8px 0;margin:0;border-bottom:1px solid var(--line)" onclick="openProduct('${p.id}')">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="price" style="font-size:.85rem">${money(p.price)}</div></div><button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+</button></div>`:'';}).join('')}<button class="btn btn-block btn-blue" style="margin-top:10px" onclick="${ids.map(i=>`addCart('${i}')`).join(';')};toast('Stack added to cart')">Add whole stack to cart · ${money(ids.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i);return s+(p?p.price:0);},0))}</button></div>`;
+  document.getElementById('stackReco').innerHTML=`<div class="card" style="padding:12px;margin-top:6px"><div class="ptag">✦ Recommended stack · ${goal[2]}</div><div class="sub" style="font-size:.74rem;margin:3px 0 8px">${goal[4]||''}</div>${ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?`<div class="pcard" style="padding:8px 0;margin:0;border-bottom:1px solid var(--line)" onclick="openProduct('${p.id}')">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="price" style="font-size:.85rem">${money(p.price)}</div></div><button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+</button></div>`:'';}).join('')}<button class="btn btn-block btn-blue" style="margin-top:10px" onclick="${ids.map(i=>`addCart('${i}')`).join(';')};toast('Stack added to cart')">Add whole stack to cart · ${money(ids.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i);return s+(p?p.price:0);},0))}</button></div>`;
   document.getElementById('suppSchedule').innerHTML=SUPP_SCHED.map(([e,slot,items])=>`<div style="margin-bottom:8px"><div style="font-weight:800;font-size:.78rem;color:var(--muted);margin:2px 0 6px">${e} ${slot}</div>${items.map(([id,txt])=>{const key=slot+'_'+id;const p=PRODUCTS.find(x=>x.id===id)||{emo:'💊'};return `<div class="meal" style="padding:8px;margin-bottom:6px"><div class="mi" style="width:38px;height:38px;font-size:1.1rem">${p.emo}</div><div class="mb"><b style="font-size:.82rem">${txt}</b></div><div class="chk ${SUPP_DONE[key]?'done':''}" onclick="toggleSupp('${key}')">✓</div></div>`;}).join('')}</div>`).join('');
-  document.getElementById('stackList').innerHTML=SUPP_GOALS.map(([k,e,l,ids])=>`<div class="card" style="padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer;${SUPP_GOAL===k?'border-color:var(--gold);':''}" onclick="pickGoal('${k}')"><div style="font-size:1.6rem">${e}</div><div style="flex:1"><b style="font-size:.9rem">${l}</b><div class="sub" style="font-size:.72rem">${ids.map(i=>L((PRODUCTS.find(p=>p.id===i)||{name:{en:i}}).name)).join(' · ')}</div></div><span style="color:var(--muted)">›</span></div>`).join('');
+  document.getElementById('stackList').innerHTML=SUPP_GOALS.map(([k,e,l,ids,d])=>{const tot=ids.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i);return s+(p?p.price:0);},0);return `<div class="card" style="padding:13px;margin-bottom:10px;cursor:pointer;${SUPP_GOAL===k?'border-color:var(--gold);':''}" onclick="pickGoal('${k}')"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:1.7rem">${e}</div><div style="flex:1"><b style="font-size:.92rem">${l}${SUPP_GOAL===k?' <span class="badge-soft">selected</span>':''}</b><div class="sub" style="font-size:.72rem">${d||''}</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="sub" style="font-size:.7rem">${ids.length} products · ${ids.map(i=>L((PRODUCTS.find(p=>p.id===i)||{name:{en:i}}).name)).join(', ')}</span><span class="price" style="font-size:.86rem">${money(tot)}</span></div></div>`;}).join('');
 }
 function drawAdh(){const cv=document.getElementById('adhChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=52;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=ADH,n=d.length,gap=W/n,bw=gap*0.6;d.forEach((v,i)=>{const bh=Math.max(4,(H-6)*(v/100));const xx=i*gap+gap*0.2,yy=H-bh,r=3;x.fillStyle=i===n-1?'#C9A94E':'#2D6A4F';x.beginPath();x.moveTo(xx,H);x.lineTo(xx,yy+r);x.quadraticCurveTo(xx,yy,xx+r,yy);x.lineTo(xx+bw-r,yy);x.quadraticCurveTo(xx+bw,yy,xx+bw,yy+r);x.lineTo(xx+bw,H);x.closePath();x.fill();});}
 function simMeasure(){const last=MMLOG[MMLOG.length-1];const v=Math.min(48,last+(Math.random()<0.5?0:1));MMLOG.push(v);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));updateOsmfStats();drawChart();renderOsmf();closeSheet();setTimeout(()=>toast('📸 Estimated '+v+'mm · logged to your Passport'),150);}
+
+/* ===== REAL CAMERA MEASUREMENT ===== */
+let camStream=null,camPts=[],camPhase='ref',camImg=null;const COIN_MM=23; /* ₹5 coin diameter */
+function closeCamera(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}const v=document.getElementById('camView');v.style.display='none';v.innerHTML='';}
+function openCamera(){
+  closeSheet();const v=document.getElementById('camView');v.style.display='flex';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camError('This browser has no camera API. Install the app or use Quick estimate.');return;}
+  v.innerHTML=`<div style="padding:14px 16px;color:#fff;text-align:center;font-size:.86rem">Point the camera at your open mouth with a <b>₹5 coin</b> beside it for scale</div><video id="camVid" autoplay playsinline muted style="flex:1;width:100%;object-fit:cover;background:#000"></video><div style="padding:16px;display:flex;gap:10px;justify-content:center"><button class="btn btn-gold" onclick="capturePhoto()">📸 Capture</button><button class="btn btn-ghost" style="color:#fff;border-color:#666" onclick="closeCamera()">Cancel</button></div>`;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(s=>{camStream=s;const vid=document.getElementById('camVid');if(vid)vid.srcObject=s;}).catch(e=>{camError('Camera permission was blocked ('+(e&&e.name||'error')+'). Allow camera access in your browser settings, or use Quick estimate.');});
+}
+function camError(msg){const v=document.getElementById('camView');v.innerHTML=`<div style="margin:auto;text-align:center;color:#fff;padding:28px;max-width:340px"><div style="font-size:2.6rem">📷</div><p style="margin:10px 0">${msg}</p><button class="btn btn-gold" onclick="closeCamera();simMeasure()">Quick estimate instead</button><br><button class="btn btn-ghost" style="color:#fff;border-color:#666;margin-top:10px" onclick="closeCamera()">Close</button></div>`;}
+function capturePhoto(){const vid=document.getElementById('camVid');if(!vid||!vid.videoWidth){toast('Camera still starting…');return;}const c=document.createElement('canvas');c.width=vid.videoWidth;c.height=vid.videoHeight;c.getContext('2d').drawImage(vid,0,0,c.width,c.height);camImg=c.toDataURL('image/jpeg',0.85);if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}camPts=[];camPhase='ref';showMark();}
+function showMark(){const v=document.getElementById('camView');v.innerHTML=`<div id="camInstr" style="padding:12px 16px;color:#fff;text-align:center;font-size:.85rem;font-weight:700;background:#0A1F44">Tap the LEFT then RIGHT edge of your ₹5 coin</div><div id="markWrap" style="flex:1;position:relative;overflow:hidden" onclick="markTap(event)"><img src="${camImg}" style="width:100%;height:100%;object-fit:contain;pointer-events:none"><div id="markDots" style="position:absolute;inset:0;pointer-events:none"></div></div><div style="padding:14px;display:flex;gap:10px;justify-content:center"><button class="btn btn-ghost" style="color:#fff;border-color:#666" onclick="camPts=[];camPhase='ref';showMark()">↺ Restart</button><button class="btn btn-ghost" style="color:#fff;border-color:#666" onclick="closeCamera()">Cancel</button></div>`;}
+function markTap(e){const wrap=document.getElementById('markWrap');const r=wrap.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;camPts.push({x,y,phase:camPhase});const dots=document.getElementById('markDots');const col=camPhase==='ref'?'#C9A94E':'#39d98a';dots.innerHTML+=`<div style="position:absolute;left:${x-7}px;top:${y-7}px;width:14px;height:14px;border-radius:50%;background:${col};border:2px solid #fff;box-shadow:0 0 6px rgba(0,0,0,.6)"></div>`;const pts=camPts.filter(p=>p.phase===camPhase);if(pts.length>=2){if(camPhase==='ref'){camPhase='mouth';const ins=document.getElementById('camInstr');if(ins){ins.textContent='Now tap the TOP then BOTTOM of your mouth opening';ins.style.background='#2D6A4F';}}else{computeCam();}}}
+function computeCam(){const ref=camPts.filter(p=>p.phase==='ref'),mo=camPts.filter(p=>p.phase==='mouth');const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);const refPx=d(ref[0],ref[1]),moPx=d(mo[0],mo[1]);if(refPx<6){toast('Coin points too close — restart');camPts=[];camPhase='ref';showMark();return;}const mm=Math.max(1,Math.round(COIN_MM*moPx/refPx));MMLOG.push(mm);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));updateOsmfStats();drawChart();renderOsmf();closeCamera();setTimeout(()=>toast('📸 Measured '+mm+' mm · logged to your Passport'),150);}
 
 /* UPDATES */
 function renderUpdates(){
@@ -938,6 +1014,14 @@ async function askLive(q){
 }
 function renderChat(){const log=document.getElementById('chatLog');log.innerHTML=CHAT.map(m=>`<div class="msg ${m.r}">${m.h}</div>`).join('');log.scrollTop=log.scrollHeight;}
 
+/* ===== ATH STAFF CONSOLE + PATIENT DATABASE ===== */
+let ATH_PATIENTS=JSON.parse(localStorage.getItem('agr_ath')||'[]');
+function renderAth(){renderAthList();}
+function athNew(){['athName','athAge','athPhone','athCity','athComplaint','athMm','athBP','athSugar','athWeight','athScreen','athDx'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['athGender','athHabit'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});const n=document.getElementById('athName');if(n)n.focus();toast('🆕 New session — fields cleared');}
+function athSave(){const g=id=>((document.getElementById(id)||{}).value||'').trim();const name=g('athName');if(!name){toast('Enter patient name');return;}const rec={name,age:g('athAge'),gender:g('athGender'),phone:g('athPhone'),city:g('athCity'),habit:g('athHabit'),complaint:g('athComplaint'),mm:g('athMm'),bp:g('athBP'),sugar:g('athSugar'),weight:g('athWeight'),screen:g('athScreen'),dx:g('athDx'),staff:'Kiosk staff',when:new Date().toLocaleString('en-IN')};ATH_PATIENTS.unshift(rec);localStorage.setItem('agr_ath',JSON.stringify(ATH_PATIENTS));renderAthList();athNew();toast('✅ '+name+' saved to the AGRAVAT database');}
+function renderAthList(){const el=document.getElementById('athList');const c=document.getElementById('athCount');if(c)c.textContent=ATH_PATIENTS.length;if(!el)return;el.innerHTML=ATH_PATIENTS.length?ATH_PATIENTS.map((p,i)=>`<div class="card" style="padding:13px;margin-bottom:10px;cursor:pointer" onclick="athView(${i})"><div style="display:flex;justify-content:space-between;align-items:center"><b>${p.name}</b><span class="sub" style="font-size:.64rem">${p.when}</span></div><div class="sub" style="font-size:.74rem">${[p.age&&p.age+'y',p.gender,p.city,p.habit&&('habit: '+p.habit)].filter(Boolean).join(' · ')||'—'}</div><div class="sub" style="font-size:.74rem">${[p.mm&&('opening '+p.mm+'mm'),p.bp&&('BP '+p.bp),p.sugar&&('sugar '+p.sugar)].filter(Boolean).join(' · ')}</div>${p.dx?`<div style="font-size:.74rem;color:var(--green);margin-top:4px">🩺 ${p.dx}</div>`:'<div class="sub" style="font-size:.68rem;margin-top:4px;font-style:italic">Awaiting clinician diagnosis</div>'}</div>`).join(''):'<div class="card" style="padding:16px"><p class="sub" style="margin:0">No patients captured yet. Fill the intake form above and tap Save.</p></div>';}
+function athView(i){const p=ATH_PATIENTS[i];if(!p)return;openSheetRaw(`<div class="grab"></div><h3>${p.name}</h3><p class="sub">${p.when} · captured by ${p.staff}</p><table style="width:100%;font-size:.84rem;border-collapse:collapse;margin-top:8px">${[['Age',p.age],['Gender',p.gender],['Phone',p.phone],['City',p.city],['Tobacco habit',p.habit],['Chief complaint',p.complaint],['Mouth opening',p.mm&&p.mm+' mm'],['Blood pressure',p.bp],['Blood sugar',p.sugar&&p.sugar+' mg/dL'],['Weight',p.weight&&p.weight+' kg'],['Screening notes',p.screen],['Clinician diagnosis',p.dx]].map(([k,v])=>v?`<tr><td style="padding:7px;border-bottom:1px solid var(--line);color:var(--muted);white-space:nowrap;vertical-align:top">${k}</td><td style="padding:7px;border-bottom:1px solid var(--line);font-weight:600">${v}</td></tr>`:'').join('')}</table><button class="btn btn-block btn-ghost" style="margin-top:12px" onclick="closeSheet()">Close</button>`);}
+
 /* ===== MANAGER CONTROL ===== */
 const ADMIN={
  kpis:[['DAU','1,284','+8%'],['MAU','9,640','+12%'],['Revenue 30d','₹4.82L','+15%'],['Orders','612','+9%'],['Conversion','4.7%','+0.6'],['Repeat rate','38%','+3'],['Avg LTV','₹3,410','+7%'],['Avg Wellness','74','+2'],['Active kiosks','6','+1']],
@@ -968,12 +1052,12 @@ function renderAdmin(sec){
     b.innerHTML=`<h2 class="sec">Recent orders</h2><div class="card" style="padding:4px 0">${ADMIN.orders.map(o=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${o[1]}</b><div class="sub">${o[0]} · ${o[2]}</div></div><span class="badge-soft">${o[3]}</span></div>`).join('')}</div>
     <h2 class="sec">Inventory (Sanand plant)</h2><div class="card" style="padding:4px 0">${PRODUCTS.map((p,i)=>{const stk=p.stock?[57,54,69,226,42,48,0,40][i]:0;return `<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${L(p.name)}</b></div><span style="font-weight:800;color:${stk===0?'#b91c1c':stk<20?'#C9A94E':'var(--green)'}">${p.stock?stk+' in stock':'OUT'}</span></div>`;}).join('')}</div>`;
   } else if(sec==='kiosks'){
-    b.innerHTML=`<h2 class="sec">ATH kiosks · walk-in capture</h2>${ADMIN.kiosks.map(k=>`<div class="card" style="padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="font-size:1.6rem">⬢</div><div style="flex:1"><b>${k[0]}</b><div class="sub">Staff on duty: ${k[2]}</div></div><div style="text-align:right"><b style="color:var(--blue);font-size:1.2rem">${k[1]}</b><div class="sub" style="font-size:.64rem">walk-ins (30d)</div></div></div>`).join('')}<p class="sub">Multi-location ready — compare per-site and per-staff performance.</p>`;
+    b.innerHTML=`<h2 class="sec">ATH kiosks · walk-in capture</h2>${ADMIN.kiosks.map(k=>`<div class="card" style="padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="font-size:1.6rem">⬢</div><div style="flex:1"><b>${k[0]}</b><div class="sub">Staff on duty: ${k[2]}</div></div><div style="text-align:right"><b style="color:var(--blue);font-size:1.2rem">${k[1]}</b><div class="sub" style="font-size:.64rem">walk-ins (30d)</div></div></div>`).join('')}<button class="btn btn-block btn-navy" style="margin:6px 0 10px" onclick="go('ath')">🩺 Open ATH staff intake console</button><p class="sub">Multi-location ready — compare per-site and per-staff performance.</p>`;
   } else if(sec==='ai'){
     b.innerHTML=`<h2 class="sec">Human-escalation queue</h2>${ADMIN.esc.map(e=>`<div class="card" style="padding:13px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>${e[0]}</b><span class="badge-soft">${e[2]}</span></div><p class="sub" style="margin:5px 0 9px">${e[1]}</p><button class="btn btn-blue" onclick="adminReply('${e[0]}')">Review & reply</button></div>`).join('')}<p class="sub">Ask-the-Doctor: AI drafts a compliant reply, a clinician approves before it is sent.</p>`;
   }
 }
-function renderCustList(q){const el=document.getElementById('custList');if(!el)return;q=(q||'').toLowerCase();const rows=ADMIN.customers.filter(c=>!q||c[0].toLowerCase().includes(q)||c[1].toLowerCase().includes(q)||c[2].toLowerCase().includes(q));el.innerHTML=`<div class="card" style="padding:4px 0">${rows.length?rows.map(c=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.86rem">${c[0]}</b><div class="sub" style="font-size:.72rem">${c[1]} · ${c[2]} · ${c[3]}</div></div><div style="text-align:right"><div class="sub" style="font-size:.66rem">${c[4]}</div><span class="badge-soft">consent ✓</span></div></div>`).join(''):'<p class="sub" style="padding:12px">No matching customers.</p>'}</div>`;}
+function renderCustList(q){const el=document.getElementById('custList');if(!el)return;q=(q||'').toLowerCase();const ath=ATH_PATIENTS.map(p=>[p.name,p.city||'—',(p.complaint||p.habit||'ATH intake'),(p.mm?p.mm+'mm':'—'),'kiosk']);const src=ath.concat(ADMIN.customers);const rows=src.filter(c=>!q||(c[0]||'').toLowerCase().includes(q)||(c[1]||'').toLowerCase().includes(q)||(c[2]||'').toLowerCase().includes(q));el.innerHTML=`<div class="card" style="padding:4px 0">${rows.length?rows.map(c=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.86rem">${c[0]}</b><div class="sub" style="font-size:.72rem">${c[1]} · ${c[2]} · ${c[3]}</div></div><div style="text-align:right"><div class="sub" style="font-size:.66rem">${c[4]}</div><span class="badge-soft">consent ✓</span></div></div>`).join(''):'<p class="sub" style="padding:12px">No matching customers.</p>'}</div>`;}
 function drawRev(){const cv=document.getElementById('revChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=150;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=ADMIN.rev,n=d.length,mx=Math.max(...d)*1.12,gap=W/n,bw=gap*0.56;d.forEach((v,i)=>{const bh=(H-18)*(v/mx);const xx=i*gap+gap*0.22,yy=H-bh-14,r=3;const g=x.createLinearGradient(0,yy,0,H);g.addColorStop(0,'#2E7BE0');g.addColorStop(1,'#0A1F44');x.fillStyle=g;x.beginPath();x.moveTo(xx,H-14);x.lineTo(xx,yy+r);x.quadraticCurveTo(xx,yy,xx+r,yy);x.lineTo(xx+bw-r,yy);x.quadraticCurveTo(xx+bw,yy,xx+bw,yy+r);x.lineTo(xx+bw,H-14);x.closePath();x.fill();});}
 
 function seedChat(){CHAT=[];const h={en:"Namaste 🙏 I'm AGRAVAT, your doctor-inspired wellness assistant. Ask me about OSMF care, supplements, diet or how to use any product — in your language, anytime.",hi:"नमस्ते 🙏 मैं AGRAVAT हूँ, आपका डॉक्टर-प्रेरित वेलनेस सहायक। OSMF देखभाल, सप्लीमेंट्स या आहार के बारे में पूछें।",gu:"નમસ્તે 🙏 હું AGRAVAT છું, તમારો ડૉક્ટર-પ્રેરિત વેલનેસ સહાયક. OSMF સંભાળ, સપ્લિમેન્ટ્સ વિશે પૂછો."};pushMsg('bot',h[LANG]||h.en);}
@@ -1002,7 +1086,7 @@ function logout(){ACCOUNT=null;localStorage.removeItem('agr_account');closeSheet
 function deleteAccount(){ACCOUNT=null;['agr_account'].forEach(k=>localStorage.removeItem(k));closeSheet();applyI18n();toast('Your account data was deleted');}
 
 /* ===== FEATURE ACTIONS (all live) ===== */
-function bookSlot(tm){localStorage.setItem('agr_booking',JSON.stringify({doctor:'Dr Bharat Agravat',time:tm,date:new Date().toDateString()}));closeSheet();toast('✅ Consultation booked with Dr Bharat · '+tm+' today. Confirmation sent'+(ACCOUNT&&ACCOUNT.email?(' to '+ACCOUNT.email):'')+'.');}
+function requestConsult(){localStorage.setItem('agr_consult_req',JSON.stringify({when:new Date().toISOString(),name:(ACCOUNT&&ACCOUNT.name)||''}));closeSheet();toast('📩 Request received — our experts will confirm your time shortly'+(ACCOUNT&&ACCOUNT.phone?(' on '+ACCOUNT.phone):'.'));}
 function careJoin(){localStorage.setItem('agr_careplus','1');closeSheet();toast('⭐ Welcome to AGRAVAT Care+! Your benefits are now active.');}
 function notifyMe(id){const p=PRODUCTS.find(x=>x.id===id)||{};const em=ACCOUNT&&ACCOUNT.email;const list=JSON.parse(localStorage.getItem('agr_notify')||'[]');if(!list.includes(id)){list.push(id);localStorage.setItem('agr_notify',JSON.stringify(list));}toast(em?('🔔 We’ll email '+em+' when '+(L(p.name)||'this')+' is back'):'🔔 Added to your notify list — sign in to get alerts');}
 function addToCartMulti(ids,msg){ids.forEach(i=>{const e=CART.find(c=>c.id===i);if(e)e.q++;else CART.push({id:i,q:1});});saveCart();toast(msg||t('addedToast'));}
@@ -1018,6 +1102,19 @@ function exportPassport(){
   w.document.close();toast('📄 Health Passport ready — use Save as PDF');
 }
 
+/* ===== POINTS & REWARDS ===== */
+let POINTS=parseInt(localStorage.getItem('agr_points')||'1240',10);
+let REDEEMED=JSON.parse(localStorage.getItem('agr_redeemed')||'{}');
+const REWARDS=[
+ {id:'off5',pts:1500,icon:'🏷️',title:'5% off everything',desc:'On supplements, OSMF & every AGRAVAT product',base:'AGRA5'},
+ {id:'consult',pts:2500,icon:'📹',title:'Free video consultation',desc:'One complimentary consult with AGRAVAT experts',base:'FREECONSULT'},
+ {id:'off10',pts:4000,icon:'🎁',title:'10% off + free shipping',desc:'Top-tier loyalty reward',base:'AGRA10'},
+];
+function earn(n){POINTS+=n;localStorage.setItem('agr_points',POINTS);renderPoints();}
+function addPoints(n,reason){earn(n);toast('+'+n+' points'+(reason?' · '+reason:''));}
+function renderPoints(){const s=POINTS.toLocaleString('en-IN');['ptsHero','ptsPass'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});}
+function redeemReward(id){const r=REWARDS.find(x=>x.id===id);if(!r)return;if(POINTS<r.pts){toast('Need '+(r.pts-POINTS)+' more points');return;}if(!REDEEMED[id]){REDEEMED[id]=r.base+'-'+Math.floor(1000+Math.random()*9000);localStorage.setItem('agr_redeemed',JSON.stringify(REDEEMED));}openSheet('rewards');setTimeout(()=>toast('🎉 Unlocked: '+r.title),120);}
+
 /* sheets */
 function openSheetRaw(h){document.getElementById('sheetBody').innerHTML=h;document.getElementById('sheetBg').classList.add('show');}
 function openSheet(type){
@@ -1030,9 +1127,9 @@ function openSheet(type){
   } else if(type==='lang'){
     const o=[['en','🇬🇧','English'],['hi','🇮🇳','हिन्दी'],['gu','🇮🇳','ગુજરાતી']];h+=`<h3>Language / भाषा / ભાષા</h3>`+o.map(([k,f,n])=>`<div class="lang-opt ${LANG===k?'sel':''}" onclick="setLang('${k}')"><span class="fl">${f}</span><b>${n}</b>${LANG===k?'<span style="margin-left:auto;color:var(--green)">✓</span>':''}</div>`).join('');
   } else if(type==='refer'){
-    h+=`<h3>🎁 ${t('refer')}</h3><p class="sub">Two-sided reward: you and your friend both get ₹200 store credit.</p><div class="card" style="padding:16px;text-align:center;margin:12px 0"><div class="sub">Your referral code</div><b style="font-size:1.6rem;letter-spacing:.15em;color:var(--gold)">KARTAVYA50</b></div><button class="btn btn-block btn-green" onclick="openLink('https://wa.me/?text=Try%20AGRAVAT%20%E2%80%94%20doctor-inspired%20wellness%20since%201950.%20Use%20code%20KARTAVYA50')">📲 Share on WhatsApp</button><div style="margin-top:14px">${['Member','🥈 Advocate (you)','Ambassador','Wellness Champion'].map((s,i)=>`<div style="display:flex;gap:10px;padding:8px 0;align-items:center;${i===1?'font-weight:800':''}"><span>${i<=1?'✅':'⚪'}</span>${s}</div>`).join('')}</div>`;
+    h+=`<h3>🎁 ${t('refer')}</h3><p class="sub">Two-sided reward: you and your friend both get ₹200 store credit — plus you earn <b>100 points</b> per successful referral toward your next offer.</p><div class="card" style="padding:16px;text-align:center;margin:12px 0"><div class="sub">Your referral code</div><b style="font-size:1.6rem;letter-spacing:.15em;color:var(--gold)">KARTAVYA50</b></div><button class="btn btn-block btn-green" onclick="openLink('https://wa.me/?text=Try%20AGRAVAT%20%E2%80%94%20doctor-inspired%20wellness%20since%201950.%20Use%20code%20KARTAVYA50')">📲 Share on WhatsApp</button><button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="addPoints(100,'referral')">✅ Mark a successful referral (+100 pts)</button><div style="margin-top:14px">${['Member','🥈 Advocate (you)','Ambassador','Wellness Champion'].map((s,i)=>`<div style="display:flex;gap:10px;padding:8px 0;align-items:center;${i===1?'font-weight:800':''}"><span>${i<=1?'✅':'⚪'}</span>${s}</div>`).join('')}</div>`;
   } else if(type==='consult'){
-    h+=`<h3>📹 Video Consultation</h3><p class="sub">Speak directly with AGRAVAT's clinical team. Diagnosis and assessment are performed only by our qualified clinicians.</p><div class="card" style="padding:16px;margin:12px 0;display:flex;gap:12px;align-items:center"><div style="font-size:2rem">👨‍⚕️</div><div><b>Dr Bharat Agravat</b><div class="sub">25 yrs · 18 awards · OLI Therapy</div></div></div><div class="sub" style="margin-bottom:6px;font-weight:700">Pick a slot for today:</div><div class="qrow">${['11:30 AM','1:00 PM','3:30 PM','5:00 PM'].map(s=>`<div class="chip" onclick="bookSlot('${s}')">🕐 ${s}</div>`).join('')}</div><button class="btn btn-block btn-blue" style="margin-top:12px" onclick="closeSheet();go('ask')">💬 Ask the Doctor (async · clinician-approved)</button>`;
+    h+=`<h3>📹 Consult Experts Now</h3><p class="sub">Request a video consultation with AGRAVAT's qualified clinical experts. Diagnosis and assessment are performed only by our clinicians.</p><div class="card" style="padding:16px;margin:12px 0;display:flex;gap:12px;align-items:center"><div style="font-size:2rem">👨‍⚕️</div><div><b>AGRAVAT Clinical Experts</b><div class="sub">OLI Therapy · OSMF specialists</div></div></div><button class="btn btn-block btn-navy" onclick="requestConsult()">📩 Request consultation</button><p class="sub" style="margin-top:8px">Our experts will confirm a time that suits you and share the details.</p><button class="btn btn-block btn-blue" style="margin-top:10px" onclick="closeSheet();go('ask')">💬 Ask the Doctor (async · clinician-approved)</button>`;
   } else if(type==='care'){
     h+=`<h3>⭐ AGRAVAT Care+</h3><p class="sub">Membership bundling consultations, member discounts, free shipping & priority support.</p><div class="card" style="padding:16px;margin:12px 0;text-align:center"><b style="font-size:1.6rem;color:var(--gold)">₹999<span style="font-size:.8rem;color:var(--muted)">/year</span></b><ul style="text-align:left;font-size:.85rem;margin-top:10px">${['2 free video consults','10% off all products','Free shipping always','Priority support','Doctor-reviewed care plan'].map(x=>`<li>${x}</li>`).join('')}</ul></div><button class="btn btn-block btn-gold" onclick="careJoin()">Join Care+ · ₹999/yr</button>`;
   } else if(type==='family'){
@@ -1042,6 +1139,10 @@ function openSheet(type){
     h+=`<h3>📹 Share your recovery story</h3><p class="sub">With your consent, the best stories feature on the Dr Agravat Wellness channel (functional language).</p><div class="field"><label>Your name</label><input id="stName" value="${(ACCOUNT&&ACCOUNT.name)||''}"></div><div class="field"><label>Your story</label><textarea id="stText" style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"></textarea></div><div class="field"><label>Video link (optional)</label><input id="stLink" placeholder="YouTube / Drive link"></div><label style="font-size:.76rem;display:flex;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" id="stConsent"> I consent to AGRAVAT sharing this.</label><button class="btn btn-block btn-blue" style="margin-top:10px" onclick="submitStory()">Submit my story</button>`;
   } else if(type==='consent'){
     h+=`<h3>🔒 Privacy & Data Consent</h3><p class="sub">Your health data builds your unified Health Passport, stored securely and never shared without consent.</p>${[['Health & OSMF data',true],['Supplement & order history',true],['AI assistant conversations',true],['Marketing communications',false]].map(([l,on])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="ml">${l}</span><span style="color:${on?'var(--green)':'var(--muted)'};font-weight:800">${on?'● On':'○ Off'}</span></div>`).join('')}<p class="sub" style="margin-top:10px">View, download or delete your data anytime. Compliant with ASCI, FSSAI & data-protection norms.</p>`;
+  } else if(type==='rewards'){
+    h+=`<h3>🎁 Rewards & points</h3><div class="card" style="padding:16px;text-align:center;margin:10px 0;background:linear-gradient(135deg,#0A1F44,#1E5FB4);color:#fff"><div style="font-size:2rem;font-weight:800;color:var(--gold2)">${POINTS.toLocaleString('en-IN')}</div><div style="font-size:.72rem;opacity:.85">points balance</div></div><p class="sub">Earn points on every product, OSMF log & daily habit. Reach a tier to unlock a reward you can use at agravat.com.</p>`;
+    h+=REWARDS.map(r=>{const got=REDEEMED[r.id];const elig=POINTS>=r.pts;const pct=Math.min(100,Math.round(POINTS/r.pts*100));return `<div class="card" style="padding:14px;margin:10px 0"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:1.6rem">${r.icon}</div><div style="flex:1"><b style="font-size:.9rem">${r.title}</b><div class="sub" style="font-size:.72rem">${r.desc}</div></div><span class="sub" style="font-size:.7rem;white-space:nowrap">${r.pts} pts</span></div>${got?`<div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(45,106,79,.12);text-align:center"><div class="sub" style="font-size:.64rem">Your code</div><b style="letter-spacing:.1em;color:var(--green);font-size:1.05rem">${got}</b><div class="sub" style="font-size:.62rem;margin-top:2px">Apply at agravat.com checkout</div></div>`:`<div class="tier-bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><button class="btn btn-block ${elig?'btn-gold':'btn-ghost'}" style="margin-top:8px" ${elig?`onclick="redeemReward('${r.id}')"`:'disabled'}>${elig?'✓ Redeem now':((r.pts-POINTS)+' more points')}</button>`}</div>`;}).join('');
+    h+=`<button class="btn btn-block btn-ghost" style="margin-top:4px" onclick="openSheet('refer')">👥 Earn 100 pts per referral →</button>`;
   } else if(type==='auth'){
     h+=`<h3>Welcome to AGRAVAT</h3><p class="sub">Create an account or log in to save your Health Passport & orders.</p><div class="tabs" style="margin:12px 0"><div class="tab active" id="authTabR" onclick="authMode('reg')">Register</div><div class="tab" id="authTabL" onclick="authMode('login')">Log in</div></div><div id="authForm">${regFormHtml()}</div>`;
   } else if(type==='editAccount'){
@@ -1049,12 +1150,13 @@ function openSheet(type){
   } else if(type==='reminders'){
     h+=`<h3>⏰ ${t('qRem')}</h3>`+[['🦷','Morning OSMF exercise','8:00 AM'],['🧴','Apply OSMF Oral Gel','2:00 PM'],['💊','OSMF Vita after dinner','9:00 PM'],['🔄','OSMF kit refill predicted','in 6 days']].map(([e,l,tm])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="e">${e}</span><span class="ml">${l}</span><span class="sub">${tm}</span></div>`).join('');
   } else if(type==='measure'){
-    h+=`<h3>📸 AI camera measurement</h3><p class="sub">Place a standard ₹5 coin (or the OSMF kit-box edge) beside your open mouth in the photo. The AI uses that known size as a reference to estimate your mouth opening in millimetres — an at-home tracking aid, never a diagnosis.</p><div class="card" style="padding:20px;text-align:center;margin:12px 0"><div style="font-size:2.6rem">📷</div><p class="sub" style="margin:8px 0 0">Camera opens here in the installed app.</p></div><button class="btn btn-block btn-gold" onclick="simMeasure()">Simulate a measurement</button>`;
+    h+=`<h3>📸 AI camera measurement</h3><p class="sub">Place a ₹5 coin (23 mm) beside your open mouth. Capture a photo, tap the coin's two edges, then the top & bottom of your mouth opening — the app calculates the millimetres. An at-home tracking aid, never a diagnosis.</p><button class="btn btn-block btn-gold" style="margin-top:8px" onclick="openCamera()">📷 Open camera & measure</button><button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="simMeasure()">Quick estimate (no camera)</button>`;
   }
   openSheetRaw(h);
 }
 function closeSheet(){document.getElementById('sheetBg').classList.remove('show');document.getElementById('sheetBody').innerHTML='';}
 function payNow(){closeSheet();toast('Opening agravat.com to complete your order…');setTimeout(()=>{const w=window.open(STORE_URL,'_blank','noopener');if(!w)window.location.href=STORE_URL;},600);}
+function buyNow(id){const p=PRODUCTS.find(x=>x.id===id);toast('Taking you to agravat.com to buy '+(p?L(p.name):'this')+'…');setTimeout(()=>{const w=window.open(STORE_URL,'_blank','noopener');if(!w)window.location.href=STORE_URL;},600);}
 function setLang(k){LANG=k;localStorage.setItem('agr_lang',k);applyI18n();seedChat();closeSheet();}
 
 /* modes */
