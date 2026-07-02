@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A1F44">
+<meta name="description" content="AGRAVAT — Doctor Inspired Daily Wellness, Since 1950.">
+<title>AGRAVAT — Daily Wellness</title>
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22AGRAVAT%20Healthcare%22%2C%22short_name%22%3A%22AGRAVAT%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230A1F44%22%2C%22theme_color%22%3A%22%230A1F44%22%7D">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1F44'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Georgia' font-weight='bold' fill='%23C9A94E' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --navy:#0A1F44; --navy2:#123A7A; --blue:#1E5FB4; --blue2:#2E7BE0; --sky:#EAF2FB;
+    --gold:#C9A94E; --gold2:#E2C76A; --green:#2D6A4F; --green2:#3f8c6c;
+    --bg:#EDF2FB; --card:#ffffff; --ink:#0A1F44; --muted:#64748b; --line:#e2e8f5;
+    --shell:480px; --r:20px; --shadow:0 10px 30px rgba(10,31,68,.10); --shadow-lg:0 20px 50px rgba(10,31,68,.18);
+    --font:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--font); color:var(--ink); background:#b9c6e0; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  body.dark{ --bg:#0b1426; --card:#121c33; --ink:#eef3fb; --muted:#93a3c2; --line:#22304f; --sky:#101a30; background:#070d1a;}
+  img{display:block; max-width:100%;}
+  #app{ max-width:var(--shell); margin:0 auto; min-height:100vh; background:var(--bg); position:relative; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 0 80px rgba(0,0,0,.3);}
+  body.kiosk #app{ max-width:1120px; }
+  body.kiosk .tiles{ grid-template-columns:repeat(3,1fr);}
+  body.kiosk .screen{ font-size:1.08rem; }
+  /* topbar */
+  .topbar{ display:flex; align-items:center; gap:9px; padding:13px 16px 11px;
+    background:linear-gradient(180deg,var(--navy),var(--navy2)); position:sticky; top:0; z-index:40; color:#fff;}
+  .logo{ display:flex; align-items:center; gap:9px; }
+  .logo .mark{ width:34px; height:34px; border-radius:9px; background:linear-gradient(145deg,#16386f,#0A1F44); border:1px solid rgba(201,169,78,.5); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.3);}
+  .logo .mark svg{ width:22px; height:22px;}
+  .logo .wm{ display:flex; flex-direction:column; line-height:1;}
+  .logo .wm b{ font-size:1.12rem; letter-spacing:.16em; font-weight:800; background:linear-gradient(90deg,#fff,#dbe6fb); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .logo .wm small{ font-size:.5rem; letter-spacing:.14em; color:var(--gold2); font-weight:700; margin-top:3px; text-transform:uppercase;}
+  .topbar .spacer{ flex:1 }
+  .ico{ width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#fff; font-size:.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .ico.active{ background:var(--gold); color:var(--navy); border-color:var(--gold);}
+  #kioskBanner{ display:none; background:linear-gradient(90deg,var(--gold),var(--gold2)); color:var(--navy); text-align:center; font-size:.7rem; font-weight:800; padding:7px; letter-spacing:.05em;}
+  body.kiosk #kioskBanner{ display:block;}
+  /* screens */
+  .screen{ flex:1; overflow-y:auto; padding:0 14px 110px; scroll-behavior:smooth;}
+  .screen::-webkit-scrollbar{ width:0 }
+  .hidden{ display:none !important;}
+  h2.sec{ font-size:1.05rem; margin:22px 4px 12px; font-weight:800; display:flex; align-items:center; gap:8px;}
+  h2.sec .more{ margin-left:auto; font-size:.72rem; color:var(--blue); font-weight:700; cursor:pointer;}
+  body.dark h2.sec .more{ color:var(--blue2);}
+  .sub{ color:var(--muted); font-size:.82rem;}
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);}
+  /* HERO / wellness */
+  .hero{ margin:14px 0 0; padding:18px; border-radius:var(--r); color:#fff; position:relative; overflow:hidden;
+    background:linear-gradient(140deg,#0A1F44 0%,#123A7A 55%,#1E5FB4 120%); box-shadow:var(--shadow-lg);}
+  .hero::after{ content:''; position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(201,169,78,.35),transparent 70%);}
+  .hero .htop{ display:flex; align-items:center; gap:15px; position:relative; z-index:2;}
+  .ring{ position:relative; width:80px; height:80px; flex:none;}
+  .ring svg{ transform:rotate(-90deg);}
+  .ring .rv{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .ring .rv b{ font-size:1.4rem; line-height:1; color:#fff;}
+  .ring .rv span{ font-size:.46rem; letter-spacing:.12em; opacity:.8; text-transform:uppercase;}
+  .hero .who h3{ margin:0 0 3px; font-size:1.15rem;}
+  .hero .who p{ margin:0; font-size:.78rem; opacity:.85;}
+  .hero .hstats{ display:flex; gap:8px; margin-top:14px; position:relative; z-index:2;}
+  .hero .hstats div{ flex:1; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:9px 8px; text-align:center;}
+  .hero .hstats b{ display:block; font-size:1.05rem; color:var(--gold2);}
+  .hero .hstats span{ font-size:.56rem; opacity:.8; text-transform:uppercase; letter-spacing:.04em;}
+  /* quick chips */
+  .qrow{ display:flex; gap:9px; overflow-x:auto; padding:12px 0 2px;}
+  .qrow::-webkit-scrollbar{ height:0 }
+  .chip{ flex:none; background:var(--card); border:1px solid var(--line); border-radius:13px; padding:10px 13px; font-size:.76rem; font-weight:700; display:flex; align-items:center; gap:7px; cursor:pointer; box-shadow:var(--shadow);}
+  .chip.on{ background:var(--navy); color:#fff; border-color:var(--navy);}
+  .chip .e{ font-size:1.05rem;}
+  /* tiles */
+  .tiles{ display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+  .tile{ border-radius:16px; padding:15px 14px; min-height:108px; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; color:#fff; position:relative; overflow:hidden; box-shadow:var(--shadow); transition:transform .12s;}
+  .tile:active{ transform:scale(.97);}
+  .tile .emo{ font-size:1.55rem;}
+  .tile b{ font-weight:800; font-size:.9rem;}
+  .tile small{ display:block; font-weight:500; opacity:.85; font-size:.66rem; margin-top:2px;}
+  .t1{ background:linear-gradient(150deg,#0A1F44,#1E5FB4);}
+  .t2{ background:linear-gradient(150deg,#123A7A,#2E7BE0);}
+  .t3{ background:linear-gradient(150deg,#2D6A4F,#3f8c6c);}
+  .t4{ background:linear-gradient(150deg,#b8973f,#E2C76A); color:#3a2e08;} .t4 small{color:#5c4a14;}
+  .t5{ background:linear-gradient(150deg,#1E5FB4,#2E7BE0);}
+  .t6{ background:linear-gradient(150deg,#0A1F44,#123A7A);}
+  /* trust strip */
+  .trust{ display:flex; gap:8px; overflow-x:auto; padding:4px 0;}
+  .trust::-webkit-scrollbar{height:0}
+  .badge{ flex:none; background:var(--card); border:1px solid var(--line); border-radius:11px; padding:8px 12px; font-size:.7rem; font-weight:700; display:flex; align-items:center; gap:6px; color:var(--green);}
+  /* product card */
+  .pcard{ display:flex; gap:12px; padding:11px; margin-bottom:11px; cursor:pointer; align-items:center; position:relative;}
+  .pimg-wrap{ width:74px; height:74px; border-radius:13px; flex:none; position:relative; overflow:hidden; background:linear-gradient(145deg,#eaf0fb,#fff); border:1px solid var(--line);}
+  .pimg-wrap img{ width:100%; height:100%; object-fit:cover;}
+  .pimg-wrap .fb{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2rem; background:linear-gradient(145deg,var(--navy),var(--blue)); color:#fff;}
+  .pcard .pi{ flex:1; min-width:0;}
+  .pcard h4{ margin:0 0 3px; font-size:.9rem; line-height:1.25;}
+  .ptag{ font-size:.64rem; color:var(--blue); font-weight:800; text-transform:uppercase; letter-spacing:.04em;}
+  body.dark .ptag{ color:var(--blue2);}
+  .prow{ display:flex; align-items:center; justify-content:space-between; margin-top:6px; gap:8px;}
+  .price{ font-weight:800; color:var(--navy); font-size:.98rem; white-space:nowrap;}
+  body.dark .price{ color:var(--gold2);}
+  .price s{ color:var(--muted); font-weight:500; font-size:.72rem; margin-left:4px;}
+  .off{ position:absolute; top:9px; left:9px; background:var(--gold); color:var(--navy); font-size:.58rem; font-weight:800; padding:2px 6px; border-radius:6px; z-index:2;}
+  .oos{ position:absolute; top:9px; right:9px; background:#b91c1c; color:#fff; font-size:.56rem; font-weight:800; padding:2px 6px; border-radius:6px;}
+  .stars{ color:var(--gold); font-size:.74rem; letter-spacing:1px;}
+  .btn{ border:none; border-radius:11px; padding:9px 13px; font-weight:800; font-size:.8rem; cursor:pointer; font-family:inherit;}
+  .btn-gold{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy);}
+  .btn-navy{ background:var(--navy); color:#fff;}
+  .btn-blue{ background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff;}
+  .btn-green{ background:var(--green); color:#fff;}
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--ink);}
+  .btn-block{ width:100%; padding:15px; font-size:.95rem; border-radius:14px;}
+  .btn:active{ filter:brightness(.94);}
+  .flag{ display:inline-block; background:var(--gold); color:var(--navy); font-size:.56rem; font-weight:800; padding:2px 6px; border-radius:5px; text-transform:uppercase; letter-spacing:.04em; margin-left:5px; vertical-align:middle;}
+  /* product detail */
+  .back{ background:none; border:none; font-size:.85rem; color:var(--blue); font-weight:700; cursor:pointer; padding:14px 0 6px; display:inline-flex; gap:6px; align-items:center;}
+  body.dark .back{ color:var(--blue2);}
+  .pd-gallery{ border-radius:var(--r); overflow:hidden; background:#fff; border:1px solid var(--line); position:relative;}
+  .pd-gallery img{ width:100%; height:280px; object-fit:contain; background:#fff;}
+  .pd-fb{ height:280px; display:flex; align-items:center; justify-content:center; font-size:6rem; background:linear-gradient(145deg,var(--navy),var(--blue)); color:#fff;}
+  .tabs{ display:flex; gap:6px; margin:16px 0 12px; overflow-x:auto;}
+  .tabs::-webkit-scrollbar{height:0}
+  .tab{ flex:none; padding:9px 14px; border-radius:999px; font-size:.78rem; font-weight:700; cursor:pointer; background:var(--card); border:1px solid var(--line); color:var(--muted);}
+  .tab.active{ background:var(--blue); color:#fff; border-color:var(--blue);}
+  .tabbody{ font-size:.86rem;} .tabbody ul{ padding-left:18px; margin:8px 0;} .tabbody li{ margin:6px 0;}
+  .compliance{ font-size:.68rem; color:var(--muted); font-style:italic; margin-top:14px; padding:10px 12px; background:rgba(45,106,79,.08); border-radius:10px; border-left:3px solid var(--green);}
+  /* OSMF */
+  .timer-wrap{ text-align:center; padding:20px 16px; margin-top:14px;}
+  .streak-badge{ display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy); padding:6px 13px; border-radius:999px; font-weight:800; font-size:.8rem;}
+  .timer-ring{ width:200px; height:200px; margin:8px auto; position:relative;}
+  .timer-ring .tt{ font-size:2.6rem; font-weight:800;}
+  .timer-ring .tl{ font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .ex-step{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); align-items:flex-start;}
+  .ex-step:last-child{ border:none;}
+  .ex-step .n{ width:26px; height:26px; flex:none; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:.8rem;}
+  .ex-step p{ margin:0; font-size:.84rem;}
+  .stat-row{ display:flex; gap:9px; margin:14px 0;}
+  .stat{ flex:1; text-align:center; padding:14px 6px;}
+  .stat b{ display:block; font-size:1.4rem; color:var(--green);}
+  .stat span{ font-size:.62rem; color:var(--muted); text-transform:uppercase;}
+  .log-input{ display:flex; gap:8px;}
+  .log-input input{ flex:1; padding:13px; border-radius:12px; border:1px solid var(--line); font-size:1rem; font-family:inherit; background:var(--card); color:var(--ink);}
+  #osmfChart{ width:100%; height:170px; margin-top:8px;}
+  /* DIET & DIABETES */
+  .seg{ display:flex; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px; margin:14px 0 4px;}
+  .seg button{ flex:1; border:none; background:none; padding:10px; border-radius:11px; font-weight:800; font-size:.82rem; color:var(--muted); cursor:pointer; font-family:inherit;}
+  .seg button.on{ background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff;}
+  .prog-card{ padding:16px; margin-top:12px; background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:var(--r); position:relative; overflow:hidden;}
+  .prog-card h3{ margin:0 0 3px; color:var(--gold2);}
+  .prog-card .bar{ height:9px; background:rgba(255,255,255,.18); border-radius:99px; margin:12px 0 6px; overflow:hidden;}
+  .prog-card .bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--green2));}
+  .meal{ display:flex; gap:12px; padding:13px; margin-bottom:10px; align-items:center;}
+  .meal .mi{ width:46px; height:46px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center; font-size:1.4rem; background:var(--sky);}
+  .meal .mb{ flex:1;} .meal .mb b{ font-size:.88rem;} .meal .mb p{ margin:2px 0 0; font-size:.74rem; color:var(--muted);}
+  .meal .chk{ width:26px; height:26px; border-radius:50%; border:2px solid var(--line); cursor:pointer; flex:none; display:flex; align-items:center; justify-content:center; font-size:.8rem; color:transparent;}
+  .meal .chk.done{ background:var(--green); border-color:var(--green); color:#fff;}
+  .vital{ display:flex; gap:10px; margin:12px 0;}
+  .vital div{ flex:1; text-align:center; padding:14px 6px;}
+  .vital b{ display:block; font-size:1.3rem; color:var(--blue);} body.dark .vital b{color:var(--blue2);}
+  .vital span{ font-size:.62rem; color:var(--muted); text-transform:uppercase;}
+  .habit{ display:flex; gap:8px; overflow-x:auto; padding:4px 0;}
+  .habit::-webkit-scrollbar{height:0}
+  .habit .h{ flex:none; width:74px; text-align:center; padding:12px 6px; border-radius:14px; background:var(--card); border:1px solid var(--line); cursor:pointer;}
+  .habit .h .e{ font-size:1.3rem;}
+  .habit .h.on{ background:var(--green); color:#fff; border-color:var(--green);}
+  .habit .h small{ font-size:.6rem; display:block; margin-top:4px; font-weight:700;}
+  /* UPDATES & VIDEO */
+  .feature{ border-radius:var(--r); overflow:hidden; margin-top:14px; cursor:pointer; box-shadow:var(--shadow-lg); position:relative;}
+  .feature .fimg{ height:180px; background-size:cover; background-position:center; position:relative;}
+  .feature .grad{ position:absolute; inset:0; background:linear-gradient(180deg,transparent 30%,rgba(10,31,68,.92));}
+  .feature .ftxt{ position:absolute; bottom:0; left:0; right:0; padding:16px; color:#fff;}
+  .feature .ftag{ display:inline-block; background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; padding:3px 8px; border-radius:6px; text-transform:uppercase; margin-bottom:7px;}
+  .feature .ftxt h3{ margin:0; font-size:1.05rem; line-height:1.3;}
+  .feature .ftxt p{ margin:4px 0 0; font-size:.72rem; opacity:.85;}
+  .vthumb .play{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+  .vthumb .play span{ width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.92); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:1rem; padding-left:3px; box-shadow:0 4px 12px rgba(0,0,0,.3);}
+  .vrow{ display:flex; gap:12px; overflow-x:auto; padding:4px 0 8px;}
+  .vrow::-webkit-scrollbar{height:0}
+  .vcard{ flex:none; width:220px; cursor:pointer;}
+  .vcard .vt{ width:220px; height:124px; background-size:cover; background-position:center; border-radius:14px; position:relative;}
+  .vcard b{ font-size:.8rem; display:block; margin-top:7px; line-height:1.3;}
+  .vcard small{ font-size:.68rem; color:var(--muted);}
+  .news{ display:flex; gap:12px; padding:11px; margin-bottom:10px; cursor:pointer; align-items:center;}
+  .news .nimg{ width:64px; height:64px; border-radius:12px; flex:none; background-size:cover; background-position:center; background-color:var(--sky);}
+  .news .nb{ flex:1;} .news .nb .ndate{ font-size:.66rem; color:var(--blue); font-weight:700;} body.dark .news .nb .ndate{color:var(--blue2);}
+  .news .nb b{ font-size:.84rem; display:block; margin:2px 0; line-height:1.3;}
+  .news .nb .ncat{ font-size:.66rem; color:var(--muted);}
+  /* chat */
+  .chat{ display:flex; flex-direction:column; height:100%;}
+  .chat-log{ flex:1; overflow-y:auto; padding:8px 2px 12px; display:flex; flex-direction:column; gap:10px;}
+  .msg{ max-width:82%; padding:11px 14px; border-radius:16px; font-size:.86rem; line-height:1.45;}
+  .msg.bot{ background:var(--card); border:1px solid var(--line); align-self:flex-start; border-bottom-left-radius:5px;}
+  .msg.user{ background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff; align-self:flex-end; border-bottom-right-radius:5px;}
+  .msg.bot .esc{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); font-size:.74rem; color:var(--green); font-weight:700;}
+  .chat-suggest{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 8px;}
+  .sug{ font-size:.76rem; padding:8px 12px; border-radius:999px; background:var(--card); border:1px solid var(--line); cursor:pointer; font-weight:600;}
+  .chat-input{ display:flex; gap:8px; padding:10px 0 2px; border-top:1px solid var(--line);}
+  .chat-input input{ flex:1; padding:13px 15px; border-radius:999px; border:1px solid var(--line); font-size:.95rem; font-family:inherit; background:var(--card); color:var(--ink);}
+  .ai-guard{ font-size:.64rem; color:var(--muted); text-align:center; margin:8px 0 0; font-style:italic;}
+  /* profile */
+  .passport{ padding:18px; margin-top:14px; background:linear-gradient(135deg,#0A1F44,#1E5FB4); color:#fff; border-radius:var(--r); position:relative; overflow:hidden;}
+  .passport::after{ content:'⚕'; position:absolute; right:10px; top:0; font-size:6rem; opacity:.08;}
+  .passport h3{ margin:0 0 2px; color:var(--gold2);}
+  .passport .pid{ font-size:.68rem; opacity:.7; letter-spacing:.1em;}
+  .passport .pg{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;}
+  .passport .pg b{ display:block; font-size:1.2rem;}
+  .passport .pg span{ font-size:.6rem; opacity:.78; text-transform:uppercase;}
+  .menu-item{ display:flex; align-items:center; gap:13px; padding:15px 16px; cursor:pointer; border-bottom:1px solid var(--line);}
+  .menu-item:last-child{border:none}
+  .menu-item .e{ font-size:1.2rem; width:24px; text-align:center;}
+  .menu-item .ml{ flex:1; font-weight:600; font-size:.88rem;}
+  .menu-item .ar{ color:var(--muted);}
+  .tier-bar{ height:8px; background:var(--line); border-radius:999px; overflow:hidden; margin:9px 0;}
+  .tier-bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--green));}
+  /* nav */
+  .nav{ position:sticky; bottom:0; display:flex; background:var(--card); border-top:1px solid var(--line); padding:8px 4px calc(8px + env(safe-area-inset-bottom)); z-index:35; box-shadow:0 -6px 24px rgba(10,31,68,.08);}
+  .nav button{ flex:1; background:none; border:none; cursor:pointer; font-family:inherit; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:.6rem; font-weight:700; padding:4px; position:relative;}
+  .nav button .e{ font-size:1.25rem;}
+  .nav button.active{ color:var(--blue);}
+  body.dark .nav button.active{ color:var(--blue2);}
+  .cartbadge{ position:absolute; top:-2px; right:22%; background:var(--gold); color:var(--navy); font-size:.56rem; font-weight:800; border-radius:999px; min-width:16px; height:16px; padding:0 4px; display:flex; align-items:center; justify-content:center;}
+  /* fab */
+  .fab{ position:fixed; right:max(16px,calc(50vw - 232px)); bottom:84px; width:58px; height:58px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy); border:none; font-size:1.5rem; cursor:pointer; box-shadow:var(--shadow-lg); z-index:36; display:flex; align-items:center; justify-content:center;}
+  body.kiosk .fab{ right:calc(50vw - 540px);}
+  /* toast / sheet */
+  .toast{ position:fixed; left:50%; bottom:100px; transform:translateX(-50%) translateY(20px); opacity:0; background:var(--navy); color:#fff; padding:12px 18px; border-radius:12px; font-size:.82rem; font-weight:600; z-index:90; transition:.25s; pointer-events:none; box-shadow:var(--shadow-lg); max-width:88%;}
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0);}
+  .sheet-bg{ position:fixed; inset:0; background:rgba(8,15,30,.55); z-index:70; display:none; align-items:flex-end; justify-content:center; backdrop-filter:blur(2px);}
+  .sheet-bg.show{ display:flex;}
+  .sheet{ background:var(--bg); width:100%; max-width:var(--shell); border-radius:24px 24px 0 0; padding:20px 18px calc(24px + env(safe-area-inset-bottom)); max-height:90vh; overflow-y:auto; animation:up .25s;}
+  body.kiosk .sheet{ max-width:560px; border-radius:24px; margin:auto;}
+  body.kiosk .sheet-bg.show{ align-items:center;}
+  @keyframes up{ from{ transform:translateY(40px); opacity:.5;} to{ transform:none; opacity:1;}}
+  .sheet h3{ margin:0 0 4px;}
+  .grab{ width:40px; height:4px; border-radius:99px; background:var(--line); margin:0 auto 14px;}
+  .cart-line{ display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line);}
+  .qty{ display:flex; align-items:center; gap:10px;}
+  .qty button{ width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--card); font-size:1rem; cursor:pointer; color:var(--ink);}
+  .field{ margin:10px 0;} .field label{ font-size:.72rem; font-weight:700; color:var(--muted); display:block; margin-bottom:5px;}
+  .field input,.field select{ width:100%; padding:13px; border-radius:12px; border:1px solid var(--line); font-size:.95rem; font-family:inherit; background:var(--card); color:var(--ink);}
+  .rz{ display:flex; align-items:center; justify-content:center; gap:8px; font-size:.7rem; color:var(--muted); margin-top:10px;}
+  .lang-opt{ display:flex; gap:11px; padding:14px 12px; border-radius:12px; cursor:pointer; align-items:center; margin-bottom:6px; border:1px solid var(--line);}
+  .lang-opt.sel{ border-color:var(--gold); background:rgba(201,169,78,.1);}
+  .lang-opt .fl{ font-size:1.4rem;}
+  .badge-soft{ display:inline-block; background:rgba(30,95,180,.12); color:var(--blue); font-size:.62rem; font-weight:800; padding:4px 8px; border-radius:6px;}
+  body.dark .badge-soft{ color:var(--blue2);}
+  .vidframe{ position:relative; width:100%; padding-bottom:56%; border-radius:14px; overflow:hidden; background:#000;}
+  .vidframe iframe{ position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .install-hint{ font-size:.7rem; color:var(--muted); text-align:center; padding:14px 10px;}
+  .kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .kpi-grid .card{ padding:12px 10px; } .kpi-grid b{ display:block; font-size:1.15rem; margin-top:2px;}
+  #adminSeg{ margin-top:10px; }
+  .typing{ opacity:.6; font-style:italic; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="kioskBanner">⬢ ATH KIOSK MODE — STAFF ASSISTED · ANYTIME HEALTH</div>
+  <div class="topbar">
+    <div class="logo">
+      <div class="mark"><svg viewBox="0 0 100 100"><text x="50" y="74" font-size="72" font-family="Georgia,serif" font-weight="bold" fill="#C9A94E" text-anchor="middle">A</text></svg></div>
+      <div class="wm"><b>AGRAVAT</b><small id="tagline">Since 1950</small></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="ico" onclick="openSheet('lang')">🌐<span id="langLabel" style="font-size:.6rem;margin-left:2px">EN</span></button>
+    <button class="ico" id="kioskBtn" onclick="toggleKiosk()" title="Kiosk mode">⬢</button>
+    <button class="ico" id="darkBtn" onclick="toggleDark()" title="Dark mode">🌙</button>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="hero">
+      <div class="htop">
+        <div class="ring">
+          <svg width="80" height="80"><circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,.18)" stroke-width="7" fill="none"/><circle id="wsRing" cx="40" cy="40" r="34" stroke="#C9A94E" stroke-width="7" fill="none" stroke-linecap="round"/></svg>
+          <div class="rv"><b id="wsNum">76</b><span data-i="score">Wellness</span></div>
+        </div>
+        <div class="who"><h3 id="greetLine">Good morning, Kartavya</h3><p data-i="greetSub">Your recovery is trending up — keep the streak alive.</p></div>
+      </div>
+      <div class="hstats">
+        <div><b id="hsMm">34mm</b><span data-i="hsOpen">Opening</span></div>
+        <div><b id="hsStreak">12</b><span data-i="hsStreak">Day streak</span></div>
+        <div><b>1,240</b><span data-i="hsPoints">Points</span></div>
+      </div>
+    </div>
+
+    <div class="qrow">
+      <div class="chip" onclick="go('osmf')"><span class="e">🦷</span><span data-i="qOsmf">Continue OSMF</span></div>
+      <div class="chip" onclick="openSheet('reminders')"><span class="e">⏰</span><span data-i="qRem">Reminders</span></div>
+      <div class="chip" onclick="go('updates')"><span class="e">📺</span><span data-i="qVideo">New videos</span></div>
+      <div class="chip" onclick="go('ask')"><span class="e">✨</span><span data-i="qAsk">Ask AGRAVAT</span></div>
+    </div>
+
+    <h2 class="sec" data-i="explore">Explore AGRAVAT</h2>
+    <div class="tiles">
+      <div class="tile t1" onclick="go('osmf')"><div class="emo">🦷</div><div><b data-i="catOsmf">OSMF Care</b><small data-i="catOsmfS">Guided recovery & tracking</small></div></div>
+      <div class="tile t4" onclick="go('supp')"><div class="emo">💊</div><div><b data-i="catSupp">Supplement Advisor</b><small data-i="catSuppS">Guidance, timing & stacks</small></div></div>
+      <div class="tile t3" onclick="setDietTab('diet')"><div class="emo">🥗</div><div><b data-i="catDiet">Diet & Plans</b><small data-i="catDietS">Daily meal programs</small></div></div>
+      <div class="tile t5" onclick="setDietTab('diabetes')"><div class="emo">🩸</div><div><b data-i="catDia">Diabetes Care</b><small data-i="catDiaS">Vitals & management</small></div></div>
+      <div class="tile t2" onclick="openSheet('consult')"><div class="emo">📹</div><div><b data-i="catCon">Consultations</b><small data-i="catConS">Talk to a clinician</small></div></div>
+      <div class="tile t6" onclick="go('updates')"><div class="emo">📺</div><div><b data-i="catUp">Updates & Videos</b><small data-i="catUpS">Latest from AGRAVAT</small></div></div>
+    </div>
+
+    <h2 class="sec"><span data-i="bestsellers">Best sellers</span><span class="more" onclick="go('shop')" data-i="seeAll">See all →</span></h2>
+    <div id="homeReco"></div>
+
+    <h2 class="sec" data-i="trustedBy">Certified & trusted</h2>
+    <div class="trust">
+      <div class="badge">🏅 <span data-i="cWho">WHO-GMP</span></div>
+      <div class="badge">✅ <span data-i="cCe">CE Mark</span></div>
+      <div class="badge">🧪 <span data-i="cFdca">FDCA Approved</span></div>
+      <div class="badge">📜 FSSAI 10721009000042</div>
+      <div class="badge">🏆 <span data-i="cAward">Award Winner</span></div>
+    </div>
+
+    <div class="feature" onclick="openVideo('4UdTdIFpX7c')">
+      <div class="fimg" style="background-image:url('https://i.ytimg.com/vi/4UdTdIFpX7c/hqdefault.jpg')">
+        <div class="grad"></div>
+        <div class="vthumb play" style="position:absolute;inset:0"><span>▶</span></div>
+        <div class="ftxt"><span class="ftag" data-i="watchNow">▶ Watch</span><h3 data-i="featTitle">Dr Bharat Agravat · OLI Therapy & the OSMF Mouth Opening Kit</h3><p>OSMF Kart · YouTube</p></div>
+      </div>
+    </div>
+
+    <div class="hero" style="margin-top:16px; background:linear-gradient(135deg,#123A7A,#0A1F44);">
+      <h3 style="margin:0 0 6px; color:var(--gold2)" data-i="herTitle">Dr Agravat's Signature Formula</h3>
+      <p style="margin:0; font-size:.82rem; opacity:.9" data-i="herBody">Four generations of clinical care from Ahmedabad. Innovated by Dr Bharat Agravat — 25 years' experience, 18 awards. Doctor-inspired daily wellness, trusted since 1950.</p>
+    </div>
+    <p class="install-hint" data-i="installHint">💡 Tap your browser menu → "Add to Home Screen" to install AGRAVAT as an app.</p>
+  </div>
+
+  <!-- SHOP -->
+  <div class="screen hidden" id="screen-shop">
+    <h2 class="sec" data-i="shopTitle">Shop AGRAVAT</h2>
+    <p class="sub" data-i="shopSub">Doctor-formulated products for OSMF care, oral health & daily wellness. Free shipping across India.</p>
+    <div class="qrow" id="shopFilters"></div>
+    <div id="productList" style="margin-top:6px"></div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <div class="screen hidden" id="screen-product"><div id="pdBody"></div></div>
+
+  <!-- OSMF -->
+  <div class="screen hidden" id="screen-osmf">
+    <div class="hero" style="margin-bottom:2px">
+      <div class="htop">
+        <div class="ring"><svg width="80" height="80"><circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,.18)" stroke-width="7" fill="none"/><circle id="osmfRing" cx="40" cy="40" r="34" stroke="#C9A94E" stroke-width="7" fill="none" stroke-linecap="round"/></svg><div class="rv"><b id="osmfPct">0%</b><span>today</span></div></div>
+        <div class="who"><h3 data-i="osmfTitle">OSMF Recovery</h3><p><span class="streak-badge" style="font-size:.74rem">🔥 <span id="streakDays">12</span> <span data-i="dayStreak">day streak</span></span></p></div>
+      </div>
+      <div id="weekDots" style="display:flex;gap:6px;justify-content:space-between;margin-top:16px;position:relative;z-index:2"></div>
+    </div>
+
+    <h2 class="sec">🧰 <span data-i="yourKit">Your OSMF Kit · daily schedule</span></h2>
+    <div class="card" style="padding:4px 14px" id="kitSchedule"></div>
+
+    <h2 class="sec">🎯 <span data-i="guidedRoutine">Guided exercise routine</span></h2>
+    <div class="card timer-wrap">
+      <div class="timer-ring">
+        <svg width="200" height="200" style="transform:rotate(-90deg)"><circle cx="100" cy="100" r="86" stroke="var(--line)" stroke-width="12" fill="none"/><circle id="timerRing" cx="100" cy="100" r="86" stroke="#C9A94E" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="540" stroke-dashoffset="0"/></svg>
+        <div class="rv" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div class="tt" id="timerText">00:30</div><div class="tl" id="exName">Stretch & hold</div>
+          <div style="font-size:.62rem;color:var(--muted);margin-top:3px" id="exSet">Set 1 / 3</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn btn-gold" id="timerBtn" onclick="toggleTimer()" data-i="start">Start</button>
+        <button class="btn btn-ghost" onclick="resetTimer()" data-i="reset">Reset</button>
+        <button class="btn btn-blue" onclick="openVideo('4UdTdIFpX7c')">▶</button>
+      </div>
+    </div>
+    <div id="exList" style="margin-top:12px"></div>
+
+    <div class="card" style="padding:16px;margin-top:14px;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openSheet('measure')">
+      <div style="font-size:2rem">📸</div><div style="flex:1"><b>AI camera measurement</b><p class="sub" style="margin:2px 0 0">Measure mouth opening from a photo using a coin or the kit box as a size reference — at-home tracking, not a diagnosis.</p></div><span style="color:var(--muted)">›</span>
+    </div>
+
+    <h2 class="sec">📈 <span data-i="logTitle">Progress · mouth opening</span></h2>
+    <div class="card" style="padding:16px">
+      <div class="log-input"><input type="number" id="mmInput" placeholder="e.g. 34" inputmode="decimal"><button class="btn btn-green" onclick="logMm()" data-i="logBtn">Log</button></div>
+      <div class="stat-row">
+        <div class="stat card"><b id="curMm">34</b><span>mm now</span></div>
+        <div class="stat card"><b id="startMm">22</b><span>mm start</span></div>
+        <div class="stat card"><b id="gainMm">+12</b><span>mm gain</span></div>
+        <div class="stat card"><b style="color:var(--gold)">40</b><span>mm goal</span></div>
+      </div>
+      <canvas id="osmfChart"></canvas>
+      <p class="sub" style="margin-top:6px" data-i="logHint">Measured in millimetres. At an ATH kiosk, staff record the official reading into the same record.</p>
+    </div>
+
+    <h2 class="sec">🩹 Symptom check-in</h2>
+    <div class="qrow" id="symptomRow"></div>
+
+    <h2 class="sec">🏅 Milestones</h2>
+    <div class="qrow" id="achvRow"></div>
+
+    <div class="compliance" data-i="osmfCompliance">AGRAVAT's tools help improve and maintain mouth opening. They are not a diagnosis or cure. Any clinical assessment is performed only by AGRAVAT's qualified clinicians.</div>
+
+    <h2 class="sec">🚭 <span data-i="cessTitle">Tobacco-free streak</span></h2>
+    <div class="card" style="padding:16px; display:flex; align-items:center; gap:14px;">
+      <div style="font-size:2.4rem">🚭</div>
+      <div style="flex:1"><b style="font-size:1.3rem; color:var(--green)" id="cessDays">28 days clean</b><p class="sub" style="margin:2px 0 0" data-i="cessSub">₹1,680 saved · supportive coaching only</p></div>
+      <button class="btn btn-ghost" onclick="toast(t('cravingLogged'))" data-i="craving">Craving</button>
+    </div>
+  </div>
+
+  <!-- SUPPLEMENTS -->
+  <div class="screen hidden" id="screen-supp">
+    <div class="hero" style="background:linear-gradient(140deg,#123A7A,#2D6A4F 130%)">
+      <h3 style="margin:0 0 4px;color:var(--gold2)">💊 Supplement Advisor</h3>
+      <p style="margin:0;font-size:.82rem;opacity:.9">Doctor-formulated guidance, correct timing and adherence — in compliant, functional language. Anything clinical routes to a clinician.</p>
+    </div>
+
+    <h2 class="sec">🎯 What's your goal?</h2>
+    <div class="qrow" id="goalRow"></div>
+    <div id="stackReco"></div>
+
+    <h2 class="sec">📅 Today's supplement schedule</h2>
+    <div class="card" style="padding:14px" id="suppSchedule"></div>
+    <div class="card" style="padding:14px;margin-top:10px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1"><b style="font-size:1.1rem;color:var(--green)">Adherence</b><p class="sub" style="margin:2px 0 0">Last 7 days · keep the streak for best results</p></div>
+      <canvas id="adhChart" style="width:120px;height:52px"></canvas>
+    </div>
+
+    <h2 class="sec">🧩 Goal-based stacks</h2>
+    <div id="stackList"></div>
+
+    <div class="card" style="padding:14px;margin-top:8px">
+      <b>⏱️ Smart timing</b>
+      <p class="sub" style="margin:6px 0 0">Ashwagandha & Magnesium work best in the evening for calm and sleep. Probiotic and Omega-3 are best with a morning meal. OSMF Vita after food.</p>
+    </div>
+    <div class="compliance">Supplement guidance is functional and educational only — not a diagnosis or prescription. Check with an AGRAVAT clinician if pregnant, on medication, or managing a condition.</div>
+  </div>
+
+  <!-- DIET & DIABETES -->
+  <div class="screen hidden" id="screen-diet">
+    <div class="seg">
+      <button id="segDiet" class="on" onclick="setDietTab('diet')" data-i="tabDiet">🥗 Diet Plan</button>
+      <button id="segDia" onclick="setDietTab('diabetes')" data-i="tabDiabetes">🩸 Diabetes Care</button>
+    </div>
+    <div id="dietBody"></div>
+  </div>
+
+  <!-- UPDATES & VIDEO -->
+  <div class="screen hidden" id="screen-updates">
+    <h2 class="sec" style="margin-top:16px">📺 <span data-i="upTitle">Updates & Videos</span></h2>
+    <div class="feature" onclick="openVideo('eFAa82ARmd4')">
+      <div class="fimg" style="background-image:url('https://i.ytimg.com/vi/eFAa82ARmd4/hqdefault.jpg')">
+        <div class="grad"></div><div class="vthumb play" style="position:absolute;inset:0"><span>▶</span></div>
+        <div class="ftxt"><span class="ftag">▶ <span data-i="featured">Featured</span></span><h3 data-i="featTitle2">OSMF Pops — World's first herbal lollipop for oral care</h3><p>Dr Agravat Wellness · 25K subscribers</p></div>
+      </div>
+    </div>
+
+    <h2 class="sec"><span data-i="latestVideos">Latest videos</span><span class="more" onclick="openLink('https://www.youtube.com/@osmfkart')" data-i="visitChannel">Channel →</span></h2>
+    <div class="vrow" id="videoRow"></div>
+
+    <h2 class="sec" data-i="newsTitle">News & press</h2>
+    <div id="newsList"></div>
+
+    <div class="card" style="padding:16px; margin-top:8px; text-align:center;">
+      <b data-i="ugcTitle">Share your recovery story</b>
+      <p class="sub" style="margin:6px 0 12px" data-i="ugcSub">Featured patients appear on the Dr Agravat Wellness YouTube channel (with consent).</p>
+      <button class="btn btn-blue btn-block" onclick="toast(t('soonMsg'))">📹 <span data-i="ugcBtn">Submit my story</span></button>
+    </div>
+  </div>
+
+  <!-- ASK -->
+  <div class="screen hidden" id="screen-ask">
+    <div class="chat">
+      <h2 class="sec" style="margin-top:16px">✨ <span data-i="askTitle">Ask AGRAVAT</span> <span class="badge-soft" data-i="askBadge">24/7 AI</span></h2>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="chat-suggest" id="chatSuggest"></div>
+      <div class="chat-input"><input id="chatInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-blue" onclick="sendChat()">➤</button></div>
+      <p class="ai-guard" data-i="aiGuard">AGRAVAT AI gives functional guidance only — it never diagnoses or prescribes. Clinical questions route to a qualified clinician.</p>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen hidden" id="screen-profile">
+    <div class="passport">
+      <h3 data-i="passportTitle">Health Passport</h3><div class="pid">ID · AHCL-0001-KA</div>
+      <div class="pg">
+        <div><b id="ppMm">34mm</b><span data-i="ppOpening">Mouth opening</span></div>
+        <div><b>76</b><span data-i="ppScore">Wellness score</span></div>
+        <div><b>3</b><span data-i="ppPlans">Active plans</span></div>
+        <div><b>1,240</b><span data-i="ppPoints">Reward points</span></div>
+      </div>
+    </div>
+    <h2 class="sec" data-i="ambTitle">Ambassador status</h2>
+    <div class="card" style="padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;"><b>🥈 <span data-i="tierAdvocate">Advocate</span></b><span class="sub" data-i="tierNext">2 referrals → Ambassador</span></div>
+      <div class="tier-bar"><i style="width:62%"></i></div>
+      <button class="btn btn-block btn-gold" style="margin-top:8px" onclick="openSheet('refer')">🎁 <span data-i="refer">Refer & earn rewards</span></button>
+    </div>
+    <h2 class="sec" data-i="myCare">My care</h2>
+    <div class="card" style="padding:4px 0">
+      <div class="menu-item" onclick="openSheet('consult')"><span class="e">📹</span><span class="ml" data-i="mConsult">Video consultation</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="toast(t('soonMsg'))"><span class="e">📄</span><span class="ml" data-i="mRecords">Health records (PDF export)</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="toast(t('soonMsg'))"><span class="e">👨‍👩‍👧</span><span class="ml" data-i="mFamily">Family profiles</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="openSheet('care')"><span class="e">⭐</span><span class="ml" data-i="mCarePlus">AGRAVAT Care+ membership</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="openSheet('consent')"><span class="e">🔒</span><span class="ml" data-i="mPrivacy">Privacy & data consent</span><span class="ar">›</span></div>
+      <div class="menu-item" onclick="openAdminGate()"><span class="e">🛠️</span><span class="ml" data-i="mAdmin">Manager Control (owner/staff)</span><span class="ar">›</span></div>
+    </div>
+    <h2 class="sec" data-i="aboutTitle">Why trust AGRAVAT</h2>
+    <div class="card" style="padding:16px; font-size:.82rem">
+      <p style="margin:0 0 8px"><b data-i="trustHeritage">Four generations, since 1950.</b> <span data-i="trustHeritageS">Dr Agravat Healthcare Ltd, Ahmedabad. Innovated by Dr Bharat Agravat (25 yrs, 18 awards); CEO Dr Kartavya Agravat.</span></p>
+      <p class="sub" style="margin:0">FSSAI 10721009000042 · WHO-GMP · CE · FDCA · <span data-i="careNo">Care</span> 7575 00 8686</p>
+    </div>
+    <p class="install-hint">v2.0 · Premium build · Real AGRAVAT catalogue</p>
+  </div>
+
+  <!-- ADMIN / MANAGER CONTROL -->
+  <div class="screen hidden" id="screen-admin">
+    <div style="display:flex;align-items:center;gap:8px;padding-top:12px">
+      <button class="back" style="padding:0" onclick="go('profile')">← Exit</button>
+      <b style="margin-left:auto;font-size:1rem">🛠️ Manager Control</b>
+    </div>
+    <div class="tabs" id="adminSeg"></div>
+    <div id="adminBody"></div>
+  </div>
+
+  <div class="nav">
+    <button class="active" data-nav="home" onclick="go('home')"><span class="e">🏠</span><span data-i="navHome">Home</span></button>
+    <button data-nav="osmf" onclick="go('osmf')"><span class="e">🦷</span><span data-i="navOsmf">OSMF</span></button>
+    <button data-nav="supp" onclick="go('supp')"><span class="e">💊</span><span data-i="navSupp">Supplements</span></button>
+    <button data-nav="shop" onclick="go('shop')"><span class="e">🛍️</span><span data-i="navShop">Shop</span><span class="cartbadge hidden" id="cartBadge">0</span></button>
+    <button data-nav="profile" onclick="go('profile')"><span class="e">👤</span><span data-i="navProfile">Profile</span></button>
+  </div>
+</div>
+
+<button class="fab" onclick="go('ask')" title="Ask AGRAVAT">✨</button>
+<div class="toast" id="toast"></div>
+<div class="sheet-bg" id="sheetBg" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheetBody"></div></div>
+
+<script>
+const IMG='https://i0.wp.com/osmfkart.com/wp-content/uploads/';
+const PRODUCTS=[
+ {id:'kit',cat:'kit',emo:'🦷',flag:true,stock:true,sold:52,rating:4.8,price:6500,mrp:7999,video:'4UdTdIFpX7c',
+  img:IMG+'2020/06/OSMF-Mouth-Opening-Kit-Pops-Oral-Gel-Execerise-Device-Vitamin-India.jpg?fit=600%2C600&ssl=1',
+  name:{en:'OSMF Mouth Opening Kit',hi:'OSMF माउथ ओपनिंग किट',gu:'OSMF માઉથ ઓપનિંગ કિટ'},
+  tag:{en:'Flagship · Pack of 4 · 2-month program',hi:'फ्लैगशिप · 4 का पैक · 2-माह',gu:'ફ્લેગશિપ · 4 નો પેક · 2-માસ'},
+  what:{en:'World’s first complete do-it-yourself OSMF kit — a pack of 4 award-winning products: OSMF Pops herbal lollipop, UNIQUE Mouth Opener device, OSMF Oral Gel and OSMF Vita. A full 2-month home program.',hi:'दुनिया की पहली संपूर्ण DIY OSMF किट — 4 उत्पादों का पैक: OSMF पॉप्स, यूनीक माउथ ओपनर, ओरल जेल और OSMF वीटा। पूरा 2-माह का घरेलू कार्यक्रम।',gu:'વિશ્વની પ્રથમ સંપૂર્ણ DIY OSMF કિટ — 4 ઉત્પાદનોનો પેક: OSMF પૉપ્સ, યુનિક માઉથ ઓપનર, ઓરલ જેલ અને OSMF વિટા. સંપૂર્ણ 2-માસનો કાર્યક્રમ.'},
+  why:{en:'Helps improve and maintain mouth opening and supports relief from 5 symptoms of OSMF: oral ulceration, burning sensation, swollen gums, restricted mouth opening and dryness. Clinically tested, award-winning, doctor-recommended.',hi:'मुँह खोलने में सुधार और OSMF के 5 लक्षणों में राहत में मदद करता है। क्लिनिकली टेस्टेड, अवार्ड-विजेता।',gu:'મોં ખોલવામાં સુધારો અને OSMF ના 5 લક્ષણોમાં રાહતમાં મદદ કરે છે. ક્લિનિકલી ટેસ્ટેડ, એવોર્ડ-વિજેતા.'},
+  how:{en:'Follow the in-app guided timer. Use morning and night. Let OSMF Pops dissolve slowly, apply Oral Gel to affected areas, take OSMF Vita as directed, and use the UNIQUE Mouth Opener with gentle progressive stretches.',hi:'ऐप टाइमर का पालन करें। सुबह और रात उपयोग करें। पॉप्स धीरे घोलें, जेल लगाएं, वीटा लें, और ओपनर से धीरे खिंचाव करें।',gu:'એપ ટાઈમર અનુસરો. સવાર-રાત વાપરો. પૉપ્સ ધીમે ઓગાળો, જેલ લગાવો, વિટા લો, અને ઓપનરથી ધીમે ખેંચાણ કરો.'},
+  trouble:{en:'Mild discomfort is normal early on. If you feel sharp pain or bleeding, stop and contact an AGRAVAT clinician via consultation.',hi:'शुरू में हल्की असुविधा सामान्य है। तेज़ दर्द या रक्तस्राव पर रुकें और क्लिनिशियन से संपर्क करें।',gu:'શરૂઆતમાં હળવી અગવડ સામાન્ય છે. તીવ્ર દુખાવો કે રક્તસ્રાવ થાય તો બંધ કરો અને ક્લિનિશિયનનો સંપર્ક કરો.'}},
+ {id:'opener',cat:'tools',emo:'🔧',stock:true,sold:29,rating:4.7,price:2699,mrp:3999,
+  img:IMG+'2020/06/UNIQUE-mouth-opening-exercise-device-for-oral-submucous-fibrosis-Gujarat-India-.jpeg?fit=600%2C600&ssl=1',
+  name:{en:'UNIQUE Mouth Opener',hi:'यूनीक माउथ ओपनर',gu:'યુનિક માઉથ ઓપનર'},
+  tag:{en:'Patent-pending exercise device',hi:'पेटेंट-पेंडिंग डिवाइस',gu:'પેટન્ટ-પેન્ડિંગ ડિવાઇસ'},
+  what:{en:'A patent-pending, stainless-steel mouth-opening exercise device with a screw-thread mechanism. Clinically tested and used by dentists and cancer surgeons for guided mouth opening.',hi:'पेटेंट-पेंडिंग स्टेनलेस-स्टील माउथ ओपनिंग डिवाइस, स्क्रू-थ्रेड मैकेनिज्म के साथ।',gu:'પેટન્ટ-પેન્ડિંગ સ્ટેનલેસ-સ્ટીલ માઉથ ઓપનિંગ ડિવાઇસ, સ્ક્રૂ-થ્રેડ મિકેનિઝમ સાથે.'},
+  why:{en:'Helps progressively open a restricted mouth through guided physio-therapeutic stretches. Foldable, firm, non-slip and easy to carry.',hi:'निर्देशित खिंचाव के माध्यम से सीमित मुँह को धीरे-धीरे खोलने में मदद करता है।',gu:'માર્ગદર્શિત ખેંચાણ દ્વારા સીમિત મોં ધીમે ખોલવામાં મદદ કરે છે.'},
+  how:{en:'Insert at a comfortable width, turn the screw gently to increase opening, hold the stretch, and progress gradually. Use with the guided timer.',hi:'आरामदायक चौड़ाई पर डालें, स्क्रू धीरे घुमाएं, खिंचाव रोकें, धीरे बढ़ें।',gu:'આરામદાયક પહોળાઈએ મૂકો, સ્ક્રૂ ધીમે ફેરવો, ખેંચાણ પકડો, ધીમે વધો.'},
+  trouble:{en:'Never force the device. Stop on sharp pain and consult an AGRAVAT clinician.',hi:'डिवाइस को ज़बरदस्ती न करें। तेज़ दर्द पर रुकें।',gu:'ડિવાઇસને બળજબરી ન કરો. તીવ્ર દુખાવે બંધ કરો.'}},
+ {id:'pops',cat:'oral',emo:'🍬',stock:true,sold:52,rating:4.6,price:810,mrp:900,video:'eFAa82ARmd4',
+  img:IMG+'2020/06/OSMF-Pops-Herbal-Organic-Lollipop-Gujarat-India-oral-submucous-fibrosis-Mouth-Opening-Kit.jpeg?fit=600%2C600&ssl=1',
+  name:{en:'OSMF Pops',hi:'OSMF पॉप्स',gu:'OSMF પૉપ્સ'},
+  tag:{en:"World's first herbal lollipop · 30 pack",hi:'विश्व की पहली हर्बल लॉलीपॉप · 30',gu:'વિશ્વની પ્રથમ હર્બલ લોલીપૉપ · 30'},
+  what:{en:'The world’s first clinically-tested herbal lollipop — a Turmeric + Tulsi + Yashtimadhu candy (pack of 30) that dissolves in the mouth for rapid oral absorption.',hi:'विश्व की पहली क्लिनिकली टेस्टेड हर्बल लॉलीपॉप — हल्दी + तुलसी + यष्टिमधु कैंडी (30 का पैक)।',gu:'વિશ્વની પ્રથમ ક્લિનિકલી ટેસ્ટેડ હર્બલ લોલીપૉપ — હળદર + તુલસી + યષ્ટિમધુ કેન્ડી (30 નો પેક).'},
+  why:{en:'Anti-inflammatory, anti-bacterial and antioxidant support that may help with oral comfort and immunity as part of the OSMF routine.',hi:'सूजन-रोधी, जीवाणु-रोधी और एंटीऑक्सीडेंट समर्थन।',gu:'સોજા-વિરોધી, બેક્ટેરિયા-વિરોધી અને એન્ટીઑક્સિડન્ટ ટેકો.'},
+  how:{en:'Do not chew. Let the pop slowly dissolve in the mouth so the herbal extract is absorbed locally. Up to 3 a day.',hi:'चबाएं नहीं। मुँह में धीरे घुलने दें। दिन में 3 तक।',gu:'ચાવો નહીં. મોંમાં ધીમે ઓગળવા દો. દિવસમાં 3 સુધી.'},
+  trouble:{en:'Discontinue if irritation occurs and ask AGRAVAT.',hi:'जलन होने पर बंद करें।',gu:'બળતરા થાય તો બંધ કરો.'}},
+ {id:'gel',cat:'oral',emo:'🧴',stock:true,sold:52,rating:4.7,price:450,mrp:450,
+  img:IMG+'2020/04/OSMF-Oral-Gel-Mouth-Ulcers-Burning-Sensation-Gujarat-India-Dr-Agravat-Healthcare-Ltd.jpg?fit=600%2C600&ssl=1',
+  name:{en:'OSMF Oral Gel',hi:'OSMF ओरल जेल',gu:'OSMF ઓરલ જેલ'},
+  tag:{en:'Mouth ulcer & burning relief',hi:'मुँह छाले व जलन राहत',gu:'મોં ચાંદા અને બળતરા રાહત'},
+  what:{en:'An Ayurvedic oral gel made from Turmeric, Tulsi and Yashtimadhu extracts — antibacterial, antiviral and anti-inflammatory.',hi:'हल्दी, तुलसी और यष्टिमधु से बना आयुर्वेदिक ओरल जेल।',gu:'હળદર, તુલસી અને યષ્ટિમધુથી બનેલ આયુર્વેદિક ઓરલ જેલ.'},
+  why:{en:'Helps manage mouth ulcers, burning sensation while eating, swollen and bleeding gums, and supports gum health.',hi:'मुँह के छाले, खाते समय जलन, सूजे मसूड़ों में मदद करता है।',gu:'મોંના ચાંદા, ખાતી વખતે બળતરા, સૂજેલા પેઢામાં મદદ કરે છે.'},
+  how:{en:'Apply on the buccal mucosa and gums twice a day. For oral use. Store below 30°C, away from sunlight.',hi:'दिन में दो बार मसूड़ों पर लगाएं। 30°C से नीचे रखें।',gu:'દિવસમાં બે વાર પેઢા પર લગાવો. 30°C થી નીચે રાખો.'},
+  trouble:{en:'Avoid in pregnancy, breastfeeding or bleeding disorders. Keep out of reach of children.',hi:'गर्भावस्था, स्तनपान में टालें। बच्चों से दूर रखें।',gu:'ગર્ભાવસ્થા, સ્તનપાનમાં ટાળો. બાળકોથી દૂર રાખો.'}},
+ {id:'vita',cat:'supp',emo:'💊',stock:true,sold:60,rating:4.6,price:630,mrp:680,
+  img:IMG+'2020/06/OSMF-Vita-Multivitamins-Nutritional-Antioxidant-Supplements-best-india.jpg?fit=600%2C600&ssl=1',
+  name:{en:'OSMF Vita',hi:'OSMF वीटा',gu:'OSMF વિટા'},
+  tag:{en:'Lycopene multivitamin & antioxidant',hi:'लाइकोपीन मल्टीविटामिन',gu:'લાઇકોપીન મલ્ટિવિટામિન'},
+  what:{en:'A nutritional supplement tablet combining Lycopene with antioxidants, minerals and multivitamins A, E, C, B1, B2, B12.',hi:'लाइकोपीन के साथ एंटीऑक्सीडेंट, खनिज और मल्टीविटामिन A, E, C, B1, B2, B12 का सप्लीमेंट।',gu:'લાઇકોપીન સાથે એન્ટીઑક્સિડન્ટ, ખનિજ અને મલ્ટિવિટામિન A, E, C, B1, B2, B12 નું સપ્લિમેન્ટ.'},
+  why:{en:'May support nutrition during OSMF care and help reduce TMJ pain, joint pain, stiffness and swelling.',hi:'OSMF देखभाल में पोषण और TMJ दर्द, जकड़न में मदद कर सकता है।',gu:'OSMF સંભાળમાં પોષણ અને TMJ દુખાવા, જકડાટમાં મદદ કરી શકે છે.'},
+  how:{en:'Take as directed, preferably one tablet daily with water after a meal.',hi:'निर्देशानुसार, भोजन के बाद रोज़ एक गोली पानी के साथ।',gu:'નિર્દેશ મુજબ, ભોજન પછી દરરોજ એક ગોળી પાણી સાથે.'},
+  trouble:{en:'Consult an AGRAVAT clinician if pregnant or on medication.',hi:'गर्भवती या दवा पर हों तो सलाह लें।',gu:'ગર્ભવતી કે દવા પર હો તો સલાહ લો.'}},
+ {id:'smile',cat:'oral',emo:'🪥',stock:true,sold:82,rating:4.7,price:499,mrp:999,video:'MLzsUNgvHG0',
+  img:IMG+'2020/06/OSMF-Smile-Tooth-Gel-best-ayurvedic-herbal-aloe-vera-top-toothpaste-in-india-Front.jpg?fit=600%2C600&ssl=1',
+  name:{en:'Smile Toothgel',hi:'स्माइल टूथजेल',gu:'સ્માઇલ ટૂથજેલ'},
+  tag:{en:'Aloe vera · fluoride-free · 100g',hi:'एलोवेरा · फ्लोराइड-मुक्त · 100g',gu:'એલોવેરા · ફ્લોરાઇડ-મુક્ત · 100g'},
+  what:{en:'A five-action, fluoride-free, non-abrasive natural toothgel with aloe vera and 10 herbs. FDCA-approved and CE-certified.',hi:'एलोवेरा और 10 जड़ी-बूटियों से बना फ्लोराइड-मुक्त नेचुरल टूथजेल।',gu:'એલોવેરા અને 10 જડીબુટ્ટીઓથી બનેલ ફ્લોરાઇડ-મુક્ત નેચરલ ટૂથજેલ.'},
+  why:{en:'Helps reduce tooth sensitivity and gum bleeding, freshens breath, helps whiten teeth and supports healthy gums.',hi:'दांत संवेदनशीलता, मसूड़ों से खून कम करता है; सांस ताज़ा करता है।',gu:'દાંતની સંવેદનશીલતા, પેઢામાંથી લોહી ઘટાડે; શ્વાસ તાજો કરે.'},
+  how:{en:'Brush twice daily, morning and night.',hi:'दिन में दो बार ब्रश करें।',gu:'દિવસમાં બે વાર બ્રશ કરો.'},
+  trouble:{en:'For external oral use only.',hi:'केवल बाहरी ओरल उपयोग।',gu:'માત્ર બાહ્ય ઓરલ ઉપયોગ.'}},
+ {id:'qsg',cat:'quit',emo:'🚭',stock:false,sold:29,rating:4.7,price:1800,mrp:2700,
+  img:IMG+'2024/04/Quit-Smoking-Gutkha-QSG-Kit-Amazon.jpg?fit=600%2C600&ssl=1',
+  name:{en:'QSG Quit-Tobacco Kit',hi:'QSG तंबाकू-छोड़ें किट',gu:'QSG તમાકુ-છોડો કિટ'},
+  tag:{en:'Quit gutkha & smoking · 1-month',hi:'गुटखा-धूम्रपान छोड़ें · 1-माह',gu:'ગુટખા-ધૂમ્રપાન છોડો · 1-માસ'},
+  what:{en:'A 1-month, 3-product cessation kit: QSG Nico gums (60), QSG Sleep gummies (30) and Energy Burst lozenges (60) with KSM-66 Ashwagandha & Ginseng.',hi:'1-माह की 3-उत्पाद किट: QSG निको गम, स्लीप गमी और एनर्जी बर्स्ट लोज़ेंज।',gu:'1-માસની 3-ઉત્પાદન કિટ: QSG નિકો ગમ, સ્લીપ ગમી અને એનર્જી બર્સ્ટ લોઝેન્જ.'},
+  why:{en:'Supports the journey to quit gutkha and smoking with craving control, calm sleep and daytime energy. Supportive coaching, not a medical claim.',hi:'गुटखा-धूम्रपान छोड़ने में तलब नियंत्रण, नींद और ऊर्जा का समर्थन।',gu:'ગુટખા-ધૂમ્રપાન છોડવામાં તલબ નિયંત્રણ, ઊંઘ અને ઊર્જાનો ટેકો.'},
+  how:{en:'Use Nico gums on cravings, an Energy Burst lozenge by day, and a Sleep gummy at night. Comes with a free consultation.',hi:'तलब पर निको गम, दिन में एनर्जी बर्स्ट, रात में स्लीप गमी।',gu:'તલબ પર નિકો ગમ, દિવસે એનર્જી બર્સ્ટ, રાત્રે સ્લીપ ગમી.'},
+  trouble:{en:'Currently out of stock — tap notify. For tailored help, book a free cessation consultation.',hi:'अभी स्टॉक में नहीं — सूचित करें। मुफ्त परामर्श बुक करें।',gu:'હાલ સ્ટોકમાં નથી — સૂચિત કરો. મફત પરામર્શ બુક કરો.'}},
+ {id:'gummies',cat:'supp',emo:'🐻',stock:true,sold:40,rating:4.5,price:599,mrp:1299,
+  img:IMG+'2024/04/OSMF-Vita-Gummies-Lycopene-Antioxidant-Multivitamin-Supplement-front.jpg?fit=600%2C600&ssl=1',
+  name:{en:'Ultimate Health Gummies',hi:'अल्टिमेट हेल्थ गमीज़',gu:'અલ્ટિમેટ હેલ્થ ગમીઝ'},
+  tag:{en:'Lycopene + multivitamin · sugar-free',hi:'लाइकोपीन + मल्टीविटामिन',gu:'લાઇકોપીન + મલ્ટિવિટામિન'},
+  what:{en:'30 sugar-free gummies with Lycopene, antioxidants and multivitamins — a tasty daily wellness gummy.',hi:'30 शुगर-फ्री गमीज़ लाइकोपीन और मल्टीविटामिन के साथ।',gu:'30 સુગર-ફ્રી ગમીઝ લાઇકોપીન અને મલ્ટિવિટામિન સાથે.'},
+  why:{en:'May support heart, immunity, bones, skin and eyesight as part of a daily routine.',hi:'हृदय, प्रतिरक्षा, हड्डी, त्वचा का समर्थन कर सकता है।',gu:'હૃદય, રોગપ્રતિકારકતા, હાડકાંને ટેકો આપી શકે છે.'},
+  how:{en:'Chew one gummy daily.',hi:'रोज़ एक गमी चबाएं।',gu:'દરરોજ એક ગમી ચાવો.'},
+  trouble:{en:'Keep out of reach of children; do not exceed the daily dose.',hi:'बच्चों से दूर रखें; खुराक न बढ़ाएं।',gu:'બાળકોથી દૂર રાખો; માત્રા ન વધારો.'}},
+];
+
+const VIDEOS=[
+ {id:'4UdTdIFpX7c',title:{en:'Dr Bharat Agravat in Mumbai · OLI Therapy · OSMF Mouth Open Kit',hi:'डॉ भरत अग्रवात मुंबई में · OLI थेरेपी · OSMF किट',gu:'ડૉ ભરત અગ્રાવત મુંબઈમાં · OLI થેરપી · OSMF કિટ'},ch:'OSMF Kart'},
+ {id:'MLzsUNgvHG0',title:{en:'OSMF Smile Toothgel — herbal toothpaste by Dr Agravat Healthcare',hi:'OSMF स्माइल टूथजेल — हर्बल टूथपेस्ट',gu:'OSMF સ્માઇલ ટૂથજેલ — હર્બલ ટૂથપેસ્ટ'},ch:'Dr Agravat Healthcare'},
+ {id:'eFAa82ARmd4',title:{en:'OSMF Pops — world’s first herbal lollipop for oral care',hi:'OSMF पॉप्स — विश्व की पहली हर्बल लॉलीपॉप',gu:'OSMF પૉપ્સ — વિશ્વની પ્રથમ હર્બલ લોલીપૉપ'},ch:'Dr Agravat Wellness'},
+];
+
+const NEWS=[
+ {date:'04 Feb 2026',cat:{en:'Oral Cancer · OLI Therapy',hi:'मुख कैंसर · OLI थेरेपी',gu:'મુખ કેન્સર · OLI થેરપી'},title:{en:"World Cancer Day 2026: Dr Bharat Agravat's OLI Therapy & OSMF DIY Kits to prevent oral cancer",hi:'विश्व कैंसर दिवस 2026: डॉ भरत अग्रवात की OLI थेरेपी और OSMF किट',gu:'વિશ્વ કેન્સર દિવસ 2026: ડૉ ભરત અગ્રાવતની OLI થેરપી અને OSMF કિટ'},url:'https://osmfkart.com/world-cancer-day-2026-dr-bharat-agravats-oli-therapy-osmf-diy-kits-to-prevent-oral-cancer/',img:'https://i.ytimg.com/vi/eFAa82ARmd4/hqdefault.jpg'},
+ {date:'19 Oct 2025',cat:{en:'Patient Review',hi:'मरीज़ समीक्षा',gu:'દર્દી સમીક્ષા'},title:{en:'Real patient review: Mouth opening with OLI Therapy + fixed teeth by dental implants',hi:'असली मरीज़ समीक्षा: OLI थेरेपी से मुँह खुलना',gu:'સાચી દર્દી સમીક્ષા: OLI થેરપીથી મોં ખુલવું'},url:'https://osmfkart.com/real-patient-review-mouth-opening-oli-therapy-fixed-teeth-by-dental-implants-dr-bharat-agravat/',img:''},
+ {date:'16 Jan 2025',cat:{en:'Tobacco Cessation · QSG',hi:'तंबाकू मुक्ति · QSG',gu:'તમાકુ મુક્તિ · QSG'},title:{en:'Dr Kartavya Agravat’s innovative tobacco-cessation program — Quit Smoking Gutkha QSG Kit',hi:'डॉ कार्तव्य अग्रवात का तंबाकू-मुक्ति कार्यक्रम — QSG किट',gu:'ડૉ કાર્તવ્ય અગ્રાવતનો તમાકુ-મુક્તિ કાર્યક્રમ — QSG કિટ'},url:'https://osmfkart.com/dr-kartavya-agravat-revolutionary-innovative-tobacco-cessation-program-quit-smoking-gutkha-qsg-kit/',img:''},
+ {date:'17 Nov 2024',cat:{en:'OLI Therapy · Mumbai',hi:'OLI थेरेपी · मुंबई',gu:'OLI થેરપી · મુંબઈ'},title:{en:'OLI Therapy & OSMF Kit innovator Dr Bharat Agravat now available for consultation in Mumbai',hi:'डॉ भरत अग्रवात अब मुंबई में परामर्श हेतु उपलब्ध',gu:'ડૉ ભરત અગ્રાવત હવે મુંબઈમાં પરામર્શ માટે ઉપલબ્ધ'},url:'https://osmfkart.com/oli-therapy-and-osmf-mouth-opening-kit-innovator-dr-bharat-agravat-is-available-for-consultation-in-mumbai/',img:''},
+];
+
+const I18N={
+ en:{tagline:'Since 1950',score:'Wellness',greetSub:'Your recovery is trending up — keep the streak alive.',hsOpen:'Opening',hsStreak:'Day streak',hsPoints:'Points',
+  qOsmf:'Continue OSMF',qRem:'Reminders',qVideo:'New videos',qAsk:'Ask AGRAVAT',explore:'Explore AGRAVAT',
+  catOsmf:'OSMF Care',catOsmfS:'Guided recovery & tracking',catSupp:'Supplement Advisor',catSuppS:'Guidance, timing & stacks',catDiet:'Diet & Plans',catDietS:'Daily meal programs',catDia:'Diabetes Care',catDiaS:'Vitals & management',catCon:'Consultations',catConS:'Talk to a clinician',catUp:'Updates & Videos',catUpS:'Latest from AGRAVAT',
+  bestsellers:'Best sellers',seeAll:'See all →',trustedBy:'Certified & trusted',cWho:'WHO-GMP',cCe:'CE Mark',cFdca:'FDCA Approved',cAward:'Award Winner',
+  watchNow:'▶ Watch',featTitle:'Dr Bharat Agravat · OLI Therapy & the OSMF Mouth Opening Kit',herTitle:"Dr Agravat's Signature Formula",herBody:"Four generations of clinical care from Ahmedabad. Innovated by Dr Bharat Agravat — 25 years' experience, 18 awards. Doctor-inspired daily wellness, trusted since 1950.",
+  installHint:'💡 Tap your browser menu → "Add to Home Screen" to install AGRAVAT as an app.',
+  shopTitle:'Shop AGRAVAT',shopSub:'Doctor-formulated products for OSMF care, oral health & daily wellness. Free shipping across India.',
+  back:'Back',addCart:'Add',buyNow:'Buy now',notify:'Notify me',outStock:'Out of stock',what:'What it is',why:'Why it helps',how:'How to use',trouble:'Troubleshooting',sold:'sold',watchProd:'Watch product video',
+  osmfTitle:'OSMF Recovery Companion',dayStreak:'day streak',start:'Start exercise',pause:'Pause',reset:'Reset',ex1:'Stretch & hold',todayRoutine:"Today's guided routine",watchVideo:'Watch video demonstration',
+  logTitle:"Log today's mouth opening",logBtn:'Log mm',logHint:'Measured in millimetres. At an ATH kiosk, staff record the official reading into the same record.',current:'now',atStart:'start',improved:'gain',
+  osmfCompliance:"AGRAVAT's tools help improve and maintain mouth opening. They are not a diagnosis or cure. Any clinical assessment is performed only by AGRAVAT's qualified clinicians.",
+  cessTitle:'Tobacco-free streak',cessSub:'₹1,680 saved · supportive coaching only',craving:'Craving',
+  tabDiet:'🥗 Diet Plan',tabDiabetes:'🩸 Diabetes Care',
+  dietPlanName:'OSMF Recovery Diet',dietPhase:'Week 2 of 8 · Soft, anti-inflammatory',todayMeals:"Today's meals",grocery:'Auto grocery list',habits:'Daily habits',
+  diaPlanName:'Diabetes Daily Plan',diaPhase:'Balanced · low glycaemic',logVital:'Log vital',vitals:'Your vitals',
+  bMeal1:'Warm turmeric milk + soaked almonds',bMeal1s:'Breakfast · soft, anti-inflammatory',bMeal2:'Moong dal khichdi + ghee',bMeal2s:'Lunch · easy to chew, protein',bMeal3:'Bottle-gourd soup + paneer',bMeal3s:'Dinner · soft, light',bMeal4:'OSMF Pops + buttermilk',bMeal4s:'Snack · oral comfort',
+  dMeal1:'Veg oats upma + 5 almonds',dMeal1s:'Breakfast · low GI',dMeal2:'2 jowar rotis + sabzi + dal',dMeal2s:'Lunch · high fibre',dMeal3:'Grilled paneer + salad',dMeal3s:'Dinner · low carb',dMeal4:'Roasted chana + green tea',dMeal4s:'Snack · steady sugar',
+  upTitle:'Updates & Videos',featured:'Featured',featTitle2:"OSMF Pops — World's first herbal lollipop for oral care",latestVideos:'Latest videos',visitChannel:'Channel →',newsTitle:'News & press',ugcTitle:'Share your recovery story',ugcSub:'Featured patients appear on the Dr Agravat Wellness YouTube channel (with consent).',ugcBtn:'Submit my story',
+  askTitle:'Ask AGRAVAT',askBadge:'24/7 AI',aiGuard:'AGRAVAT AI gives functional guidance only — it never diagnoses or prescribes. Clinical questions route to a qualified clinician.',
+  passportTitle:'Health Passport',ppOpening:'Mouth opening',ppScore:'Wellness score',ppPlans:'Active plans',ppPoints:'Reward points',ambTitle:'Ambassador status',tierAdvocate:'Advocate',tierNext:'2 referrals → Ambassador',refer:'Refer & earn rewards',
+  myCare:'My care',mConsult:'Video consultation',mRecords:'Health records (PDF export)',mFamily:'Family profiles',mCarePlus:'AGRAVAT Care+ membership',mPrivacy:'Privacy & data consent',mAdmin:'Manager Control (owner/staff)',
+  aboutTitle:'Why trust AGRAVAT',trustHeritage:'Four generations, since 1950.',trustHeritageS:'Dr Agravat Healthcare Ltd, Ahmedabad. Innovated by Dr Bharat Agravat (25 yrs, 18 awards); CEO Dr Kartavya Agravat.',careNo:'Care',
+  navHome:'Home',navShop:'Shop',navOsmf:'OSMF',navSupp:'Supplements',navUpdates:'Updates',navProfile:'Profile',
+  soonMsg:'This opens fully in the next build phase.',cravingLogged:"Craving logged. You've got this. 💪",addedToast:'Added to cart',
+  cartTitle:'Your cart',cartEmpty:'Your cart is empty.',cartTotal:'Total',checkout:'Checkout with Razorpay',coName:'Full name',coPhone:'Phone',coAddr:'Delivery address',coPay:'Pay securely',paySuccess:'Payment successful! Order confirmed. 🎉',rzSecure:'Secured by Razorpay · UPI / Cards / EMI',
+  greetMorning:'Good morning',greetAfternoon:'Good afternoon',greetEvening:'Good evening'},
+ hi:{tagline:'1950 से',score:'वेलनेस',greetSub:'आपकी रिकवरी बेहतर हो रही है — लय बनाए रखें।',hsOpen:'खुलना',hsStreak:'दिन लय',hsPoints:'पॉइंट',
+  qOsmf:'OSMF जारी रखें',qRem:'रिमाइंडर',qVideo:'नए वीडियो',qAsk:'AGRAVAT से पूछें',explore:'AGRAVAT एक्सप्लोर करें',
+  catOsmf:'OSMF देखभाल',catOsmfS:'निर्देशित रिकवरी',catSupp:'सप्लीमेंट सलाहकार',catSuppS:'मार्गदर्शन, समय व स्टैक',catDiet:'आहार व योजनाएं',catDietS:'दैनिक भोजन',catDia:'मधुमेह देखभाल',catDiaS:'वाइटल्स व प्रबंधन',catCon:'परामर्श',catConS:'क्लिनिशियन से बात',catUp:'अपडेट व वीडियो',catUpS:'AGRAVAT से नवीनतम',
+  bestsellers:'बेस्ट सेलर',seeAll:'सभी देखें →',trustedBy:'प्रमाणित व विश्वसनीय',cWho:'WHO-GMP',cCe:'CE मार्क',cFdca:'FDCA अनुमोदित',cAward:'अवार्ड विजेता',
+  watchNow:'▶ देखें',featTitle:'डॉ भरत अग्रवात · OLI थेरेपी और OSMF किट',herTitle:'डॉ अग्रवात की सिग्नेचर फॉर्मूला',herBody:'अहमदाबाद से चार पीढ़ियों की क्लिनिकल देखभाल। डॉ भरत अग्रवात द्वारा निर्मित — 25 वर्ष, 18 पुरस्कार। 1950 से भरोसेमंद।',
+  installHint:'💡 ब्राउज़र मेनू → "होम स्क्रीन में जोड़ें" से ऐप इंस्टॉल करें।',
+  shopTitle:'AGRAVAT शॉप',shopSub:'OSMF देखभाल व दैनिक कल्याण के लिए डॉक्टर-निर्मित उत्पाद। पूरे भारत में मुफ्त शिपिंग।',
+  back:'वापस',addCart:'जोड़ें',buyNow:'खरीदें',notify:'सूचित करें',outStock:'स्टॉक में नहीं',what:'यह क्या है',why:'कैसे मदद करता है',how:'उपयोग कैसे करें',trouble:'समस्या समाधान',sold:'बिके',watchProd:'प्रोडक्ट वीडियो देखें',
+  osmfTitle:'OSMF रिकवरी साथी',dayStreak:'दिन लय',start:'व्यायाम शुरू करें',pause:'रोकें',reset:'रीसेट',ex1:'खींचें व रोकें',todayRoutine:'आज की दिनचर्या',watchVideo:'वीडियो प्रदर्शन देखें',
+  logTitle:'आज का मुँह खुलना दर्ज करें',logBtn:'mm दर्ज करें',logHint:'मिलीमीटर में मापा गया। ATH कियोस्क पर स्टाफ रीडिंग दर्ज करता है।',current:'अभी',atStart:'शुरू',improved:'सुधार',
+  osmfCompliance:'AGRAVAT के उपकरण मुँह खोलने में सुधार में मदद करते हैं। यह निदान या इलाज नहीं है।',
+  cessTitle:'तंबाकू-मुक्त लय',cessSub:'₹1,680 बचाए · केवल सहायक कोचिंग',craving:'तलब',
+  tabDiet:'🥗 आहार योजना',tabDiabetes:'🩸 मधुमेह देखभाल',
+  dietPlanName:'OSMF रिकवरी आहार',dietPhase:'8 में से सप्ताह 2 · नरम, सूजन-रोधी',todayMeals:'आज के भोजन',grocery:'ऑटो ग्रॉसरी सूची',habits:'दैनिक आदतें',
+  diaPlanName:'मधुमेह दैनिक योजना',diaPhase:'संतुलित · कम ग्लाइसेमिक',logVital:'वाइटल दर्ज करें',vitals:'आपके वाइटल्स',
+  bMeal1:'गर्म हल्दी दूध + भीगे बादाम',bMeal1s:'नाश्ता · नरम',bMeal2:'मूंग दाल खिचड़ी + घी',bMeal2s:'दोपहर · प्रोटीन',bMeal3:'लौकी सूप + पनीर',bMeal3s:'रात · हल्का',bMeal4:'OSMF पॉप्स + छाछ',bMeal4s:'स्नैक · ओरल आराम',
+  dMeal1:'वेज ओट्स उपमा + 5 बादाम',dMeal1s:'नाश्ता · कम GI',dMeal2:'2 ज्वार रोटी + सब्ज़ी + दाल',dMeal2s:'दोपहर · फाइबर',dMeal3:'ग्रिल्ड पनीर + सलाद',dMeal3s:'रात · कम कार्ब',dMeal4:'भुना चना + ग्रीन टी',dMeal4s:'स्नैक',
+  upTitle:'अपडेट व वीडियो',featured:'फीचर्ड',featTitle2:'OSMF पॉप्स — विश्व की पहली हर्बल लॉलीपॉप',latestVideos:'नवीनतम वीडियो',visitChannel:'चैनल →',newsTitle:'समाचार व प्रेस',ugcTitle:'अपनी रिकवरी कहानी साझा करें',ugcSub:'चुनिंदा मरीज़ डॉ अग्रवात वेलनेस YouTube चैनल पर (सहमति से)।',ugcBtn:'मेरी कहानी भेजें',
+  askTitle:'AGRAVAT से पूछें',askBadge:'24/7 AI',aiGuard:'AGRAVAT AI केवल कार्यात्मक मार्गदर्शन देता है — यह कभी निदान नहीं करता।',
+  passportTitle:'हेल्थ पासपोर्ट',ppOpening:'मुँह खुलना',ppScore:'वेलनेस स्कोर',ppPlans:'सक्रिय योजनाएं',ppPoints:'रिवॉर्ड पॉइंट',ambTitle:'एंबेसडर स्थिति',tierAdvocate:'एडवोकेट',tierNext:'2 रेफरल → एंबेसडर',refer:'रेफर करें व कमाएं',
+  myCare:'मेरी देखभाल',mConsult:'वीडियो परामर्श',mRecords:'स्वास्थ्य रिकॉर्ड (PDF)',mFamily:'परिवार प्रोफाइल',mCarePlus:'AGRAVAT Care+ सदस्यता',mPrivacy:'गोपनीयता व सहमति',mAdmin:'मैनेजर कंट्रोल (मालिक/स्टाफ)',
+  aboutTitle:'AGRAVAT पर भरोसा क्यों',trustHeritage:'चार पीढ़ियां, 1950 से।',trustHeritageS:'डॉ अग्रवात हेल्थकेयर लिमिटेड, अहमदाबाद। डॉ भरत अग्रवात (25 वर्ष, 18 पुरस्कार); CEO डॉ कार्तव्य अग्रवात।',careNo:'केयर',
+  navHome:'होम',navShop:'शॉप',navOsmf:'OSMF',navSupp:'सप्लीमेंट',navUpdates:'अपडेट',navProfile:'प्रोफाइल',
+  soonMsg:'यह अगले चरण में पूरा खुलेगा।',cravingLogged:'तलब दर्ज। आप कर सकते हैं। 💪',addedToast:'कार्ट में जोड़ा',
+  cartTitle:'आपका कार्ट',cartEmpty:'कार्ट खाली है।',cartTotal:'कुल',checkout:'Razorpay से चेकआउट',coName:'पूरा नाम',coPhone:'फोन',coAddr:'डिलीवरी पता',coPay:'सुरक्षित भुगतान',paySuccess:'भुगतान सफल! ऑर्डर पुष्ट। 🎉',rzSecure:'Razorpay द्वारा सुरक्षित · UPI / कार्ड / EMI',
+  greetMorning:'सुप्रभात',greetAfternoon:'नमस्कार',greetEvening:'शुभ संध्या'},
+ gu:{tagline:'1950 થી',score:'વેલનેસ',greetSub:'તમારી રિકવરી સુધરી રહી છે — લય જાળવો.',hsOpen:'ખુલવું',hsStreak:'દિવસ લય',hsPoints:'પોઈન્ટ',
+  qOsmf:'OSMF ચાલુ રાખો',qRem:'રિમાઇન્ડર',qVideo:'નવા વિડિયો',qAsk:'AGRAVAT ને પૂછો',explore:'AGRAVAT શોધો',
+  catOsmf:'OSMF સંભાળ',catOsmfS:'માર્ગદર્શિત રિકવરી',catSupp:'સપ્લિમેન્ટ સલાહકાર',catSuppS:'માર્ગદર્શન, સમય અને સ્ટૅક',catDiet:'આહાર અને યોજનાઓ',catDietS:'દૈનિક ભોજન',catDia:'ડાયાબિટીસ સંભાળ',catDiaS:'વાઇટલ્સ અને વ્યવસ્થા',catCon:'પરામર્શ',catConS:'ક્લિનિશિયન સાથે વાત',catUp:'અપડેટ અને વિડિયો',catUpS:'AGRAVAT થી નવીનતમ',
+  bestsellers:'બેસ્ટ સેલર',seeAll:'બધું જુઓ →',trustedBy:'પ્રમાણિત અને વિશ્વસનીય',cWho:'WHO-GMP',cCe:'CE માર્ક',cFdca:'FDCA મંજૂર',cAward:'એવોર્ડ વિજેતા',
+  watchNow:'▶ જુઓ',featTitle:'ડૉ ભરત અગ્રાવત · OLI થેરપી અને OSMF કિટ',herTitle:'ડૉ અગ્રાવતની સિગ્નેચર ફોર્મ્યુલા',herBody:'અમદાવાદથી ચાર પેઢીની ક્લિનિકલ સંભાળ. ડૉ ભરત અગ્રાવત દ્વારા નિર્મિત — 25 વર્ષ, 18 પુરસ્કાર. 1950 થી વિશ્વસનીય.',
+  installHint:'💡 બ્રાઉઝર મેનૂ → "હોમ સ્ક્રીન પર ઉમેરો" થી એપ ઇન્સ્ટોલ કરો.',
+  shopTitle:'AGRAVAT શોપ',shopSub:'OSMF સંભાળ અને દૈનિક સુખાકારી માટે ડૉક્ટર-નિર્મિત ઉત્પાદનો. સમગ્ર ભારતમાં મફત શિપિંગ.',
+  back:'પાછળ',addCart:'ઉમેરો',buyNow:'ખરીદો',notify:'સૂચિત કરો',outStock:'સ્ટોકમાં નથી',what:'આ શું છે',why:'કેવી રીતે મદદ કરે',how:'કેવી રીતે વાપરવું',trouble:'સમસ્યા નિવારણ',sold:'વેચાયા',watchProd:'પ્રોડક્ટ વિડિયો જુઓ',
+  osmfTitle:'OSMF રિકવરી સાથી',dayStreak:'દિવસ લય',start:'કસરત શરૂ કરો',pause:'થોભો',reset:'રીસેટ',ex1:'ખેંચો અને પકડો',todayRoutine:'આજની દિનચર્યા',watchVideo:'વિડિયો નિદર્શન જુઓ',
+  logTitle:'આજનું મોં ખુલવું નોંધો',logBtn:'mm નોંધો',logHint:'મિલિમીટરમાં માપેલું. ATH કિઓસ્ક પર સ્ટાફ રીડિંગ નોંધે છે.',current:'હમણાં',atStart:'શરૂ',improved:'સુધારો',
+  osmfCompliance:'AGRAVAT ના સાધનો મોં ખોલવામાં સુધારો કરવામાં મદદ કરે છે. તે નિદાન કે ઇલાજ નથી.',
+  cessTitle:'તમાકુ-મુક્ત લય',cessSub:'₹1,680 બચ્યા · માત્ર સહાયક કોચિંગ',craving:'તલબ',
+  tabDiet:'🥗 આહાર યોજના',tabDiabetes:'🩸 ડાયાબિટીસ સંભાળ',
+  dietPlanName:'OSMF રિકવરી આહાર',dietPhase:'8 માંથી અઠવાડિયું 2 · નરમ, સોજા-વિરોધી',todayMeals:'આજના ભોજન',grocery:'ઓટો ગ્રોસરી યાદી',habits:'દૈનિક ટેવો',
+  diaPlanName:'ડાયાબિટીસ દૈનિક યોજના',diaPhase:'સંતુલિત · ઓછું ગ્લાયસેમિક',logVital:'વાઇટલ નોંધો',vitals:'તમારા વાઇટલ્સ',
+  bMeal1:'ગરમ હળદર દૂધ + પલાળેલી બદામ',bMeal1s:'નાસ્તો · નરમ',bMeal2:'મગ દાળ ખીચડી + ઘી',bMeal2s:'બપોર · પ્રોટીન',bMeal3:'દૂધી સૂપ + પનીર',bMeal3s:'રાત · હળવું',bMeal4:'OSMF પૉપ્સ + છાશ',bMeal4s:'નાસ્તો · ઓરલ આરામ',
+  dMeal1:'વેજ ઓટ્સ ઉપમા + 5 બદામ',dMeal1s:'નાસ્તો · ઓછું GI',dMeal2:'2 જુવાર રોટલી + શાક + દાળ',dMeal2s:'બપોર · ફાઇબર',dMeal3:'ગ્રિલ્ડ પનીર + સલાડ',dMeal3s:'રાત · ઓછું કાર્બ',dMeal4:'શેકેલા ચણા + ગ્રીન ટી',dMeal4s:'નાસ્તો',
+  upTitle:'અપડેટ અને વિડિયો',featured:'ફીચર્ડ',featTitle2:'OSMF પૉપ્સ — વિશ્વની પ્રથમ હર્બલ લોલીપૉપ',latestVideos:'નવીનતમ વિડિયો',visitChannel:'ચેનલ →',newsTitle:'સમાચાર અને પ્રેસ',ugcTitle:'તમારી રિકવરી વાર્તા શેર કરો',ugcSub:'પસંદ કરેલા દર્દીઓ ડૉ અગ્રાવત વેલનેસ YouTube ચેનલ પર (સંમતિથી).',ugcBtn:'મારી વાર્તા મોકલો',
+  askTitle:'AGRAVAT ને પૂછો',askBadge:'24/7 AI',aiGuard:'AGRAVAT AI માત્ર કાર્યાત્મક માર્ગદર્શન આપે છે — તે ક્યારેય નિદાન કરતું નથી.',
+  passportTitle:'હેલ્થ પાસપોર્ટ',ppOpening:'મોં ખુલવું',ppScore:'વેલનેસ સ્કોર',ppPlans:'સક્રિય યોજનાઓ',ppPoints:'રિવોર્ડ પોઈન્ટ',ambTitle:'એમ્બેસેડર સ્થિતિ',tierAdvocate:'એડવોકેટ',tierNext:'2 રેફરલ → એમ્બેસેડર',refer:'રેફર કરો અને કમાઓ',
+  myCare:'મારી સંભાળ',mConsult:'વિડિયો પરામર્શ',mRecords:'આરોગ્ય રેકોર્ડ (PDF)',mFamily:'કુટુંબ પ્રોફાઇલ',mCarePlus:'AGRAVAT Care+ સભ્યપદ',mPrivacy:'ગોપનીયતા અને સંમતિ',mAdmin:'મેનેજર કંટ્રોલ (માલિક/સ્ટાફ)',
+  aboutTitle:'AGRAVAT પર વિશ્વાસ કેમ',trustHeritage:'ચાર પેઢી, 1950 થી.',trustHeritageS:'ડૉ અગ્રાવત હેલ્થકેર લિ., અમદાવાદ. ડૉ ભરત અગ્રાવત (25 વર્ષ, 18 પુરસ્કાર); CEO ડૉ કાર્તવ્ય અગ્રાવત.',careNo:'કેર',
+  navHome:'હોમ',navShop:'શોપ',navOsmf:'OSMF',navSupp:'સપ્લિમેન્ટ',navUpdates:'અપડેટ',navProfile:'પ્રોફાઇલ',
+  soonMsg:'આ આગલા તબક્કામાં સંપૂર્ણ ખુલશે.',cravingLogged:'તલબ નોંધાઈ. તમે કરી શકો છો. 💪',addedToast:'કાર્ટમાં ઉમેર્યું',
+  cartTitle:'તમારું કાર્ટ',cartEmpty:'કાર્ટ ખાલી છે.',cartTotal:'કુલ',checkout:'Razorpay થી ચેકઆઉટ',coName:'પૂરું નામ',coPhone:'ફોન',coAddr:'ડિલિવરી સરનામું',coPay:'સુરક્ષિત ચુકવણી',paySuccess:'ચુકવણી સફળ! ઓર્ડર પુષ્ટ. 🎉',rzSecure:'Razorpay દ્વારા સુરક્ષિત · UPI / કાર્ડ / EMI',
+  greetMorning:'સુપ્રભાત',greetAfternoon:'નમસ્તે',greetEvening:'શુભ સાંજ'},
+};
+
+const CHAT_FLOW={
+ en:{suggestions:['How do I use the OSMF kit?','Which product for mouth ulcers?','Is mild jaw pain normal?','Talk to a doctor'],
+  answers:{'How do I use the OSMF kit?':"Use the OSMF Mouth Opening Kit twice a day, morning and night. Let an OSMF Pop dissolve slowly, apply the Oral Gel to affected areas, take OSMF Vita after a meal, and use the UNIQUE Mouth Opener with gentle, progressive stretches — the Recovery Companion has a guided timer and video. This helps improve and maintain mouth opening over time.",
+   'Which product for mouth ulcers?':"For mouth ulcers and burning sensation, many people use the OSMF Oral Gel (turmeric, tulsi, yashtimadhu), applied twice daily. The OSMF Pops can also support oral comfort. Shall I add the Oral Gel to your cart?",
+   'Is mild jaw pain normal?':{esc:true,text:"Mild stretching discomfort early in OSMF exercise can be common. But pain is a clinical question and I shouldn't assess it myself."},
+   'Talk to a doctor':{esc:true,text:"Of course. I'll connect you with AGRAVAT's clinical team — Dr Bharat Agravat and the OLI Therapy team."},
+   _default:"I can help with product guidance, OSMF care, supplements, diet and how to use any product — all in simple, functional terms. For anything clinical I'll connect you to a qualified AGRAVAT clinician. What would you like to know?"},
+  escMsg:"→ Connecting you to an AGRAVAT clinician with your full context. You're never stuck with the AI alone."},
+ hi:{suggestions:['OSMF किट कैसे उपयोग करें?','मुँह छालों के लिए कौन सा उत्पाद?','हल्का जबड़ा दर्द सामान्य है?','डॉक्टर से बात करें'],
+  answers:{'OSMF किट कैसे उपयोग करें?':"OSMF किट दिन में दो बार, सुबह और रात उपयोग करें। पॉप्स धीरे घुलने दें, ओरल जेल लगाएं, भोजन के बाद वीटा लें, और ओपनर से धीरे खिंचाव करें। रिकवरी साथी में गाइडेड टाइमर और वीडियो है।",
+   'मुँह छालों के लिए कौन सा उत्पाद?':"मुँह के छाले व जलन के लिए OSMF ओरल जेल (हल्दी, तुलसी, यष्टिमधु) दिन में दो बार लगाएं। क्या मैं इसे कार्ट में जोड़ूं?",
+   'हल्का जबड़ा दर्द सामान्य है?':{esc:true,text:"OSMF व्यायाम की शुरुआत में हल्की असुविधा आम हो सकती है। लेकिन दर्द एक क्लिनिकल प्रश्न है।"},
+   'डॉक्टर से बात करें':{esc:true,text:"ज़रूर। मैं आपको AGRAVAT की क्लिनिकल टीम से जोड़ता हूँ।"},
+   _default:"मैं उत्पाद, OSMF देखभाल, सप्लीमेंट्स व आहार में मदद कर सकता हूँ। किसी भी क्लिनिकल बात के लिए क्लिनिशियन से जोड़ूंगा।"},
+  escMsg:"→ आपको पूरे संदर्भ के साथ AGRAVAT क्लिनिशियन से जोड़ा जा रहा है।"},
+ gu:{suggestions:['OSMF કિટ કેવી રીતે વાપરવી?','મોં ચાંદા માટે કયું ઉત્પાદન?','હળવો જડબાનો દુખાવો સામાન્ય છે?','ડૉક્ટર સાથે વાત કરો'],
+  answers:{'OSMF કિટ કેવી રીતે વાપરવી?':"OSMF કિટ દિવસમાં બે વાર, સવાર-રાત વાપરો. પૉપ્સ ધીમે ઓગળવા દો, ઓરલ જેલ લગાવો, ભોજન પછી વિટા લો, અને ઓપનરથી ધીમે ખેંચાણ કરો. રિકવરી સાથીમાં ટાઈમર અને વિડિયો છે.",
+   'મોં ચાંદા માટે કયું ઉત્પાદન?':"મોંના ચાંદા અને બળતરા માટે OSMF ઓરલ જેલ (હળદર, તુલસી, યષ્ટિમધુ) દિવસમાં બે વાર લગાવો. શું હું તેને કાર્ટમાં ઉમેરું?",
+   'હળવો જડબાનો દુખાવો સામાન્ય છે?':{esc:true,text:"OSMF કસરતની શરૂઆતમાં હળવી અગવડ સામાન્ય હોઈ શકે. પણ દુખાવો ક્લિનિકલ પ્રશ્ન છે."},
+   'ડૉક્ટર સાથે વાત કરો':{esc:true,text:"જરૂર. હું તમને AGRAVAT ની ક્લિનિકલ ટીમ સાથે જોડું છું."},
+   _default:"હું ઉત્પાદન, OSMF સંભાળ, સપ્લિમેન્ટ્સ અને આહારમાં મદદ કરી શકું. કોઈપણ ક્લિનિકલ બાબત માટે ક્લિનિશિયન સાથે જોડીશ."},
+  escMsg:"→ તમને સંપૂર્ણ સંદર્ભ સાથે AGRAVAT ક્લિનિશિયન સાથે જોડવામાં આવી રહ્યા છો."},
+};
+
+/* STATE */
+let LANG=localStorage.getItem('agr_lang')||'en';
+let CART=JSON.parse(localStorage.getItem('agr_cart2')||'[]');
+let MMLOG=JSON.parse(localStorage.getItem('agr_mm')||'[22,24,26,27,29,31,32,34]');
+let SUGAR=JSON.parse(localStorage.getItem('agr_sugar')||'[140,132,128,135,122,118,124]');
+let MEALS_DONE=JSON.parse(localStorage.getItem('agr_meals')||'{}');
+let HABITS=JSON.parse(localStorage.getItem('agr_habits')||'{}');
+let DIET_TAB='diet', CUR='home', PD_TAB='what', SHOP_FILTER='all';
+const t=k=>(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;
+const L=o=>o?(o[LANG]||o.en):'';
+const money=n=>'₹'+n.toLocaleString('en-IN');
+
+function applyI18n(){
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(I18N[LANG]&&I18N[LANG][k]!==undefined)el.textContent=I18N[LANG][k];});
+  document.getElementById('langLabel').textContent=LANG.toUpperCase();
+  document.getElementById('greetLine').textContent=greeting()+', Kartavya';
+  document.documentElement.lang=LANG;
+  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates();
+}
+function greeting(){const h=new Date().getHours();return h<12?t('greetMorning'):h<17?t('greetAfternoon'):t('greetEvening');}
+
+function go(s){
+  CUR=s;
+  ['home','shop','product','osmf','supp','diet','updates','ask','profile','admin'].forEach(x=>document.getElementById('screen-'+x).classList.add('hidden'));
+  document.getElementById('screen-'+s).classList.remove('hidden');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===s));
+  document.getElementById('screen-'+s).scrollTop=0;
+  if(s==='osmf'){renderOsmf();setTimeout(drawChart,30);}
+  if(s==='supp'){renderSupp();setTimeout(drawAdh,30);}
+  if(s==='diet')renderDiet();
+  if(s==='admin')renderAdmin(ADMIN_TAB||'overview');
+}
+
+function imgHtml(p,cls){
+  return `<div class="${cls||'pimg-wrap'}"><img src="${p.img}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fb" style="display:none">${p.emo}</div></div>`;
+}
+function pcardHtml(p){
+  const off=p.mrp>p.price?Math.round((1-p.price/p.mrp)*100):0;
+  return `<div class="card pcard" onclick="openProduct('${p.id}')">
+    ${off?`<div class="off">${off}% OFF</div>`:''}${!p.stock?`<div class="oos">${t('outStock')}</div>`:''}
+    ${imgHtml(p)}
+    <div class="pi">
+      <div class="ptag">${L(p.tag)}</div>
+      <h4>${L(p.name)}${p.flag?'<span class="flag">★ Best</span>':''}</h4>
+      <div class="stars">${'★'.repeat(Math.round(p.rating))}<span style="color:var(--muted);font-size:.66rem"> ${p.rating} · ${p.sold} ${t('sold')}</span></div>
+      <div class="prow"><span class="price">${money(p.price)}${p.mrp>p.price?` <s>${money(p.mrp)}</s>`:''}</span>
+      ${p.stock?`<button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+ ${t('addCart')}</button>`:`<button class="btn btn-ghost" onclick="event.stopPropagation();toast(t('soonMsg'))">${t('notify')}</button>`}</div>
+    </div></div>`;
+}
+function renderReco(){document.getElementById('homeReco').innerHTML=['kit','smile','pops'].map(id=>pcardHtml(PRODUCTS.find(p=>p.id===id))).join('');}
+
+const FILTERS=[['all','🌟',{en:'All',hi:'सभी',gu:'બધા'}],['kit','🎁',{en:'Kits',hi:'किट',gu:'કિટ'}],['oral','🦷',{en:'Oral Care',hi:'ओरल',gu:'ઓરલ'}],['supp','💊',{en:'Supplements',hi:'सप्लीमेंट्स',gu:'સપ્લિમેન્ટ્સ'}],['tools','🔧',{en:'Tools',hi:'टूल्स',gu:'ટૂલ્સ'}],['quit','🚭',{en:'Quit Tobacco',hi:'तंबाकू छोड़ें',gu:'તમાકુ છોડો'}]];
+function renderProducts(){
+  const sf=document.getElementById('shopFilters');if(!sf)return;
+  sf.innerHTML=FILTERS.map(([k,e,n])=>`<div class="chip ${SHOP_FILTER===k?'on':''}" onclick="SHOP_FILTER='${k}';renderProducts()"><span class="e">${e}</span>${L(n)}</div>`).join('');
+  const list=PRODUCTS.filter(p=>SHOP_FILTER==='all'||p.cat===SHOP_FILTER);
+  document.getElementById('productList').innerHTML=list.map(pcardHtml).join('');
+}
+
+function openProduct(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;window._pd=p;PD_TAB='what';renderPD();go('product');}
+function renderPD(){
+  const p=window._pd;if(!p)return;
+  const tabs=[['what',t('what')],['why',t('why')],['how',t('how')],['trouble',t('trouble')]];
+  const off=p.mrp>p.price?Math.round((1-p.price/p.mrp)*100):0;
+  document.getElementById('pdBody').innerHTML=`
+    <button class="back" onclick="go('shop')">← <span>${t('back')}</span></button>
+    <div class="pd-gallery"><img src="${p.img.replace('600%2C600','1000%2C1000')}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="pd-fb" style="display:none">${p.emo}</div></div>
+    <div class="ptag" style="margin-top:14px">${L(p.tag)}</div>
+    <h2 style="margin:4px 0 2px;font-size:1.3rem">${L(p.name)}${p.flag?'<span class="flag">Best-seller</span>':''}</h2>
+    <div class="stars">${'★'.repeat(Math.round(p.rating))}<span style="color:var(--muted);font-size:.74rem"> ${p.rating} · ${p.sold} ${t('sold')}</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0;">
+      <span class="price" style="font-size:1.45rem">${money(p.price)}${p.mrp>p.price?` <s>${money(p.mrp)}</s>`:''}</span>
+      ${off?`<span class="badge-soft">${off}% OFF</span>`:''}${!p.stock?`<span class="oos" style="position:static">${t('outStock')}</span>`:''}</div>
+    ${p.video?`<button class="btn btn-block btn-blue" style="margin-bottom:14px" onclick="openVideo('${p.video}')">▶ ${t('watchProd')}</button>`:''}
+    <div class="tabs">${tabs.map(([k,l])=>`<div class="tab ${PD_TAB===k?'active':''}" onclick="PD_TAB='${k}';renderPD()">${l}</div>`).join('')}</div>
+    <div class="tabbody">${L(p[PD_TAB])}</div>
+    <div class="compliance">${t('osmfCompliance')}</div>
+    <div style="display:flex;gap:10px;margin:18px 0 8px;">
+      ${p.stock?`<button class="btn btn-block btn-ghost" onclick="addCart('${p.id}')">+ ${t('addCart')}</button><button class="btn btn-block btn-gold" onclick="addCart('${p.id}',true)">${t('buyNow')}</button>`:`<button class="btn btn-block btn-blue" onclick="toast(t('soonMsg'))">🔔 ${t('notify')}</button>`}
+    </div>`;
+}
+
+/* cart */
+function addCart(id,buy){const e=CART.find(c=>c.id===id);if(e)e.q++;else CART.push({id,q:1});saveCart();toast(t('addedToast'));if(buy)openSheet('cart');}
+function saveCart(){localStorage.setItem('agr_cart2',JSON.stringify(CART));const n=CART.reduce((s,c)=>s+c.q,0);const b=document.getElementById('cartBadge');b.textContent=n;b.classList.toggle('hidden',n===0);}
+function cartTotal(){return CART.reduce((s,c)=>{const p=PRODUCTS.find(x=>x.id===c.id);return s+p.price*c.q;},0);}
+function changeQty(id,d){const c=CART.find(x=>x.id===id);if(!c)return;c.q+=d;if(c.q<=0)CART=CART.filter(x=>x.id!==id);saveCart();openSheet('cart');}
+
+/* OSMF */
+const EXERCISES=[
+ {id:'warm',emo:'🔄',dur:30,sets:1,name:'Warm-up: open & close',tip:'Open and close your mouth slowly and gently.'},
+ {id:'stretch',emo:'↔️',dur:30,sets:3,name:'Opener stretch & hold',tip:'Insert the UNIQUE Mouth Opener at a comfortable size; hold the stretch.'},
+ {id:'lateral',emo:'↩️',dur:20,sets:3,name:'Lateral jaw glide',tip:'Move the lower jaw gently left and right.'},
+ {id:'tongue',emo:'👅',dur:20,sets:2,name:'Tongue stretch',tip:'Extend the tongue toward nose, then chin.'},
+ {id:'cheek',emo:'😮',dur:15,sets:2,name:'Cheek balloon',tip:'Puff the cheeks with air and hold.'},
+];
+let curEx=0,curSet=1,timerInt=null,timerLeft=EXERCISES[0].dur,timerRunning=false;const RING=540;
+let exDone=JSON.parse(localStorage.getItem('agr_exdone')||'{}');
+const isToday=v=>v===new Date().toDateString();
+function selectEx(i){curEx=i;curSet=1;timerLeft=EXERCISES[i].dur;timerRunning=false;clearInterval(timerInt);const b=document.getElementById('timerBtn');if(b)b.textContent=t('start');updTimer();renderExList();}
+function toggleTimer(){const b=document.getElementById('timerBtn');const ex=EXERCISES[curEx];if(timerRunning){clearInterval(timerInt);timerRunning=false;b.textContent=t('start');return;}timerRunning=true;b.textContent=t('pause');timerInt=setInterval(()=>{timerLeft--;updTimer();if(timerLeft<=0){clearInterval(timerInt);timerRunning=false;if(curSet<ex.sets){curSet++;timerLeft=ex.dur;b.textContent=t('start');updTimer();toast('✅ Set done — next set of '+ex.sets);}else{exDone[ex.id]=new Date().toDateString();localStorage.setItem('agr_exdone',JSON.stringify(exDone));toast('✅ '+ex.name+' complete');renderOsmf();if(curEx<EXERCISES.length-1){selectEx(curEx+1);}else{timerLeft=ex.dur;updTimer();toast('🎉 Routine complete for today!');}}}},1000);}
+function resetTimer(){clearInterval(timerInt);timerRunning=false;curSet=1;timerLeft=EXERCISES[curEx].dur;const b=document.getElementById('timerBtn');if(b)b.textContent=t('start');updTimer();}
+function updTimer(){const ex=EXERCISES[curEx];const m=String(Math.floor(timerLeft/60)).padStart(2,'0'),s=String(timerLeft%60).padStart(2,'0');const tt=document.getElementById('timerText');if(tt)tt.textContent=`${m}:${s}`;const en=document.getElementById('exName');if(en)en.textContent=ex.name;const es=document.getElementById('exSet');if(es)es.textContent='Set '+curSet+' / '+ex.sets;const r=document.getElementById('timerRing');if(r)r.style.strokeDashoffset=RING*(1-timerLeft/ex.dur);}
+function renderExList(){const el=document.getElementById('exList');if(!el)return;el.innerHTML=EXERCISES.map((e,i)=>`<div class="card pcard" style="padding:10px 12px;margin-bottom:8px;${i===curEx?'border-color:var(--gold);border-width:2px;':''}" onclick="selectEx(${i})"><div style="width:40px;height:40px;border-radius:11px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none">${e.emo}</div><div class="pi"><h4 style="margin:0">${e.name}</h4><div class="sub" style="font-size:.72rem">${e.dur}s × ${e.sets} sets · ${e.tip}</div></div><div style="font-size:1.15rem;color:${isToday(exDone[e.id])?'var(--green)':'var(--muted)'}">${isToday(exDone[e.id])?'✓':(i===curEx?'▶':'○')}</div></div>`).join('');}
+function renderOsmf(){
+  const wd=document.getElementById('weekDots');if(!wd)return;
+  const days=['S','M','T','W','T','F','S'];const today=new Date().getDay();
+  wd.innerHTML=days.map((d,i)=>{const on=i<=today;return `<div style="flex:1;text-align:center"><div style="width:26px;height:26px;margin:0 auto;border-radius:50%;background:${on?'var(--gold)':'rgba(255,255,255,.15)'};color:${on?'var(--navy)':'#fff'};display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800">${on?'✓':''}</div><div style="font-size:.54rem;opacity:.75;margin-top:3px;color:#fff">${d}</div></div>`;}).join('');
+  const doneCount=EXERCISES.filter(e=>isToday(exDone[e.id])).length;const pct=Math.round(doneCount/EXERCISES.length*100);
+  document.getElementById('osmfPct').textContent=pct+'%';const C=2*Math.PI*34;const rr=document.getElementById('osmfRing');rr.style.strokeDasharray=C;rr.style.strokeDashoffset=C*(1-pct/100);
+  const kit=[['🍬','OSMF Pops','Morning & night · dissolve slowly'],['🔧','UNIQUE Mouth Opener','Morning & night · guided stretch'],['🧴','OSMF Oral Gel','Twice daily · apply to gums'],['💊','OSMF Vita','After dinner · 1 tablet']];
+  document.getElementById('kitSchedule').innerHTML=kit.map(([e,n,s])=>`<div class="ex-step"><div class="n" style="background:var(--sky);color:var(--navy)">${e}</div><div><b style="font-size:.86rem">${n}</b><div class="sub" style="font-size:.72rem">${s}</div></div></div>`).join('');
+  renderExList();
+  const sy=[['🔥','Burning'],['😣','Ulcer'],['🦿','Stiffness'],['🌵','Dryness'],['🙂','None today']];
+  document.getElementById('symptomRow').innerHTML=sy.map(([e,l])=>`<div class="chip" onclick="toast('Logged: ${l} — saved to your Health Passport')"><span class="e">${e}</span>${l}</div>`).join('');
+  const cur=MMLOG[MMLOG.length-1],gain=cur-MMLOG[0];
+  const ach=[['🎯','First log',MMLOG.length>=1],['📈','+5mm',gain>=5],['🚀','+10mm',gain>=10],['🔥','7-day streak',true],['🏆','Reached 40mm',cur>=40]];
+  document.getElementById('achvRow').innerHTML=ach.map(([e,l,on])=>`<div class="chip" style="${on?'':'opacity:.45'}"><span class="e">${on?e:'🔒'}</span>${l}</div>`).join('');
+}
+function buildExSteps(){const st={en:['Gentle warm-up: open and close slowly 10 times.','Insert the UNIQUE Mouth Opener at a comfortable size, stretch and hold 30 seconds.','Progress one turn up when comfortable, repeat 3 sets.','Apply OSMF Oral Gel, then log your reading below.'],hi:['वार्म-अप: धीरे 10 बार खोलें-बंद करें।','ओपनर आरामदायक आकार में डालें, 30 सेकंड रोकें।','आरामदायक होने पर एक मोड़ बढ़ाएं, 3 सेट।','ओरल जेल लगाएं, फिर रीडिंग दर्ज करें।'],gu:['વોર્મ-અપ: ધીમે 10 વાર ખોલો-બંધ કરો.','ઓપનર આરામદાયક કદમાં મૂકો, 30 સેકન્ડ પકડો.','આરામદાયક હોય ત્યારે એક વળાંક વધારો, 3 સેટ.','ઓરલ જેલ લગાવો, પછી રીડિંગ નોંધો.']};const el=document.getElementById('exSteps');if(el)el.innerHTML=(st[LANG]||st.en).map((s,i)=>`<div class="ex-step"><div class="n">${i+1}</div><p>${s}</p></div>`).join('');}
+function logMm(){const v=parseFloat(document.getElementById('mmInput').value);if(!v||v<5||v>80){toast('Enter valid mm (5–80)');return;}MMLOG.push(v);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));document.getElementById('mmInput').value='';updateOsmfStats();drawChart();renderOsmf();toast('✅ '+v+'mm logged');}
+function updateOsmfStats(){const c=MMLOG[MMLOG.length-1],s=MMLOG[0];document.getElementById('curMm').textContent=c;document.getElementById('startMm').textContent=s;document.getElementById('gainMm').textContent=(c-s>=0?'+':'')+(c-s);document.getElementById('ppMm').textContent=c+'mm';document.getElementById('hsMm').textContent=c+'mm';}
+function drawChart(){const cv=document.getElementById('osmfChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=170;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const GOAL=40;const d=MMLOG,n=d.length,mn=Math.min(...d)-2,mx=Math.max(Math.max(...d),GOAL)+2,pad=24,px=i=>pad+(W-pad*1.5)*(i/(n-1)),py=v=>H-pad-(H-pad*1.8)*((v-mn)/(mx-mn));x.strokeStyle=getComputedStyle(document.body).getPropertyValue('--line');x.lineWidth=1;for(let g=0;g<=3;g++){const gy=pad*.4+(H-pad*1.5)*g/3;x.beginPath();x.moveTo(pad,gy);x.lineTo(W-pad*.5,gy);x.stroke();}const gr=x.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(30,95,180,.28)');gr.addColorStop(1,'rgba(30,95,180,0)');x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.lineTo(px(n-1),H-pad);x.lineTo(px(0),H-pad);x.closePath();x.fillStyle=gr;x.fill();x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.strokeStyle='#1E5FB4';x.lineWidth=2.6;x.lineJoin='round';x.stroke();d.forEach((v,i)=>{x.beginPath();x.arc(px(i),py(v),i===n-1?5:3,0,7);x.fillStyle=i===n-1?'#C9A94E':'#1E5FB4';x.fill();});x.setLineDash([5,4]);x.strokeStyle='#C9A94E';x.lineWidth=1.5;x.beginPath();x.moveTo(pad,py(GOAL));x.lineTo(W-pad*.5,py(GOAL));x.stroke();x.setLineDash([]);x.fillStyle='#C9A94E';x.font='bold 10px sans-serif';x.fillText('Goal '+GOAL+'mm',pad+2,py(GOAL)-4);x.fillStyle=getComputedStyle(document.body).getPropertyValue('--ink');x.font='bold 12px sans-serif';x.fillText(d[n-1]+'mm',px(n-1)-22,py(d[n-1])-12);}
+
+/* DIET */
+function setDietTab(tab){DIET_TAB=tab;const a=document.getElementById('segDiet'),b=document.getElementById('segDia');if(a)a.classList.toggle('on',tab==='diet');if(b)b.classList.toggle('on',tab==='diabetes');renderDiet();go('diet');}
+function renderDiet(){
+  const b=document.getElementById('dietBody');if(!b)return;
+  if(DIET_TAB==='diet'){
+    const meals=[['m1','🥛','bMeal1','bMeal1s'],['m2','🍲','bMeal2','bMeal2s'],['m3','🥣','bMeal3','bMeal3s'],['m4','🍬','bMeal4','bMeal4s']];
+    const done=Object.keys(MEALS_DONE).filter(k=>k[0]==='m'&&MEALS_DONE[k]).length, pct=Math.round(done/4*100);
+    b.innerHTML=`<div class="prog-card"><h3>${t('dietPlanName')}</h3><div class="sub" style="color:rgba(255,255,255,.8)">${t('dietPhase')}</div><div class="bar"><i style="width:${pct}%"></i></div><div style="font-size:.72rem;opacity:.85">${done}/4 ✓</div></div>
+      <h2 class="sec">${t('todayMeals')}</h2>
+      ${meals.map(([id,e,n,s])=>`<div class="card meal"><div class="mi">${e}</div><div class="mb"><b>${t(n)}</b><p>${t(s)}</p></div><div class="chk ${MEALS_DONE[id]?'done':''}" onclick="toggleMeal('${id}')">✓</div></div>`).join('')}
+      <h2 class="sec">${t('habits')}</h2><div class="habit">${habitHtml()}</div>
+      <h2 class="sec">${t('grocery')}</h2><div class="card" style="padding:14px;font-size:.84rem;line-height:1.9">🛒 Turmeric, almonds, moong dal, ghee, bottle gourd, paneer, milk, buttermilk, tulsi, OSMF Pops<br><button class="btn btn-blue" style="margin-top:8px" onclick="toast(t('soonMsg'))">${t('addCart')} → cart</button></div>
+      <div class="compliance">${t('osmfCompliance')}</div>`;
+  } else {
+    const meals=[['d1','🥣','dMeal1','dMeal1s'],['d2','🫓','dMeal2','dMeal2s'],['d3','🥗','dMeal3','dMeal3s'],['d4','🍵','dMeal4','dMeal4s']];
+    b.innerHTML=`<div class="prog-card" style="background:linear-gradient(135deg,#123A7A,#1E5FB4)"><h3>${t('diaPlanName')}</h3><div class="sub" style="color:rgba(255,255,255,.8)">${t('diaPhase')}</div></div>
+      <h2 class="sec">${t('vitals')}</h2>
+      <div class="card"><div class="vital"><div><b>${SUGAR[SUGAR.length-1]}</b><span>mg/dL</span></div><div><b>126/82</b><span>BP</span></div><div><b>72</b><span>kg</span></div><div><b>24.1</b><span>BMI</span></div></div>
+      <div style="padding:0 14px 8px"><div class="log-input"><input type="number" id="sugarInput" placeholder="Blood sugar mg/dL" inputmode="decimal"><button class="btn btn-green" onclick="logSugar()">${t('logVital')}</button></div></div>
+      <canvas id="sugarChart" style="width:100%;height:160px"></canvas></div>
+      <h2 class="sec">${t('todayMeals')}</h2>
+      ${meals.map(([id,e,n,s])=>`<div class="card meal"><div class="mi">${e}</div><div class="mb"><b>${t(n)}</b><p>${t(s)}</p></div><div class="chk ${MEALS_DONE[id]?'done':''}" onclick="toggleMeal('${id}')">✓</div></div>`).join('')}
+      <h2 class="sec">${t('habits')}</h2><div class="habit">${habitHtml()}</div>
+      <div class="compliance">${t('osmfCompliance')}</div>`;
+    setTimeout(drawSugar,30);
+  }
+}
+function habitHtml(){const hs=[['water','💧','Water'],['walk','🚶','Walk'],['sleep','😴','Sleep'],['notobacco','🚭','No tobacco'],['meds','💊','Supps']];return hs.map(([k,e,l])=>`<div class="h ${HABITS[k]?'on':''}" onclick="toggleHabit('${k}')"><div class="e">${e}</div><small>${l}</small></div>`).join('');}
+function toggleMeal(id){MEALS_DONE[id]=!MEALS_DONE[id];localStorage.setItem('agr_meals',JSON.stringify(MEALS_DONE));renderDiet();}
+function toggleHabit(k){HABITS[k]=!HABITS[k];localStorage.setItem('agr_habits',JSON.stringify(HABITS));renderDiet();}
+function logSugar(){const v=parseFloat(document.getElementById('sugarInput').value);if(!v||v<40||v>500){toast('Enter valid mg/dL');return;}SUGAR.push(v);if(SUGAR.length>7)SUGAR=SUGAR.slice(-7);localStorage.setItem('agr_sugar',JSON.stringify(SUGAR));renderDiet();toast('✅ '+v+' mg/dL logged');}
+function drawSugar(){const cv=document.getElementById('sugarChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=160;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=SUGAR,n=d.length,mn=Math.min(...d)-10,mx=Math.max(...d)+10,pad=26,px=i=>pad+(W-pad*1.5)*(i/(n-1)),py=v=>H-pad-(H-pad*1.7)*((v-mn)/(mx-mn));x.strokeStyle=getComputedStyle(document.body).getPropertyValue('--line');for(let g=0;g<=3;g++){const gy=pad*.4+(H-pad*1.4)*g/3;x.beginPath();x.moveTo(pad,gy);x.lineTo(W-pad*.5,gy);x.stroke();}x.beginPath();x.moveTo(px(0),py(d[0]));d.forEach((v,i)=>x.lineTo(px(i),py(v)));x.strokeStyle='#2D6A4F';x.lineWidth=2.6;x.lineJoin='round';x.stroke();d.forEach((v,i)=>{x.beginPath();x.arc(px(i),py(v),i===n-1?5:3,0,7);x.fillStyle=i===n-1?'#C9A94E':'#2D6A4F';x.fill();});x.fillStyle=getComputedStyle(document.body).getPropertyValue('--ink');x.font='bold 12px sans-serif';x.fillText(d[n-1]+'',px(n-1)-14,py(d[n-1])-12);}
+
+/* SUPPLEMENTS */
+const SUPP_GOALS=[['recovery','🦷','OSMF recovery',['vita','pops','gel']],['immunity','🛡️','Immunity & antioxidant',['vita','gummies']],['oral','🪥','Oral care',['smile','gel','pops']],['daily','✨','Daily multivitamin',['gummies','vita']],['quit','🚭','Quit tobacco',['qsg']]];
+let SUPP_GOAL=localStorage.getItem('agr_sgoal')||'recovery';
+const SUPP_SCHED=[['🌅','Morning',[['gummies','Ultimate Health Gummies — 1 with breakfast'],['smile','Brush with Smile Toothgel']]],['☀️','Afternoon',[['pops','OSMF Pops — dissolve 1 slowly']]],['🌙','Night',[['vita','OSMF Vita — 1 after dinner'],['gel','OSMF Oral Gel — apply to gums']]]];
+let SUPP_DONE=JSON.parse(localStorage.getItem('agr_suppdone')||'{}');
+let ADH=JSON.parse(localStorage.getItem('agr_adh')||'[72,80,65,90,100,85,95]');
+function pickGoal(g){SUPP_GOAL=g;localStorage.setItem('agr_sgoal',g);renderSupp();document.getElementById('screen-supp').scrollTop=0;}
+function toggleSupp(k){SUPP_DONE[k]=!SUPP_DONE[k];localStorage.setItem('agr_suppdone',JSON.stringify(SUPP_DONE));renderSupp();}
+function renderSupp(){
+  const gr=document.getElementById('goalRow');if(!gr)return;
+  gr.innerHTML=SUPP_GOALS.map(([k,e,l])=>`<div class="chip ${SUPP_GOAL===k?'on':''}" onclick="pickGoal('${k}')"><span class="e">${e}</span>${l}</div>`).join('');
+  const goal=SUPP_GOALS.find(g=>g[0]===SUPP_GOAL)||SUPP_GOALS[0];const ids=goal[3];
+  document.getElementById('stackReco').innerHTML=`<div class="card" style="padding:12px;margin-top:6px"><div class="ptag">✦ Recommended stack · ${goal[2]}</div>${ids.map(id=>{const p=PRODUCTS.find(x=>x.id===id);return p?`<div class="pcard" style="padding:8px 0;margin:0;border-bottom:1px solid var(--line)" onclick="openProduct('${p.id}')">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="price" style="font-size:.85rem">${money(p.price)}</div></div><button class="btn btn-gold" onclick="event.stopPropagation();addCart('${p.id}')">+</button></div>`:'';}).join('')}<button class="btn btn-block btn-blue" style="margin-top:10px" onclick="${ids.map(i=>`addCart('${i}')`).join(';')};toast('Stack added to cart')">Add whole stack to cart · ${money(ids.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i);return s+(p?p.price:0);},0))}</button></div>`;
+  document.getElementById('suppSchedule').innerHTML=SUPP_SCHED.map(([e,slot,items])=>`<div style="margin-bottom:8px"><div style="font-weight:800;font-size:.78rem;color:var(--muted);margin:2px 0 6px">${e} ${slot}</div>${items.map(([id,txt])=>{const key=slot+'_'+id;const p=PRODUCTS.find(x=>x.id===id)||{emo:'💊'};return `<div class="meal" style="padding:8px;margin-bottom:6px"><div class="mi" style="width:38px;height:38px;font-size:1.1rem">${p.emo}</div><div class="mb"><b style="font-size:.82rem">${txt}</b></div><div class="chk ${SUPP_DONE[key]?'done':''}" onclick="toggleSupp('${key}')">✓</div></div>`;}).join('')}</div>`).join('');
+  document.getElementById('stackList').innerHTML=SUPP_GOALS.map(([k,e,l,ids])=>`<div class="card" style="padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer;${SUPP_GOAL===k?'border-color:var(--gold);':''}" onclick="pickGoal('${k}')"><div style="font-size:1.6rem">${e}</div><div style="flex:1"><b style="font-size:.9rem">${l}</b><div class="sub" style="font-size:.72rem">${ids.map(i=>L((PRODUCTS.find(p=>p.id===i)||{name:{en:i}}).name)).join(' · ')}</div></div><span style="color:var(--muted)">›</span></div>`).join('');
+}
+function drawAdh(){const cv=document.getElementById('adhChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=52;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=ADH,n=d.length,gap=W/n,bw=gap*0.6;d.forEach((v,i)=>{const bh=Math.max(4,(H-6)*(v/100));const xx=i*gap+gap*0.2,yy=H-bh,r=3;x.fillStyle=i===n-1?'#C9A94E':'#2D6A4F';x.beginPath();x.moveTo(xx,H);x.lineTo(xx,yy+r);x.quadraticCurveTo(xx,yy,xx+r,yy);x.lineTo(xx+bw-r,yy);x.quadraticCurveTo(xx+bw,yy,xx+bw,yy+r);x.lineTo(xx+bw,H);x.closePath();x.fill();});}
+function simMeasure(){const last=MMLOG[MMLOG.length-1];const v=Math.min(48,last+(Math.random()<0.5?0:1));MMLOG.push(v);if(MMLOG.length>14)MMLOG=MMLOG.slice(-14);localStorage.setItem('agr_mm',JSON.stringify(MMLOG));updateOsmfStats();drawChart();renderOsmf();closeSheet();setTimeout(()=>toast('📸 Estimated '+v+'mm · logged to your Passport'),150);}
+
+/* UPDATES */
+function renderUpdates(){
+  const vr=document.getElementById('videoRow');if(vr)vr.innerHTML=VIDEOS.map(v=>`<div class="vcard" onclick="openVideo('${v.id}')"><div class="vt" style="background-image:url('https://i.ytimg.com/vi/${v.id}/hqdefault.jpg')"><div class="vthumb play" style="position:absolute;inset:0"><span>▶</span></div></div><b>${L(v.title)}</b><small>${v.ch}</small></div>`).join('');
+  const nl=document.getElementById('newsList');if(nl)nl.innerHTML=NEWS.map(n=>`<div class="card news" onclick="openLink('${n.url}')"><div class="nimg" style="background-image:url('${n.img||'https://i.ytimg.com/vi/eFAa82ARmd4/hqdefault.jpg'}')"></div><div class="nb"><span class="ndate">${n.date}</span><b>${L(n.title)}</b><span class="ncat">${L(n.cat)}</span></div></div>`).join('');
+}
+function openVideo(id){openSheetRaw(`<div class="grab"></div><div class="vidframe"><iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe></div><p class="sub" style="text-align:center;margin-top:12px">Dr Agravat Wellness · YouTube</p><button class="btn btn-block btn-ghost" style="margin-top:6px" onclick="openLink('https://www.youtube.com/@osmfkart')">${t('visitChannel')}</button>`);}
+function openLink(u){window.open(u,'_blank','noopener');}
+
+/* chat */
+let CHAT=[];
+function renderChatSuggest(){const f=CHAT_FLOW[LANG]||CHAT_FLOW.en;const el=document.getElementById('chatSuggest');if(el)el.innerHTML=f.suggestions.map(s=>`<div class="sug" onclick="askQ(this.textContent)">${s}</div>`).join('');}
+function pushMsg(r,h){CHAT.push({r,h});const log=document.getElementById('chatLog');log.innerHTML=CHAT.map(m=>`<div class="msg ${m.r}">${m.h}</div>`).join('');log.scrollTop=log.scrollHeight;}
+function askQ(q){pushMsg('user',q);const f=CHAT_FLOW[LANG]||CHAT_FLOW.en;let a=f.answers[q];setTimeout(()=>{if(a&&typeof a==='object'&&a.esc){pushMsg('bot',a.text+`<div class="esc">${f.escMsg}</div>`);}else{pushMsg('bot',typeof a==='string'?a:f.answers._default);}},380);}
+/* ===== LIVE CLAUDE AI ===== */
+/* To enable live AI: deploy the included Cloudflare Worker (agravat-ai-worker.js) with your
+   ANTHROPIC_API_KEY, then paste its URL below. Leave blank to use the built-in offline assistant. */
+const AI_ENDPOINT="";
+let AI_BUSY=false;
+function sendChat(){const i=document.getElementById('chatInput');const v=i.value.trim();if(!v||AI_BUSY)return;i.value='';askLive(v);}
+async function askLive(q){
+  pushMsg('user',q);
+  const f=CHAT_FLOW[LANG]||CHAT_FLOW.en;
+  const exact=f.answers[q];
+  if(exact){ setTimeout(()=>{ if(typeof exact==='object'&&exact.esc){pushMsg('bot',exact.text+`<div class="esc">${f.escMsg}</div>`);}else{pushMsg('bot',exact);} },350); return; }
+  if(AI_ENDPOINT){
+    AI_BUSY=true; CHAT.push({r:'bot',h:'<span class="typing">AGRAVAT is typing…</span>'}); renderChat();
+    try{
+      const hist=CHAT.filter(m=>!m.h.includes('typing')).slice(-8).map(m=>({role:m.r==='user'?'user':'assistant',content:m.h.replace(/<[^>]+>/g,'')}));
+      const r=await fetch(AI_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,lang:LANG,history:hist})});
+      const j=await r.json(); CHAT.pop();
+      pushMsg('bot',(j.reply||j.text||f.answers._default));
+    }catch(e){ CHAT.pop(); pushMsg('bot',f.answers._default); }
+    AI_BUSY=false;
+  } else {
+    setTimeout(()=>pushMsg('bot',f.answers._default),350);
+  }
+}
+function renderChat(){const log=document.getElementById('chatLog');log.innerHTML=CHAT.map(m=>`<div class="msg ${m.r}">${m.h}</div>`).join('');log.scrollTop=log.scrollHeight;}
+
+/* ===== MANAGER CONTROL ===== */
+const ADMIN={
+ kpis:[['DAU','1,284','+8%'],['MAU','9,640','+12%'],['Revenue 30d','₹4.82L','+15%'],['Orders','612','+9%'],['Conversion','4.7%','+0.6'],['Repeat rate','38%','+3'],['Avg LTV','₹3,410','+7%'],['Avg Wellness','74','+2'],['Active kiosks','6','+1']],
+ rev:[210,240,190,260,300,280,340,360,320,400,380,460],
+ customers:[['Ramesh Patel','Ahmedabad','OSMF','22→34mm','2h ago'],['Sunita Shah','Surat','PCOS','—','1d ago'],['Imran Khan','Mumbai','OSMF · quit','18→29mm','3h ago'],['Priya Mehta','Vadodara','Diabetes','—','5h ago'],['Arjun Rao','Rajkot','OSMF','25→31mm','1d ago']],
+ orders:[['#A6121','OSMF Mouth Opening Kit','₹6,500','Shipped'],['#A6120','Smile Toothgel ×2','₹998','Packed'],['#A6119','OSMF Pops','₹810','Delivered'],['#A6118','Ultimate Health Gummies','₹599','Shipped']],
+ kiosks:[['Thaltej, Ahmedabad','142','Priya'],['Sanand GIDC','98','Rohit'],['Mumbai Andheri','76','Sana']],
+ esc:[['Imran K.','"sharp pain while stretching"','OSMF · urgent'],['Priya M.','"my sugar reading is high"','Diabetes'],['Ramesh P.','"which supplement with the kit?"','Product']]
+};
+let ADMIN_TAB='overview';
+function openAdminGate(){openSheetRaw(`<div class="grab"></div><h3>🛠️ Manager Control</h3><p class="sub">Owner / staff access. Role-based, secure in the full build.</p><div class="field"><label>Passcode</label><input id="adminPin" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')verifyAdmin()"></div><button class="btn btn-block btn-navy" onclick="verifyAdmin()">Enter dashboard</button><p class="sub" style="text-align:center;margin-top:8px">Demo passcode: <b>1950</b></p>`);}
+function verifyAdmin(){const el=document.getElementById('adminPin');if(el&&el.value==='1950'){closeSheet();go('admin');}else{toast('Incorrect passcode');}}
+function setAdminTab(tb){ADMIN_TAB=tb;renderAdmin(tb);document.getElementById('screen-admin').scrollTop=0;}
+function renderAdmin(sec){
+  ADMIN_TAB=sec;const seg=document.getElementById('adminSeg');if(!seg)return;
+  const tabs=[['overview','Overview'],['customers','Customers'],['orders','Orders'],['kiosks','Kiosks'],['ai','AI Queue']];
+  seg.innerHTML=tabs.map(([k,l])=>`<div class="tab ${sec===k?'active':''}" onclick="setAdminTab('${k}')">${l}</div>`).join('');
+  const b=document.getElementById('adminBody');
+  if(sec==='overview'){
+    b.innerHTML=`<h2 class="sec">Business at a glance</h2><div class="kpi-grid">${ADMIN.kpis.map(([l,v,d])=>`<div class="card"><div class="sub" style="font-size:.62rem">${l}</div><b>${v}</b><span style="color:var(--green);font-size:.66rem;font-weight:700">${d}</span></div>`).join('')}</div>
+    <h2 class="sec">Revenue trend (12 mo)</h2><div class="card" style="padding:14px"><canvas id="revChart" style="width:100%;height:150px"></canvas></div>
+    <h2 class="sec">Top products</h2>${['kit','smile','pops'].map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<div class="card pcard" style="cursor:default">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="sub">${p.sold} sold · ${money(p.price)}</div></div></div>`;}).join('')}`;
+    setTimeout(drawRev,30);
+  } else if(sec==='customers'){
+    b.innerHTML=`<h2 class="sec">Unified Health Passport</h2><input style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:8px" placeholder="Search customers… (demo)"><div class="card" style="padding:4px 0">${ADMIN.customers.map(c=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.86rem">${c[0]}</b><div class="sub" style="font-size:.72rem">${c[1]} · ${c[2]} · ${c[3]}</div></div><div style="text-align:right"><div class="sub" style="font-size:.66rem">${c[4]}</div><span class="badge-soft">consent ✓</span></div></div>`).join('')}</div><p class="sub" style="margin-top:8px">One record per customer, merged across app, kiosk & WhatsApp. Segment & export in the full build.</p>`;
+  } else if(sec==='orders'){
+    b.innerHTML=`<h2 class="sec">Recent orders</h2><div class="card" style="padding:4px 0">${ADMIN.orders.map(o=>`<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${o[1]}</b><div class="sub">${o[0]} · ${o[2]}</div></div><span class="badge-soft">${o[3]}</span></div>`).join('')}</div>
+    <h2 class="sec">Inventory (Sanand plant)</h2><div class="card" style="padding:4px 0">${PRODUCTS.map((p,i)=>{const stk=p.stock?[57,54,69,226,42,48,0,40][i]:0;return `<div class="menu-item"><div style="flex:1"><b style="font-size:.84rem">${L(p.name)}</b></div><span style="font-weight:800;color:${stk===0?'#b91c1c':stk<20?'#C9A94E':'var(--green)'}">${p.stock?stk+' in stock':'OUT'}</span></div>`;}).join('')}</div>`;
+  } else if(sec==='kiosks'){
+    b.innerHTML=`<h2 class="sec">ATH kiosks · walk-in capture</h2>${ADMIN.kiosks.map(k=>`<div class="card" style="padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="font-size:1.6rem">⬢</div><div style="flex:1"><b>${k[0]}</b><div class="sub">Staff on duty: ${k[2]}</div></div><div style="text-align:right"><b style="color:var(--blue);font-size:1.2rem">${k[1]}</b><div class="sub" style="font-size:.64rem">walk-ins (30d)</div></div></div>`).join('')}<p class="sub">Multi-location ready — compare per-site and per-staff performance.</p>`;
+  } else if(sec==='ai'){
+    b.innerHTML=`<h2 class="sec">Human-escalation queue</h2>${ADMIN.esc.map(e=>`<div class="card" style="padding:13px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>${e[0]}</b><span class="badge-soft">${e[2]}</span></div><p class="sub" style="margin:5px 0 9px">${e[1]}</p><button class="btn btn-blue" onclick="toast('Opening conversation with full AI context…')">Review & reply</button></div>`).join('')}<p class="sub">Ask-the-Doctor: AI drafts a compliant reply, a clinician approves before it is sent.</p>`;
+  }
+}
+function drawRev(){const cv=document.getElementById('revChart');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=150;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);const d=ADMIN.rev,n=d.length,mx=Math.max(...d)*1.12,gap=W/n,bw=gap*0.56;d.forEach((v,i)=>{const bh=(H-18)*(v/mx);const xx=i*gap+gap*0.22,yy=H-bh-14,r=3;const g=x.createLinearGradient(0,yy,0,H);g.addColorStop(0,'#2E7BE0');g.addColorStop(1,'#0A1F44');x.fillStyle=g;x.beginPath();x.moveTo(xx,H-14);x.lineTo(xx,yy+r);x.quadraticCurveTo(xx,yy,xx+r,yy);x.lineTo(xx+bw-r,yy);x.quadraticCurveTo(xx+bw,yy,xx+bw,yy+r);x.lineTo(xx+bw,H-14);x.closePath();x.fill();});}
+
+function seedChat(){CHAT=[];const h={en:"Namaste 🙏 I'm AGRAVAT, your doctor-inspired wellness assistant. Ask me about OSMF care, supplements, diet or how to use any product — in your language, anytime.",hi:"नमस्ते 🙏 मैं AGRAVAT हूँ, आपका डॉक्टर-प्रेरित वेलनेस सहायक। OSMF देखभाल, सप्लीमेंट्स या आहार के बारे में पूछें।",gu:"નમસ્તે 🙏 હું AGRAVAT છું, તમારો ડૉક્ટર-પ્રેરિત વેલનેસ સહાયક. OSMF સંભાળ, સપ્લિમેન્ટ્સ વિશે પૂછો."};pushMsg('bot',h[LANG]||h.en);}
+
+/* sheets */
+function openSheetRaw(h){document.getElementById('sheetBody').innerHTML=h;document.getElementById('sheetBg').classList.add('show');}
+function openSheet(type){
+  let h='<div class="grab"></div>';
+  if(type==='cart'){
+    if(!CART.length)h+=`<h3>${t('cartTitle')}</h3><p class="sub" style="padding:20px 0">${t('cartEmpty')}</p><button class="btn btn-block btn-navy" onclick="closeSheet();go('shop')">${t('shopTitle')}</button>`;
+    else h+=`<h3>${t('cartTitle')}</h3>`+CART.map(c=>{const p=PRODUCTS.find(x=>x.id===c.id);return `<div class="cart-line">${imgHtml(p)}<div style="flex:1"><b style="font-size:.84rem">${L(p.name)}</b><div class="price" style="font-size:.84rem">${money(p.price*c.q)}</div></div><div class="qty"><button onclick="changeQty('${c.id}',-1)">−</button><b>${c.q}</b><button onclick="changeQty('${c.id}',1)">+</button></div></div>`;}).join('')+`<div style="display:flex;justify-content:space-between;margin:16px 0 4px;font-size:1.1rem;font-weight:800"><span>${t('cartTotal')}</span><span class="price" style="font-size:1.1rem">${money(cartTotal())}</span></div><button class="btn btn-block btn-gold" onclick="openSheet('checkout')">${t('checkout')}</button><div class="rz">🔒 ${t('rzSecure')}</div>`;
+  } else if(type==='checkout'){
+    h+=`<h3>${t('checkout')}</h3><div class="field"><label>${t('coName')}</label><input value="Kartavya Agravat"></div><div class="field"><label>${t('coPhone')}</label><input value="+91 75750 08686" inputmode="tel"></div><div class="field"><label>${t('coAddr')}</label><input placeholder="Thaltej, Ahmedabad, Gujarat 380059"></div><div class="field"><label>${t('coPay')}</label><select><option>UPI (Google Pay / PhonePe)</option><option>Credit / Debit Card</option><option>Net Banking</option><option>EMI</option></select></div><div style="display:flex;justify-content:space-between;margin:10px 0;font-weight:800"><span>${t('cartTotal')}</span><span class="price">${money(cartTotal())}</span></div><button class="btn btn-block btn-green" onclick="payNow()">🔒 ${t('coPay')} ${money(cartTotal())}</button><div class="rz">🔒 ${t('rzSecure')}</div>`;
+  } else if(type==='lang'){
+    const o=[['en','🇬🇧','English'],['hi','🇮🇳','हिन्दी'],['gu','🇮🇳','ગુજરાતી']];h+=`<h3>Language / भाषा / ભાષા</h3>`+o.map(([k,f,n])=>`<div class="lang-opt ${LANG===k?'sel':''}" onclick="setLang('${k}')"><span class="fl">${f}</span><b>${n}</b>${LANG===k?'<span style="margin-left:auto;color:var(--green)">✓</span>':''}</div>`).join('');
+  } else if(type==='refer'){
+    h+=`<h3>🎁 ${t('refer')}</h3><p class="sub">Two-sided reward: you and your friend both get ₹200 store credit.</p><div class="card" style="padding:16px;text-align:center;margin:12px 0"><div class="sub">Your referral code</div><b style="font-size:1.6rem;letter-spacing:.15em;color:var(--gold)">KARTAVYA50</b></div><button class="btn btn-block btn-green" onclick="openLink('https://wa.me/?text=Try%20AGRAVAT%20%E2%80%94%20doctor-inspired%20wellness%20since%201950.%20Use%20code%20KARTAVYA50')">📲 Share on WhatsApp</button><div style="margin-top:14px">${['Member','🥈 Advocate (you)','Ambassador','Wellness Champion'].map((s,i)=>`<div style="display:flex;gap:10px;padding:8px 0;align-items:center;${i===1?'font-weight:800':''}"><span>${i<=1?'✅':'⚪'}</span>${s}</div>`).join('')}</div>`;
+  } else if(type==='consult'){
+    h+=`<h3>📹 Video Consultation</h3><p class="sub">Speak directly with AGRAVAT's clinical team. Diagnosis and assessment are performed only by our qualified clinicians.</p><div class="card" style="padding:16px;margin:12px 0;display:flex;gap:12px;align-items:center"><div style="font-size:2rem">👨‍⚕️</div><div><b>Dr Bharat Agravat</b><div class="sub">25 yrs · 18 awards · OLI Therapy · 3 slots today</div></div></div><button class="btn btn-block btn-navy" onclick="toast(t('soonMsg'))">Book a slot</button><p class="sub" style="margin-top:10px">Or try async "Ask the Doctor" — AI drafts, a clinician approves before it's sent.</p>`;
+  } else if(type==='care'){
+    h+=`<h3>⭐ AGRAVAT Care+</h3><p class="sub">Membership bundling consultations, member discounts, free shipping & priority support.</p><div class="card" style="padding:16px;margin:12px 0;text-align:center"><b style="font-size:1.6rem;color:var(--gold)">₹999<span style="font-size:.8rem;color:var(--muted)">/year</span></b><ul style="text-align:left;font-size:.85rem;margin-top:10px">${['2 free video consults','10% off all products','Free shipping always','Priority support','Doctor-reviewed care plan'].map(x=>`<li>${x}</li>`).join('')}</ul></div><button class="btn btn-block btn-gold" onclick="toast(t('soonMsg'))">Join Care+</button>`;
+  } else if(type==='consent'){
+    h+=`<h3>🔒 Privacy & Data Consent</h3><p class="sub">Your health data builds your unified Health Passport, stored securely and never shared without consent.</p>${[['Health & OSMF data',true],['Supplement & order history',true],['AI assistant conversations',true],['Marketing communications',false]].map(([l,on])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="ml">${l}</span><span style="color:${on?'var(--green)':'var(--muted)'};font-weight:800">${on?'● On':'○ Off'}</span></div>`).join('')}<p class="sub" style="margin-top:10px">View, download or delete your data anytime. Compliant with ASCI, FSSAI & data-protection norms.</p>`;
+  } else if(type==='reminders'){
+    h+=`<h3>⏰ ${t('qRem')}</h3>`+[['🦷','Morning OSMF exercise','8:00 AM'],['🧴','Apply OSMF Oral Gel','2:00 PM'],['💊','OSMF Vita after dinner','9:00 PM'],['🔄','OSMF kit refill predicted','in 6 days']].map(([e,l,tm])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="e">${e}</span><span class="ml">${l}</span><span class="sub">${tm}</span></div>`).join('');
+  } else if(type==='measure'){
+    h+=`<h3>📸 AI camera measurement</h3><p class="sub">Place a standard ₹5 coin (or the OSMF kit-box edge) beside your open mouth in the photo. The AI uses that known size as a reference to estimate your mouth opening in millimetres — an at-home tracking aid, never a diagnosis.</p><div class="card" style="padding:20px;text-align:center;margin:12px 0"><div style="font-size:2.6rem">📷</div><p class="sub" style="margin:8px 0 0">Camera opens here in the installed app.</p></div><button class="btn btn-block btn-gold" onclick="simMeasure()">Simulate a measurement</button>`;
+  }
+  openSheetRaw(h);
+}
+function closeSheet(){document.getElementById('sheetBg').classList.remove('show');document.getElementById('sheetBody').innerHTML='';}
+function payNow(){CART=[];saveCart();closeSheet();setTimeout(()=>toast(t('paySuccess')),200);}
+function setLang(k){LANG=k;localStorage.setItem('agr_lang',k);applyI18n();seedChat();closeSheet();}
+
+/* modes */
+function toggleKiosk(){document.body.classList.toggle('kiosk');document.getElementById('kioskBtn').classList.toggle('active',document.body.classList.contains('kiosk'));setTimeout(()=>{drawChart();drawSugar();},60);}
+function toggleDark(){document.body.classList.toggle('dark');document.getElementById('darkBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';setTimeout(()=>{drawChart();drawSugar();},60);}
+
+let toastT=null;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2200);}
+function setWellness(n){document.getElementById('wsNum').textContent=n;const C=2*Math.PI*34;const r=document.getElementById('wsRing');r.style.strokeDasharray=C;r.style.strokeDashoffset=C*(1-n/100);}
+
+function init(){applyI18n();saveCart();updateOsmfStats();setWellness(76);seedChat();updTimer();window.addEventListener('resize',()=>{if(CUR==='osmf')drawChart();if(CUR==='diet')drawSugar();});}
+init();
+</script>
+</body>
+</html>
