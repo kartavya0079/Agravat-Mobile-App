@@ -251,6 +251,7 @@
   .kpi-grid .card{ padding:12px 10px; } .kpi-grid b{ display:block; font-size:1.15rem; margin-top:2px;}
   #adminSeg{ margin-top:10px; }
   .typing{ opacity:.6; font-style:italic; }
+  .kiosk-only{ display:none !important; } body.kiosk .kiosk-only{ display:flex !important; }
 </style>
 </head>
 <body>
@@ -289,6 +290,7 @@
       <div class="chip" onclick="openSheet('reminders')"><span class="e">⏰</span><span data-i="qRem">Reminders</span></div>
       <div class="chip" onclick="go('updates')"><span class="e">📺</span><span data-i="qVideo">New videos</span></div>
       <div class="chip" onclick="go('ask')"><span class="e">✨</span><span data-i="qAsk">Ask AGRAVAT</span></div>
+      <div class="chip kiosk-only" onclick="go('ath')" style="background:var(--navy);color:#fff;border-color:var(--navy)"><span class="e">🩺</span>Patient Data Entry</div>
     </div>
 
     <h2 class="sec" data-i="explore">Explore AGRAVAT</h2>
@@ -526,6 +528,7 @@
       <b style="margin-left:auto;font-size:1rem">🩺 ATH Staff Console</b>
     </div>
     <p class="sub" style="margin-top:6px">Staff-assisted intake. Measurements & screening are captured by staff; <b>diagnosis is entered only by a qualified AGRAVAT clinician</b>.</p>
+    <button class="btn btn-block btn-gold" style="margin-top:10px" onclick="athNew()">➕ New patient data entry</button>
 
     <div class="card" style="padding:14px;margin-top:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>New patient intake</b><button class="btn btn-ghost" onclick="athNew()">↺ New session</button></div>
