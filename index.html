@@ -299,6 +299,7 @@
     <div class="tiles">
       <div class="tile t1" onclick="go('osmf')"><div class="emo">🦷</div><div><b data-i="catOsmf">OSMF Care</b><small data-i="catOsmfS">Guided recovery & tracking</small></div></div>
       <div class="tile t4" onclick="go('supp')"><div class="emo">💊</div><div><b data-i="catSupp">Supplement Advisor</b><small data-i="catSuppS">Guidance, timing & stacks</small></div></div>
+      <div class="tile" style="background:linear-gradient(150deg,#2D6A4F,#1E5FB4)" onclick="go('sport')"><div class="emo">🏅</div><div><b>Sport Nutrition</b><small>Protein for every body</small></div></div>
       <div class="tile t3" onclick="setDietTab('diet')"><div class="emo">🥗</div><div><b data-i="catDiet">Diet & Plans</b><small data-i="catDietS">Daily meal programs</small></div></div>
       <div class="tile t5" onclick="setDietTab('diabetes')"><div class="emo">🩸</div><div><b data-i="catDia">Diabetes Care</b><small data-i="catDiaS">Vitals & management</small></div></div>
       <div class="tile t2" onclick="openSheet('consult')"><div class="emo">📹</div><div><b data-i="catCon">Consultations</b><small data-i="catConS">Talk to a clinician</small></div></div>
@@ -521,6 +522,38 @@
     </div>
     <div class="tabs" id="adminSeg"></div>
     <div id="adminBody"></div>
+  </div>
+
+  <!-- SPORT NUTRITION -->
+  <div class="screen hidden" id="screen-sport">
+    <div class="hero" style="background:linear-gradient(140deg,#0A1F44,#1E5FB4 55%,#2D6A4F 130%)">
+      <h3 style="margin:0 0 4px;color:var(--gold2)">🏅 AGRAVAT Sport Nutrition</h3>
+      <p style="margin:0;font-size:.82rem;opacity:.92">Doctor-backed nutrition for <b>every body</b> — not just the gym. Personalised protein & supplement plans, integrated with your oral care and daily wellness.</p>
+    </div>
+
+    <h2 class="sec">🧮 Your personalised protein plan</h2>
+    <div class="card" style="padding:16px">
+      <div style="display:flex;gap:8px">
+        <div class="field" style="flex:1;margin:0"><label>Weight (kg)</label><input id="spWeight" type="number" inputmode="decimal" value="70"></div>
+        <div class="field" style="flex:1.3;margin:0"><label>You are</label><select id="spWho"><option value="everyday">Everyday / walker</option><option value="corporate">Corporate desk (30+)</option><option value="senior">Senior (60+)</option><option value="gym">Gym / strength</option><option value="athlete">Sport athlete</option></select></div>
+      </div>
+      <button class="btn btn-block btn-gold" style="margin-top:12px" onclick="calcProtein()">Calculate my protein</button>
+      <div id="spResult" style="margin-top:12px"></div>
+    </div>
+
+    <h2 class="sec">💪 Protein is for everyone</h2>
+    <div id="spWhoCards"></div>
+
+    <h2 class="sec">🎯 Sport & lifestyle diet charts</h2>
+    <div class="qrow" id="spSportRow"></div>
+    <div id="spChart"></div>
+
+    <h2 class="sec">🧴 Our nutrition range</h2>
+    <p class="sub" style="margin:-6px 4px 8px">Premium protein, creatine, L-carnitine & herbal performance supplements are available on personal request — our experts guide your exact choice & dosage.</p>
+    <div id="spProducts"></div>
+
+    <div class="card" style="padding:14px;margin-top:12px"><b>🔗 Integrated with AGRAVAT</b><p class="sub" style="margin:6px 0 0">Your protein, health supplements and oral care work as one plan — timed together for your goal. Let our AI combine them for you.</p><button class="btn btn-blue btn-block" style="margin-top:8px" onclick="go('ask')">✨ Ask AGRAVAT to build my plan</button></div>
+    <div class="compliance">Nutrition guidance is functional and educational — protein is safe for healthy adults, including seniors and non-athletes, with no side effects at recommended intakes. Not a substitute for medical advice; we tailor plans personally on request.</div>
   </div>
 
   <!-- ATH STAFF CONSOLE (kiosk) -->
@@ -781,7 +814,7 @@ function greeting(){const h=new Date().getHours();return h<12?t('greetMorning'):
 
 function go(s){
   CUR=s;
-  ['home','shop','product','osmf','supp','diet','updates','ask','profile','admin','ath'].forEach(x=>document.getElementById('screen-'+x).classList.add('hidden'));
+  ['home','shop','product','osmf','supp','sport','diet','updates','ask','profile','admin','ath'].forEach(x=>document.getElementById('screen-'+x).classList.add('hidden'));
   document.getElementById('screen-'+s).classList.remove('hidden');
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===s));
   document.getElementById('screen-'+s).scrollTop=0;
@@ -790,6 +823,7 @@ function go(s){
   if(s==='diet')renderDiet();
   if(s==='admin')renderAdmin(ADMIN_TAB||'overview');
   if(s==='ath')renderAth();
+  if(s==='sport')renderSport();
 }
 
 function imgHtml(p,cls){
@@ -1046,7 +1080,12 @@ const KB=[
  ['oli therapy,oli','OLI Therapy is AGRAVAT’s clinical approach for restricted mouth opening, provided by our qualified clinicians. I can connect you to request a consultation.'+ESC],
  ['pain,bleeding,swelling worse,lump,white patch','That sounds like something a clinician should assess directly — I don’t diagnose symptoms myself.'+ESC],
  ['language,hindi,gujarati,भाषा,ભાષા','Tap the 🌐 button at the top to switch between English, हिन्दी and ગુજરાતી anytime.'],
- ['thank,thanks,helpful','Happy to help! Anything else about your OSMF care, supplements, diet or products? 🙏'],
+ ['protein,how much protein,protein powder,whey,plant protein','Protein is for every body — not just the gym. A rough daily target: ~1.0 g/kg for everyday walkers, ~1.2 g/kg for corporate/desk (30+), ~1.3 g/kg for seniors, and 1.6–2.0 g/kg for gym/athletes. Open Sport Nutrition to calculate yours. Whey & plant protein are available on personal request — tap Enquire and our experts guide the exact choice.'],
+ ['creatine,creatine monohydrate','Creatine monohydrate (3–5 g daily, any time) is the most researched supplement for strength & power — safe for healthy adults. It’s part of our nutrition range, available on request with expert guidance.'],
+ ['l-carnitine,carnitine,fat burn,endurance','L-Carnitine supports fat metabolism and endurance energy. Available on personal request — our experts recommend the right dose for your goal.'],
+ ['sport,sports nutrition,pickleball,football,running,workout,gym diet,exercise diet','AGRAVAT Sport Nutrition gives sport-specific diet charts (pickleball, football, gym, running, senior fitness, corporate desk), a personalised protein calculator, and a premium range (protein, creatine, L-carnitine, herbal) — all integrated with your supplements and oral care. Open the Sport Nutrition tile to explore.'],
+ ['senior protein,elderly,old age,parents protein,sarcopenia','Seniors need MORE protein, not less — around 1.2–1.5 g/kg daily helps prevent muscle & bone loss, improve balance and speed recovery. We offer gentle, easy-to-digest options (great alongside OSMF care). Ask our experts for a senior plan.'],
+ ['thank,thanks,helpful','Happy to help! Anything else about your OSMF care, supplements, diet, sport nutrition or products? 🙏'],
 ];
 function localAnswer(q){q=(q||'').toLowerCase();let best=null,bs=0;for(const [keys,ans] of KB){let s=0;for(const k of keys.split(','))if(k&&q.includes(k))s++;if(s>bs){bs=s;best=ans;}}return bs>0?best:(CHAT_FLOW[LANG]||CHAT_FLOW.en).answers._default;}
 function chatPhotoPick(e){const file=e.target.files&&e.target.files[0];if(!file){return;}const r=new FileReader();r.onload=()=>{pushMsg('user',`<img src="${r.result}" alt="photo" style="max-width:170px;border-radius:10px;display:block">`);setTimeout(()=>{pushMsg('bot','Thanks for sharing your photo. 📷 For your safety I don’t diagnose from images — I’ve noted it so an AGRAVAT clinician can review it during a consultation.'+ESC);},450);};r.readAsDataURL(file);e.target.value='';}
@@ -1152,6 +1191,40 @@ function earn(n){POINTS+=n;localStorage.setItem('agr_points',POINTS);renderPoint
 function addPoints(n,reason){earn(n);toast('+'+n+' points'+(reason?' · '+reason:''));}
 function renderPoints(){const s=POINTS.toLocaleString('en-IN');['ptsHero','ptsPass'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});}
 function redeemReward(id){const r=REWARDS.find(x=>x.id===id);if(!r)return;if(POINTS<r.pts){toast('Need '+(r.pts-POINTS)+' more points');return;}if(!REDEEMED[id]){REDEEMED[id]=r.base+'-'+Math.floor(1000+Math.random()*9000);localStorage.setItem('agr_redeemed',JSON.stringify(REDEEMED));}openSheet('rewards');setTimeout(()=>toast('🎉 Unlocked: '+r.title),120);}
+
+/* ===== SPORT NUTRITION ===== */
+const SP_WHO={
+ everyday:{f:1.0,label:'Everyday / walker',why:'Even without the gym, protein preserves muscle, keeps you full, steadies energy and supports immunity as you age.'},
+ corporate:{f:1.2,label:'Corporate desk (30+)',why:'Desk jobs quietly lose muscle after 30. Protein protects metabolism, focus and posture through long sitting days.'},
+ senior:{f:1.3,label:'Senior (60+)',why:'Seniors need MORE protein, not less — it prevents muscle loss (sarcopenia), keeps bones & balance strong and speeds recovery.'},
+ gym:{f:1.7,label:'Gym / strength',why:'Rebuild and grow muscle after training with well-timed protein plus creatine for strength.'},
+ athlete:{f:1.9,label:'Sport athlete',why:'High output needs high recovery — protein, creatine and hydration keep performance and repair on point.'},
+};
+const SP_WHO_CARDS=[['👵','Seniors (60+)','Protein prevents muscle & bone loss, improves balance and recovery. Gentle, easy-to-digest options.'],['💼','Corporate 30+','Fights the muscle & metabolism dip of desk life; supports focus and energy.'],['🚶','Everyday walkers','A common walker gets fuller, steadier energy and better immunity — with zero side effects at normal intake.'],['🏋️','Gym & athletes','Build, recover and perform with protein + creatine, timed around training.']];
+const SPORTS={
+ pickleball:{e:'🥒',label:'Pickleball',chart:[['Pre (1–2h)','Banana + handful of nuts + water — light carbs for quick energy'],['During','Sip water/electrolytes every changeover'],['Post (30–45min)','Protein shake or paneer/curd + fruit — repair & rehydrate'],['Daily protein','1.4 g/kg to support agility & joints'],['Tip','Add magnesium for the wrists & calves that pickleball punishes']]},
+ football:{e:'⚽',label:'Football',chart:[['Pre (2–3h)','Rice/roti + dal + veg — sustained carbs + protein'],['During','Electrolytes at half-time'],['Post','30–40 g protein + carbs within 45 min'],['Daily protein','1.6–1.8 g/kg for sprints & recovery'],['Tip','Creatine supports repeated sprint power']]},
+ gym:{e:'🏋️',label:'Gym / Strength',chart:[['Pre','Coffee + light carbs; optional creatine'],['Post','Whey/plant protein 25–40 g'],['Daily protein','1.6–2.0 g/kg, split across 3–4 meals'],['Creatine','3–5 g daily, any time'],['Tip','Consistency beats dose — hit protein every meal']]},
+ running:{e:'🏃',label:'Running',chart:[['Pre','Banana/toast 1h before'],['During','Water/electrolytes on long runs'],['Post','Protein + carbs (3:1) to refuel'],['Daily protein','1.4–1.6 g/kg'],['Tip','L-carnitine may support endurance fuel use']]},
+ senior:{e:'👵',label:'Senior fitness',chart:[['Morning','Protein at breakfast (eggs/curd/soft paneer) — seniors absorb it best early'],['Daily protein','1.2–1.5 g/kg, spread evenly'],['With','Vitamin D + calcium + gentle walking'],['Texture','Soft, easy-to-chew proteins (great with OSMF care)'],['Tip','Resistance bands 2–3×/week keep muscle']]},
+ corporate:{e:'💼',label:'Corporate / desk',chart:[['Breakfast','Protein-first (eggs, curd, sprouts) to avoid 11am crash'],['Desk snack','Roasted chana / a protein bar over biscuits'],['Daily protein','1.2 g/kg minimum'],['Move','5-min walk each hour + post-lunch stroll'],['Tip','Hydrate — fatigue is often dehydration']]},
+};
+const SP_PRODUCTS=[['🥤','Whey & Plant Protein','Clean protein for muscle, recovery & everyday nutrition'],['⚡','Creatine Monohydrate','The most researched supplement for strength & power'],['🔥','L-Carnitine','Supports fat metabolism & endurance energy'],['🌿','Herbal performance range','Ashwagandha, shilajit & botanicals — our upcoming herbal-first line']];
+let SP_SPORT='pickleball';
+function calcProtein(){const w=parseFloat((document.getElementById('spWeight')||{}).value)||70;const who=(document.getElementById('spWho')||{}).value||'everyday';const o=SP_WHO[who];const rec=Math.round(w*o.f);const perMeal=Math.round(rec/4);const el=document.getElementById('spResult');if(!el)return;
+  let prod = who==='gym'||who==='athlete' ? 'Whey/Plant Protein + Creatine' : who==='senior' ? 'a gentle, easy-to-digest protein + Vitamin D' : 'Whey or Plant Protein';
+  el.innerHTML=`<div class="card" style="padding:16px;text-align:center;background:linear-gradient(135deg,#0A1F44,#2D6A4F);color:#fff"><div style="font-size:.7rem;opacity:.85">Recommended daily protein</div><div style="font-size:2rem;font-weight:800;color:var(--gold2)">${rec} g<span style="font-size:.9rem;font-weight:600">/day</span></div><div style="font-size:.72rem;opacity:.9">≈ ${perMeal} g across 4 meals · ${o.label}</div></div><p class="sub" style="margin:10px 2px 0">${o.why}</p><p class="sub" style="margin:8px 2px 0">Suggested from our range: <b>${prod}</b>, integrated with your AGRAVAT supplements & oral care. Tap “Ask AGRAVAT” for a full personalised plan.</p><button class="btn btn-block btn-green" style="margin-top:10px" onclick="contactCare('a personalised protein plan')">📞 Get a personal plan from our experts</button>`;
+}
+function renderSport(){
+  const wc=document.getElementById('spWhoCards');if(!wc)return;
+  wc.innerHTML=SP_WHO_CARDS.map(([e,t,d])=>`<div class="card" style="padding:13px;margin-bottom:9px;display:flex;gap:12px;align-items:center"><div style="font-size:1.6rem">${e}</div><div><b style="font-size:.88rem">${t}</b><div class="sub" style="font-size:.73rem">${d}</div></div></div>`).join('');
+  document.getElementById('spSportRow').innerHTML=Object.keys(SPORTS).map(k=>`<div class="chip ${SP_SPORT===k?'on':''}" onclick="setSport('${k}')"><span class="e">${SPORTS[k].e}</span>${SPORTS[k].label}</div>`).join('');
+  const s=SPORTS[SP_SPORT];
+  document.getElementById('spChart').innerHTML=`<div class="card" style="padding:6px 14px">${s.chart.map(([k,v])=>`<div class="ex-step"><div class="n" style="background:var(--sky);color:var(--navy);font-size:.62rem">${k.split(' ')[0].slice(0,4)}</div><div><b style="font-size:.82rem">${k}</b><div class="sub" style="font-size:.73rem">${v}</div></div></div>`).join('')}</div>`;
+  document.getElementById('spProducts').innerHTML=SP_PRODUCTS.map(([e,t,d])=>`<div class="card" style="padding:13px;margin-bottom:9px;display:flex;gap:12px;align-items:center"><div style="font-size:1.6rem">${e}</div><div style="flex:1"><b style="font-size:.88rem">${t}</b><div class="sub" style="font-size:.73rem">${d}</div><span class="badge-soft" style="margin-top:4px;display:inline-block">Available on request</span></div><button class="btn btn-gold" onclick="contactCare('${t}')">Enquire</button></div>`).join('');
+}
+function setSport(k){SP_SPORT=k;renderSport();}
+function contactCare(prod){openSheetRaw(`<div class="grab"></div><h3>📞 Personal guidance</h3><p class="sub">Our nutrition experts will personally recommend the right ${prod||'products'} and dosage for your body & goal.</p><a href="tel:7575008686" class="btn btn-block btn-navy" style="text-decoration:none;display:block;text-align:center;box-sizing:border-box">📞 Call care · 7575 00 8686</a><button class="btn btn-block btn-green" style="margin-top:8px" onclick="openLink('https://wa.me/917575008686?text=I%27d%20like%20guidance%20on%20AGRAVAT%20Sport%20Nutrition')">💬 WhatsApp our experts</button><p class="sub" style="text-align:center;margin-top:8px;font-size:.66rem">Personalised plans combine protein + supplements + oral care.</p>`);}
 
 /* ===== CLOUD DATABASE (Supabase) ===== */
 let SB=null,CLOUD=false,athPhoto=null;
