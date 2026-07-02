@@ -253,6 +253,7 @@
   .typing{ opacity:.6; font-style:italic; }
   .kiosk-only{ display:none !important; } body.kiosk .kiosk-only{ display:flex !important; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div id="app">
@@ -292,6 +293,7 @@
       <div class="chip" onclick="go('ask')"><span class="e">✨</span><span data-i="qAsk">Ask AGRAVAT</span></div>
       <div class="chip kiosk-only" onclick="go('ath')" style="background:var(--navy);color:#fff;border-color:var(--navy)"><span class="e">🩺</span>Patient Data Entry</div>
     </div>
+    <div class="card" id="dailyTip" style="padding:12px 14px;margin-top:12px;display:flex;gap:10px;align-items:center"></div>
 
     <h2 class="sec" data-i="explore">Explore AGRAVAT</h2>
     <div class="tiles">
@@ -470,7 +472,7 @@
       <h2 class="sec" style="margin-top:16px">✨ <span data-i="askTitle">Ask AGRAVAT</span> <span class="badge-soft" data-i="askBadge">24/7 AI</span></h2>
       <div class="chat-log" id="chatLog"></div>
       <div class="chat-suggest" id="chatSuggest"></div>
-      <div class="chat-input"><input id="chatInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-blue" onclick="sendChat()">➤</button></div>
+      <div class="chat-input"><input type="file" id="chatPhoto" accept="image/*" capture="environment" style="display:none" onchange="chatPhotoPick(event)"><button class="btn btn-ghost" style="padding:12px 13px" title="Send a photo" onclick="document.getElementById('chatPhoto').click()">📷</button><input id="chatInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-blue" onclick="sendChat()">➤</button></div>
       <p class="ai-guard" data-i="aiGuard">AGRAVAT AI gives functional guidance only — it never diagnoses or prescribes. Clinical questions route to a qualified clinician.</p>
     </div>
   </div>
@@ -541,6 +543,7 @@
       <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Mouth opening (mm)</label><input id="athMm" inputmode="decimal"></div><div class="field" style="flex:1"><label>Blood pressure</label><input id="athBP" placeholder="120/80"></div></div>
       <div style="display:flex;gap:8px"><div class="field" style="flex:1"><label>Blood sugar (mg/dL)</label><input id="athSugar" inputmode="numeric"></div><div class="field" style="flex:1"><label>Weight (kg)</label><input id="athWeight" inputmode="decimal"></div></div>
       <div class="field"><label>Screening notes</label><textarea id="athScreen" style="width:100%;min-height:60px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"></textarea></div>
+      <div class="field"><label>Oral photo (optional)</label><input type="file" id="athPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="athPhotoPick(event)"><button class="btn btn-ghost btn-block" onclick="document.getElementById('athPhotoInput').click()">📷 Capture / attach oral photo</button><div id="athPhotoPrev" style="margin-top:8px"></div></div>
       <div style="font-weight:800;font-size:.8rem;color:var(--green);margin:10px 0 4px">🩺 Clinician assessment & diagnosis</div>
       <div class="field"><label>Diagnosis (qualified clinician only)</label><textarea id="athDx" style="width:100%;min-height:60px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit" placeholder="Entered by AGRAVAT clinician after assessment"></textarea></div>
       <button class="btn btn-block btn-green" onclick="athSave()">💾 Save patient to AGRAVAT database</button>
@@ -772,7 +775,7 @@ function applyI18n(){
   const nm=ACCOUNT&&ACCOUNT.name?ACCOUNT.name.split(' ')[0]:'there';
   document.getElementById('greetLine').textContent=greeting()+', '+nm;
   document.documentElement.lang=LANG;
-  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates(); renderAcct(); renderPoints();
+  renderReco(); renderProducts(); renderChatSuggest(); renderOsmf(); renderSupp(); renderDiet(); renderUpdates(); renderAcct(); renderPoints(); renderTip();
 }
 function greeting(){const h=new Date().getHours();return h<12?t('greetMorning'):h<17?t('greetAfternoon'):t('greetEvening');}
 
@@ -1012,18 +1015,50 @@ async function askLive(q){
     }catch(e){ CHAT.pop(); pushMsg('bot',f.answers._default); }
     AI_BUSY=false;
   } else {
-    setTimeout(()=>pushMsg('bot',f.answers._default),350);
+    setTimeout(()=>pushMsg('bot',localAnswer(q)),350);
   }
 }
+const ESC='<div class="esc">→ I’m connecting you to a qualified AGRAVAT clinician. You’re never stuck with the AI alone.</div>';
+const KB=[
+ ['kit,mouth opening kit,osmf kit,pack of 4','The OSMF Mouth Opening Kit (₹6,500) is our flagship — a pack of 4: OSMF Pops, the UNIQUE Mouth Opener, OSMF Oral Gel and OSMF Vita. A full 2-month home program that helps improve and maintain mouth opening. Use morning & night with the guided timer.'],
+ ['pops,lollipop','OSMF Pops (₹810) is the world’s first herbal lollipop — turmeric, tulsi & yashtimadhu. Don’t chew; let one dissolve slowly, up to 3 a day, for oral comfort and immunity support.'],
+ ['gel,ulcer,burning,sore,mouth pain','OSMF Oral Gel (₹450) with turmeric, tulsi & yashtimadhu helps manage mouth ulcers, burning while eating and swollen gums. Apply to the gums/inner cheek twice daily. If pain is sharp or worsening, please see a clinician.'+ESC],
+ ['vita,vitamin,multivitamin,lycopene,antioxidant','OSMF Vita (₹630) combines lycopene with antioxidants and multivitamins A, E, C, B-group. Take one tablet daily after a meal to support nutrition during OSMF care.'],
+ ['smile,toothgel,toothpaste,gums,sensitivity','Smile Toothgel (₹499) is a fluoride-free aloe-vera toothgel with 10 herbs — helps reduce sensitivity & gum bleeding and freshens breath. Brush twice daily.'],
+ ['qsg,quit,gutkha,tobacco,smoking,cigarette,betel','Quitting tobacco/gutkha is the single biggest driver of OSMF recovery. The QSG Quit-Tobacco Kit (₹1,800) has Nico gums, sleep gummies and energy lozenges for a month, with a free consultation. Use the in-app tobacco-free tracker for daily support.'],
+ ['opener,device,unique,widen','The UNIQUE Mouth Opener (₹2,699) is a patent-pending stainless-steel device with a screw thread. Insert at a comfortable width, turn gently, hold the stretch — never force it. Follow the guided routine.'],
+ ['gummies,gummy','Ultimate Health Gummies (₹599) — 30 sugar-free lycopene + multivitamin gummies for daily wellness. Chew one a day.'],
+ ['price,cost,how much,rupees,rate','Prices: Kit ₹6,500 · UNIQUE Opener ₹2,699 · QSG Kit ₹1,800 · Pops ₹810 · Vita ₹630 · Gummies ₹599 · Smile ₹499 · Oral Gel ₹450. Open Shop to see all with offers.'],
+ ['buy,order,purchase,checkout,cart','Tap “Buy now” on any product to complete your order securely on agravat.com, or “Add” to build a cart. Free shipping across India.'],
+ ['ship,delivery,deliver,courier,dispatch','We offer free shipping across India. Order tracking and one-tap reorder are built in.'],
+ ['exercise,stretch,routine,how to open,widen mouth,physio','The OSMF Recovery Companion guides a daily routine — each exercise is 60 seconds with a 60-second rest: warm-up, opener stretch, tongue rotation to the palate, tongue stretch and cheek balloon. Consistency (small daily reps) drives progress.'],
+ ['tongue,stiff,palate','For tongue stiffness, do the Tongue rotation & palate reach exercise — rotate the tongue slowly inside the mouth and press up to the palate. It’s in your OSMF routine and supports mobility.'],
+ ['diet,food,eat,meal,nutrition','Favour soft, cool, protein-rich foods — dals, khichdi, paneer, curd, banana, soaked nuts, plus turmeric & tulsi. Limit spicy, chilli, very hot or hard foods and all tobacco. See Diet & Plans for a full daily plan.'],
+ ['diabetes,blood sugar,sugar level','The Diabetes Care plan tracks your vitals and gives a low-GI Indian meal plan — jowar/bajra roti, whole dals, greens; limit sugar, white rice and fried foods; a short walk after meals helps.'],
+ ['pcos','We have PCOS-supportive guidance and supplements. As PCOS is a clinical condition, I’ll also connect you to an AGRAVAT clinician for a tailored plan.'+ESC],
+ ['supplement,timing,when to take,dose,dosage','Timing: OSMF Vita and Omega-type supplements are best after a morning/meal; calming supplements suit the evening; OSMF Pops up to 3×/day. The Supplement Advisor builds a schedule for your goal.'],
+ ['pregnan,breastfeed,feeding','Some products aren’t suitable in pregnancy or breastfeeding. Please don’t start anything new without checking — I’ll connect you to an AGRAVAT clinician.'+ESC],
+ ['consult,doctor,appointment,expert,clinician','Tap “Consult Experts Now” to request a video consultation — our experts confirm a time that suits you. For quick, non-clinical questions I can help right here.'],
+ ['points,reward,offer,coupon,discount,loyalty','You earn points on every product, OSMF log and daily habit. Reach a tier to unlock a 5% off code (1,500 pts) or a free consultation (2,500 pts). Open Rewards to redeem.'],
+ ['refer,referral,friend,invite','Share your referral code — you and your friend both get ₹200 credit and you earn 100 points per successful referral. Find it in Profile → Refer & earn.'],
+ ['camera,measure,mm,measurement,opening reading','You can measure your mouth opening from a photo: OSMF → AI camera measurement. Place a ₹5 coin for scale, capture, and tap the coin edges then your mouth — it calculates the millimetres. It’s a tracking aid, not a diagnosis.'],
+ ['contact,phone,number,care,helpline,call','You can reach AGRAVAT care at 7575 00 8686. FSSAI licence 10721009000042.'],
+ ['oli therapy,oli','OLI Therapy is AGRAVAT’s clinical approach for restricted mouth opening, provided by our qualified clinicians. I can connect you to request a consultation.'+ESC],
+ ['pain,bleeding,swelling worse,lump,white patch','That sounds like something a clinician should assess directly — I don’t diagnose symptoms myself.'+ESC],
+ ['language,hindi,gujarati,भाषा,ભાષા','Tap the 🌐 button at the top to switch between English, हिन्दी and ગુજરાતી anytime.'],
+ ['thank,thanks,helpful','Happy to help! Anything else about your OSMF care, supplements, diet or products? 🙏'],
+];
+function localAnswer(q){q=(q||'').toLowerCase();let best=null,bs=0;for(const [keys,ans] of KB){let s=0;for(const k of keys.split(','))if(k&&q.includes(k))s++;if(s>bs){bs=s;best=ans;}}return bs>0?best:(CHAT_FLOW[LANG]||CHAT_FLOW.en).answers._default;}
+function chatPhotoPick(e){const file=e.target.files&&e.target.files[0];if(!file){return;}const r=new FileReader();r.onload=()=>{pushMsg('user',`<img src="${r.result}" alt="photo" style="max-width:170px;border-radius:10px;display:block">`);setTimeout(()=>{pushMsg('bot','Thanks for sharing your photo. 📷 For your safety I don’t diagnose from images — I’ve noted it so an AGRAVAT clinician can review it during a consultation.'+ESC);},450);};r.readAsDataURL(file);e.target.value='';}
 function renderChat(){const log=document.getElementById('chatLog');log.innerHTML=CHAT.map(m=>`<div class="msg ${m.r}">${m.h}</div>`).join('');log.scrollTop=log.scrollHeight;}
 
 /* ===== ATH STAFF CONSOLE + PATIENT DATABASE ===== */
 let ATH_PATIENTS=JSON.parse(localStorage.getItem('agr_ath')||'[]');
 function renderAth(){renderAthList();}
-function athNew(){['athName','athAge','athPhone','athCity','athComplaint','athMm','athBP','athSugar','athWeight','athScreen','athDx'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['athGender','athHabit'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});const n=document.getElementById('athName');if(n)n.focus();toast('🆕 New session — fields cleared');}
-function athSave(){const g=id=>((document.getElementById(id)||{}).value||'').trim();const name=g('athName');if(!name){toast('Enter patient name');return;}const rec={name,age:g('athAge'),gender:g('athGender'),phone:g('athPhone'),city:g('athCity'),habit:g('athHabit'),complaint:g('athComplaint'),mm:g('athMm'),bp:g('athBP'),sugar:g('athSugar'),weight:g('athWeight'),screen:g('athScreen'),dx:g('athDx'),staff:'Kiosk staff',when:new Date().toLocaleString('en-IN')};ATH_PATIENTS.unshift(rec);localStorage.setItem('agr_ath',JSON.stringify(ATH_PATIENTS));renderAthList();athNew();toast('✅ '+name+' saved to the AGRAVAT database');}
+function athNew(){['athName','athAge','athPhone','athCity','athComplaint','athMm','athBP','athSugar','athWeight','athScreen','athDx'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['athGender','athHabit'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});athPhoto=null;const pv=document.getElementById('athPhotoPrev');if(pv)pv.innerHTML='';const n=document.getElementById('athName');if(n)n.focus();toast('🆕 New session — fields cleared');}
+function athSave(){const g=id=>((document.getElementById(id)||{}).value||'').trim();const name=g('athName');if(!name){toast('Enter patient name');return;}const ph=athPhoto;const rec={name,age:g('athAge'),gender:g('athGender'),phone:g('athPhone'),city:g('athCity'),habit:g('athHabit'),complaint:g('athComplaint'),mm:g('athMm'),bp:g('athBP'),sugar:g('athSugar'),weight:g('athWeight'),screen:g('athScreen'),dx:g('athDx'),photo:ph||'',staff:'Kiosk staff',when:new Date().toLocaleString('en-IN')};ATH_PATIENTS.unshift(rec);localStorage.setItem('agr_ath',JSON.stringify(ATH_PATIENTS));cloudSavePatient(rec,ph);renderAthList();athNew();toast('✅ '+name+' saved'+(CLOUD?' & synced to cloud ☁️':' to the AGRAVAT database'));}
 function renderAthList(){const el=document.getElementById('athList');const c=document.getElementById('athCount');if(c)c.textContent=ATH_PATIENTS.length;if(!el)return;el.innerHTML=ATH_PATIENTS.length?ATH_PATIENTS.map((p,i)=>`<div class="card" style="padding:13px;margin-bottom:10px;cursor:pointer" onclick="athView(${i})"><div style="display:flex;justify-content:space-between;align-items:center"><b>${p.name}</b><span class="sub" style="font-size:.64rem">${p.when}</span></div><div class="sub" style="font-size:.74rem">${[p.age&&p.age+'y',p.gender,p.city,p.habit&&('habit: '+p.habit)].filter(Boolean).join(' · ')||'—'}</div><div class="sub" style="font-size:.74rem">${[p.mm&&('opening '+p.mm+'mm'),p.bp&&('BP '+p.bp),p.sugar&&('sugar '+p.sugar)].filter(Boolean).join(' · ')}</div>${p.dx?`<div style="font-size:.74rem;color:var(--green);margin-top:4px">🩺 ${p.dx}</div>`:'<div class="sub" style="font-size:.68rem;margin-top:4px;font-style:italic">Awaiting clinician diagnosis</div>'}</div>`).join(''):'<div class="card" style="padding:16px"><p class="sub" style="margin:0">No patients captured yet. Fill the intake form above and tap Save.</p></div>';}
-function athView(i){const p=ATH_PATIENTS[i];if(!p)return;openSheetRaw(`<div class="grab"></div><h3>${p.name}</h3><p class="sub">${p.when} · captured by ${p.staff}</p><table style="width:100%;font-size:.84rem;border-collapse:collapse;margin-top:8px">${[['Age',p.age],['Gender',p.gender],['Phone',p.phone],['City',p.city],['Tobacco habit',p.habit],['Chief complaint',p.complaint],['Mouth opening',p.mm&&p.mm+' mm'],['Blood pressure',p.bp],['Blood sugar',p.sugar&&p.sugar+' mg/dL'],['Weight',p.weight&&p.weight+' kg'],['Screening notes',p.screen],['Clinician diagnosis',p.dx]].map(([k,v])=>v?`<tr><td style="padding:7px;border-bottom:1px solid var(--line);color:var(--muted);white-space:nowrap;vertical-align:top">${k}</td><td style="padding:7px;border-bottom:1px solid var(--line);font-weight:600">${v}</td></tr>`:'').join('')}</table><button class="btn btn-block btn-ghost" style="margin-top:12px" onclick="closeSheet()">Close</button>`);}
+function athView(i){const p=ATH_PATIENTS[i];if(!p)return;openSheetRaw(`<div class="grab"></div><h3>${p.name}</h3><p class="sub">${p.when} · captured by ${p.staff}</p>${p.photo?`<img src="${p.photo}" style="width:100%;max-height:220px;object-fit:contain;border-radius:12px;margin:8px 0;background:#000">`:''}<table style="width:100%;font-size:.84rem;border-collapse:collapse;margin-top:8px">${[['Age',p.age],['Gender',p.gender],['Phone',p.phone],['City',p.city],['Tobacco habit',p.habit],['Chief complaint',p.complaint],['Mouth opening',p.mm&&p.mm+' mm'],['Blood pressure',p.bp],['Blood sugar',p.sugar&&p.sugar+' mg/dL'],['Weight',p.weight&&p.weight+' kg'],['Screening notes',p.screen],['Clinician diagnosis',p.dx]].map(([k,v])=>v?`<tr><td style="padding:7px;border-bottom:1px solid var(--line);color:var(--muted);white-space:nowrap;vertical-align:top">${k}</td><td style="padding:7px;border-bottom:1px solid var(--line);font-weight:600">${v}</td></tr>`:'').join('')}</table><button class="btn btn-block btn-ghost" style="margin-top:12px" onclick="closeSheet()">Close</button>`);}
 
 /* ===== MANAGER CONTROL ===== */
 const ADMIN={
@@ -1044,7 +1079,7 @@ function renderAdmin(sec){
   seg.innerHTML=tabs.map(([k,l])=>`<div class="tab ${sec===k?'active':''}" onclick="setAdminTab('${k}')">${l}</div>`).join('');
   const b=document.getElementById('adminBody');
   if(sec==='overview'){
-    b.innerHTML=`<h2 class="sec">Business at a glance</h2><div class="kpi-grid">${ADMIN.kpis.map(([l,v,d])=>`<div class="card"><div class="sub" style="font-size:.62rem">${l}</div><b>${v}</b><span style="color:var(--green);font-size:.66rem;font-weight:700">${d}</span></div>`).join('')}</div>
+    b.innerHTML=`<button class="btn btn-block btn-navy" style="margin-top:10px" onclick="openSheet('cloud')">☁️ Cloud database setup ${CLOUD?'· connected ✅':''}</button><h2 class="sec">Business at a glance</h2><div class="kpi-grid">${ADMIN.kpis.map(([l,v,d])=>`<div class="card"><div class="sub" style="font-size:.62rem">${l}</div><b>${v}</b><span style="color:var(--green);font-size:.66rem;font-weight:700">${d}</span></div>`).join('')}</div>
     <h2 class="sec">Revenue trend (12 mo)</h2><div class="card" style="padding:14px"><canvas id="revChart" style="width:100%;height:150px"></canvas></div>
     <h2 class="sec">Top products</h2>${['kit','smile','pops'].map(id=>{const p=PRODUCTS.find(x=>x.id===id);return `<div class="card pcard" style="cursor:default">${imgHtml(p)}<div class="pi"><h4 style="margin:0">${L(p.name)}</h4><div class="sub">${p.sold} sold · ${money(p.price)}</div></div></div>`;}).join('')}`;
     setTimeout(drawRev,30);
@@ -1118,6 +1153,41 @@ function addPoints(n,reason){earn(n);toast('+'+n+' points'+(reason?' · '+reason
 function renderPoints(){const s=POINTS.toLocaleString('en-IN');['ptsHero','ptsPass'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});}
 function redeemReward(id){const r=REWARDS.find(x=>x.id===id);if(!r)return;if(POINTS<r.pts){toast('Need '+(r.pts-POINTS)+' more points');return;}if(!REDEEMED[id]){REDEEMED[id]=r.base+'-'+Math.floor(1000+Math.random()*9000);localStorage.setItem('agr_redeemed',JSON.stringify(REDEEMED));}openSheet('rewards');setTimeout(()=>toast('🎉 Unlocked: '+r.title),120);}
 
+/* ===== CLOUD DATABASE (Supabase) ===== */
+let SB=null,CLOUD=false,athPhoto=null;
+function cloudInit(){try{const c=JSON.parse(localStorage.getItem('agr_supa')||'{}');if(c.url&&c.key&&window.supabase){SB=window.supabase.createClient(c.url,c.key);CLOUD=true;cloudLoadPatients();cloudSyncProfile();}else{CLOUD=false;}}catch(e){CLOUD=false;}}
+function saveCloud(){const url=((document.getElementById('supaUrl')||{}).value||'').trim(),key=((document.getElementById('supaKey')||{}).value||'').trim();if(!url||!key){toast('Enter both the URL and the anon key');return;}localStorage.setItem('agr_supa',JSON.stringify({url,key}));cloudInit();closeSheet();setTimeout(()=>toast(CLOUD?'☁️ Cloud connected — data now syncs':'Saved — reopen Cloud to check the connection'),200);}
+async function cloudSavePatient(rec,photo){if(!CLOUD)return;try{let photo_url=null;if(photo){const nm='p_'+Date.now()+'.jpg';const blob=await(await fetch(photo)).blob();const up=await SB.storage.from('patient-photos').upload(nm,blob,{contentType:'image/jpeg',upsert:true});if(!up.error)photo_url=SB.storage.from('patient-photos').getPublicUrl(nm).data.publicUrl;}const row=Object.assign({},rec);delete row.photo;row.photo_url=photo_url;await SB.from('patients').insert([row]);}catch(e){console.warn('cloud patient save failed',e);}}
+async function cloudLoadPatients(){if(!CLOUD)return;try{const r=await SB.from('patients').select('*').order('created_at',{ascending:false}).limit(200);if(r.data&&r.data.length){ATH_PATIENTS=r.data.map(d=>({name:d.name,age:d.age,gender:d.gender,phone:d.phone,city:d.city,habit:d.habit,complaint:d.complaint,mm:d.mm,bp:d.bp,sugar:d.sugar,weight:d.weight,screen:d.screen,dx:d.dx,staff:d.staff,when:d.when,photo:d.photo_url}));localStorage.setItem('agr_ath',JSON.stringify(ATH_PATIENTS));renderAthList();}}catch(e){}}
+async function cloudSyncProfile(){if(!CLOUD||!ACCOUNT||!ACCOUNT.email)return;try{await SB.from('profiles').upsert([{email:ACCOUNT.email,name:ACCOUNT.name,phone:ACCOUNT.phone,city:ACCOUNT.city,points:POINTS}],{onConflict:'email'});}catch(e){}}
+function athPhotoPick(e){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{athPhoto=r.result;const pv=document.getElementById('athPhotoPrev');if(pv)pv.innerHTML=`<img src="${athPhoto}" style="max-width:130px;border-radius:10px">`;};r.readAsDataURL(f);e.target.value='';}
+
+/* ===== REMINDERS & NOTIFICATIONS ===== */
+const REMINDERS=[
+ {id:'osmf',time:'08:00',icon:'🦷',label:'Morning OSMF exercises'},
+ {id:'water',time:'12:00',icon:'💧',label:'Hydration check'},
+ {id:'gel',time:'14:00',icon:'🧴',label:'Apply OSMF Oral Gel'},
+ {id:'tobacco',time:'19:00',icon:'🚭',label:'Tobacco-free check-in'},
+ {id:'supp',time:'21:00',icon:'💊',label:'Evening supplements'},
+];
+const REM_MSGS={
+ osmf:['Time for your OSMF stretches — 60 seconds moves you closer to your goal 💪','Your mouth-opening routine is waiting. Small daily reps, big results! 🦷','2 minutes of guided exercises now keeps your streak alive.'],
+ water:['Sip some cool water 💧 it soothes the mouth and aids recovery.','Hydration break! Aim for your 8 glasses today.','A glass of water now — your body and mouth will thank you.'],
+ gel:['Midday OSMF Oral Gel time — soothe any burning 🧴','Apply your oral gel for healthy, comfortable gums.','Gentle reminder: your OSMF Oral Gel keeps things calm.'],
+ tobacco:['Another tobacco-free day is a real win. Log your streak 🚭','Craving? It passes in minutes — you’ve got this 💚','Every clean day directly speeds your OSMF recovery.'],
+ supp:['Evening supplements — OSMF Vita after dinner tonight 💊','Your daily stack keeps recovery on track. Take them now.','Don’t forget your supplements — consistency compounds.'],
+};
+let REM_ON=JSON.parse(localStorage.getItem('agr_rem')||'null')||{osmf:1,water:1,gel:1,tobacco:1,supp:1};
+let remTimers=[];
+function notify(title,body){try{if(('Notification'in window)&&Notification.permission==='granted'){new Notification(title,{body});return;}}catch(e){}toast(title+' · '+body);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function enableNotif(){if(!('Notification'in window)){toast('Notifications aren’t supported in this browser');return;}Notification.requestPermission().then(p=>{if(p==='granted'){localStorage.setItem('agr_notif','1');scheduleReminders();openSheet('reminders');setTimeout(()=>notify('AGRAVAT reminders are on ✅',pick(REM_MSGS.osmf)),300);}else{toast('Allow notifications in your browser settings to enable');}});}
+function toggleRem(id){REM_ON[id]=!REM_ON[id];localStorage.setItem('agr_rem',JSON.stringify(REM_ON));scheduleReminders();openSheet('reminders');}
+function scheduleReminders(){remTimers.forEach(t=>clearTimeout(t));remTimers=[];if(localStorage.getItem('agr_notif')!=='1')return;const now=new Date();REMINDERS.forEach(r=>{if(!REM_ON[r.id])return;const p=r.time.split(':');const t=new Date();t.setHours(+p[0],+p[1],0,0);const ms=t-now;if(ms>0&&ms<86400000)remTimers.push(setTimeout(()=>notify('AGRAVAT · '+r.label,pick(REM_MSGS[r.id]||['Time for your wellness step'])),ms));});}
+function testReminder(){const k=pick(Object.keys(REM_MSGS));notify('AGRAVAT reminder',pick(REM_MSGS[k]));}
+const TIPS=['Cool water and soft foods ease OSMF burning.','60-second stretches done daily beat occasional long sessions.','Turmeric + tulsi (OSMF Oral Gel) support oral comfort.','Every tobacco-free day directly aids your recovery.','Take OSMF Vita after a meal for better absorption.','Rotate your tongue to the palate daily to ease stiffness.','Log your mouth opening daily — consistency compounds.','A short walk after meals helps blood sugar & mood.'];
+function renderTip(){const el=document.getElementById('dailyTip');if(!el)return;const d=Math.floor(Date.now()/864e5)%TIPS.length;el.innerHTML=`<div style="font-size:1.3rem">💡</div><div style="flex:1"><b style="font-size:.8rem">Tip of the day</b><div class="sub" style="font-size:.75rem">${TIPS[d]}</div></div>`;}
+
 /* sheets */
 function openSheetRaw(h){document.getElementById('sheetBody').innerHTML=h;document.getElementById('sheetBg').classList.add('show');}
 function openSheet(type){
@@ -1142,6 +1212,9 @@ function openSheet(type){
     h+=`<h3>📹 Share your recovery story</h3><p class="sub">With your consent, the best stories feature on the Dr Agravat Wellness channel (functional language).</p><div class="field"><label>Your name</label><input id="stName" value="${(ACCOUNT&&ACCOUNT.name)||''}"></div><div class="field"><label>Your story</label><textarea id="stText" style="width:100%;min-height:90px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"></textarea></div><div class="field"><label>Video link (optional)</label><input id="stLink" placeholder="YouTube / Drive link"></div><label style="font-size:.76rem;display:flex;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" id="stConsent"> I consent to AGRAVAT sharing this.</label><button class="btn btn-block btn-blue" style="margin-top:10px" onclick="submitStory()">Submit my story</button>`;
   } else if(type==='consent'){
     h+=`<h3>🔒 Privacy & Data Consent</h3><p class="sub">Your health data builds your unified Health Passport, stored securely and never shared without consent.</p>${[['Health & OSMF data',true],['Supplement & order history',true],['AI assistant conversations',true],['Marketing communications',false]].map(([l,on])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="ml">${l}</span><span style="color:${on?'var(--green)':'var(--muted)'};font-weight:800">${on?'● On':'○ Off'}</span></div>`).join('')}<p class="sub" style="margin-top:10px">View, download or delete your data anytime. Compliant with ASCI, FSSAI & data-protection norms.</p>`;
+  } else if(type==='cloud'){
+    const c=JSON.parse(localStorage.getItem('agr_supa')||'{}');
+    h+=`<h3>☁️ Cloud database</h3><p class="sub">Connect a free Supabase project to store patient records, photos, accounts & points centrally and sync across all devices. Paste your Project URL and anon key (Supabase → Settings → API).</p><div class="field"><label>Project URL</label><input id="supaUrl" value="${c.url||''}" placeholder="https://xxxx.supabase.co"></div><div class="field"><label>Anon public key</label><input id="supaKey" value="${c.key||''}" placeholder="eyJhbGci..."></div><button class="btn btn-block btn-green" onclick="saveCloud()">Connect</button><div class="badge-soft" style="display:block;text-align:center;margin-top:10px;padding:8px">${CLOUD?'✅ Connected & syncing':'⚪ Not connected — using on-device storage'}</div><p class="sub" style="margin-top:8px;font-size:.66rem">Full step-by-step setup (with the database schema) is in the AGRAVAT-CLOUD-SETUP guide. The anon key is safe to use in-app; your data is protected by row-level security.</p>`;
   } else if(type==='rewards'){
     h+=`<h3>🎁 Rewards & points</h3><div class="card" style="padding:16px;text-align:center;margin:10px 0;background:linear-gradient(135deg,#0A1F44,#1E5FB4);color:#fff"><div style="font-size:2rem;font-weight:800;color:var(--gold2)">${POINTS.toLocaleString('en-IN')}</div><div style="font-size:.72rem;opacity:.85">points balance</div></div><p class="sub">Earn points on every product, OSMF log & daily habit. Reach a tier to unlock a reward you can use at agravat.com.</p>`;
     h+=REWARDS.map(r=>{const got=REDEEMED[r.id];const elig=POINTS>=r.pts;const pct=Math.min(100,Math.round(POINTS/r.pts*100));return `<div class="card" style="padding:14px;margin:10px 0"><div style="display:flex;gap:12px;align-items:center"><div style="font-size:1.6rem">${r.icon}</div><div style="flex:1"><b style="font-size:.9rem">${r.title}</b><div class="sub" style="font-size:.72rem">${r.desc}</div></div><span class="sub" style="font-size:.7rem;white-space:nowrap">${r.pts} pts</span></div>${got?`<div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(45,106,79,.12);text-align:center"><div class="sub" style="font-size:.64rem">Your code</div><b style="letter-spacing:.1em;color:var(--green);font-size:1.05rem">${got}</b><div class="sub" style="font-size:.62rem;margin-top:2px">Apply at agravat.com checkout</div></div>`:`<div class="tier-bar" style="margin-top:10px"><i style="width:${pct}%"></i></div><button class="btn btn-block ${elig?'btn-gold':'btn-ghost'}" style="margin-top:8px" ${elig?`onclick="redeemReward('${r.id}')"`:'disabled'}>${elig?'✓ Redeem now':((r.pts-POINTS)+' more points')}</button>`}</div>`;}).join('');
@@ -1151,7 +1224,11 @@ function openSheet(type){
   } else if(type==='editAccount'){
     const a=ACCOUNT||{};h+=`<h3>Account & profile</h3><div class="field"><label>Full name</label><input id="acName" value="${a.name||''}"></div><div class="field"><label>Email</label><input id="acEmail" value="${a.email||''}"></div><div class="field"><label>Phone</label><input id="acPhone" value="${a.phone||''}"></div><div class="field"><label>City</label><input id="acCity" value="${a.city||''}"></div><button class="btn btn-block btn-green" onclick="saveAccount()">Save changes</button><button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="logout()">Log out</button><button class="btn btn-block" style="margin-top:8px;color:#b91c1c;background:transparent;border:1px solid var(--line)" onclick="deleteAccount()">Delete my data</button>`;
   } else if(type==='reminders'){
-    h+=`<h3>⏰ ${t('qRem')}</h3>`+[['🦷','Morning OSMF exercise','8:00 AM'],['🧴','Apply OSMF Oral Gel','2:00 PM'],['💊','OSMF Vita after dinner','9:00 PM'],['🔄','OSMF kit refill predicted','in 6 days']].map(([e,l,tm])=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="e">${e}</span><span class="ml">${l}</span><span class="sub">${tm}</span></div>`).join('');
+    const perm=('Notification'in window)?Notification.permission:'unsupported';const on=localStorage.getItem('agr_notif')==='1'&&perm==='granted';
+    h+=`<h3>⏰ Daily reminders</h3><p class="sub">A friendly, unique nudge for exercises, supplements, hydration & your tobacco-free streak — a fresh message each time.</p>`;
+    h+= on?`<div class="badge-soft" style="display:block;text-align:center;padding:9px;margin:10px 0">🔔 Reminders are ON</div>`:`<button class="btn btn-block btn-gold" style="margin:10px 0" onclick="enableNotif()">🔔 Turn on daily reminders</button>`;
+    h+=REMINDERS.map(r=>`<div class="menu-item" style="border:1px solid var(--line);border-radius:12px;margin-bottom:6px"><span class="e">${r.icon}</span><span class="ml">${r.label}<div class="sub" style="font-size:.68rem">Daily · ${r.time}</div></span><span onclick="toggleRem('${r.id}')" style="font-weight:800;color:${REM_ON[r.id]?'var(--green)':'var(--muted)'};cursor:pointer">${REM_ON[r.id]?'● On':'○ Off'}</span></div>`).join('');
+    h+=`<button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="testReminder()">Send a sample reminder</button><p class="sub" style="margin-top:8px;font-size:.66rem">Reminders show while the app is installed/open. Always-on background alerts come with the native app or a push service.</p>`;
   } else if(type==='measure'){
     h+=`<h3>📸 AI camera measurement</h3><p class="sub">Place a ₹5 coin (23 mm) beside your open mouth. Capture a photo, tap the coin's two edges, then the top & bottom of your mouth opening — the app calculates the millimetres. An at-home tracking aid, never a diagnosis.</p><button class="btn btn-block btn-gold" style="margin-top:8px" onclick="openCamera()">📷 Open camera & measure</button><button class="btn btn-block btn-ghost" style="margin-top:8px" onclick="simMeasure()">Quick estimate (no camera)</button>`;
   }
@@ -1170,7 +1247,7 @@ let toastT=null;
 function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2200);}
 function setWellness(n){document.getElementById('wsNum').textContent=n;const C=2*Math.PI*34;const r=document.getElementById('wsRing');r.style.strokeDasharray=C;r.style.strokeDashoffset=C*(1-n/100);}
 
-function init(){applyI18n();saveCart();updateOsmfStats();setWellness(76);seedChat();updTimer();window.addEventListener('resize',()=>{if(CUR==='osmf')drawChart();if(CUR==='diet')drawSugar();});}
+function init(){applyI18n();saveCart();updateOsmfStats();setWellness(76);seedChat();updTimer();if(localStorage.getItem('agr_notif')==='1')scheduleReminders();cloudInit();window.addEventListener('resize',()=>{if(CUR==='osmf')drawChart();if(CUR==='diet')drawSugar();});}
 init();
 </script>
 </body>
